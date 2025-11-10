@@ -29,7 +29,7 @@
 
    body {
             /* 背景图片设置 */
-            background-image: url('D:/JAVA/tzb/images/4ED9557E923B0B49B6F4A467C16AB514.jpg');
+            background-image: url('images/4ED9557E923B0B49B6F4A467C16AB514.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -504,7 +504,7 @@
         }
 
        .character {
-    background-image: url('D:\JAVA\tzb\images\3DB4A5D6F35C44B34ECBC88BD7D20D37.jpg');
+    background-image: url('images/3DB4A5D6F35C44B34ECBC88BD7D20D37.jpg');
     background-size: cover;
     background-position: center;
 }
@@ -1560,6 +1560,35 @@
             e.preventDefault();
             document.getElementById('help-btn').click();
         });
+
+        // 提交反馈函数
+        function submitFeedback() {
+            const type = document.getElementById('feedback-type').value;
+            const title = document.getElementById('feedback-title').value;
+            const content = document.getElementById('feedback-content').value;
+            const contact = document.getElementById('contact-info').value;
+            const rating = document.querySelectorAll('.star.active').length;
+            
+            if (!title || !content) {
+                alert(currentLanguage === 'zh-CN' ? '请填写标题和详细内容' : 'Please fill in title and content');
+                return;
+            }
+            
+            // 这里可以添加实际的提交逻辑（发送到服务器）
+            console.log('提交反馈:', { type, title, content, contact, rating });
+            
+            // 显示成功消息
+            alert(currentLanguage === 'zh-CN' ? 
+                '反馈提交成功！感谢您的宝贵意见。' : 
+                'Feedback submitted successfully! Thank you for your valuable feedback.');
+            
+            // 清空表单
+            document.getElementById('feedback-title').value = '';
+            document.getElementById('feedback-content').value = '';
+            document.getElementById('contact-info').value = '';
+            document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+            document.getElementById('rating-text').textContent = currentLanguage === 'zh-CN' ? '请选择评分' : 'Please select rating';
+        }
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
