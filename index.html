@@ -482,6 +482,149 @@
     color: var(--primary);
     min-height: 30px;
 }
+
+.conversation-panel {
+    background: rgba(245, 245, 245, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.conversation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.conversation-toggles {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.detected-language {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.toggle input {
+    accent-color: var(--primary);
+}
+
+.conversation-status {
+    min-height: 20px;
+    font-size: 0.9rem;
+    color: var(--primary);
+}
+
+.chat-log {
+    max-height: 260px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chat-message.user {
+    align-items: flex-end;
+}
+
+.chat-message.assistant {
+    align-items: flex-start;
+}
+
+.chat-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.chat-bubble {
+    background: rgba(255, 152, 0, 0.12);
+    color: var(--dark);
+    padding: 10px 14px;
+    border-radius: 14px;
+    max-width: 100%;
+    line-height: 1.5;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.chat-message.user .chat-bubble {
+    background: rgba(46, 204, 113, 0.18);
+}
+
+.conversation-input {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.conversation-input input {
+    flex: 1;
+    min-width: 180px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.voice-btn {
+    background: var(--secondary);
+}
+
+.voice-btn.listening {
+    background: var(--danger);
+}
+
+.arabic-text .conversation-panel {
+    direction: rtl;
+    text-align: right;
+}
+
+.arabic-text .conversation-input {
+    flex-direction: row-reverse;
+}
+
+.arabic-text .conversation-toggles {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+}
+
+.chat-message[dir="rtl"] {
+    align-items: flex-end;
+}
+
+.chat-message[dir="rtl"] .chat-bubble {
+    text-align: right;
+}
         .virtual-character {
             display: flex;
             flex-direction: column;
@@ -958,6 +1101,33 @@
                     <h5 id="f1-song3">南京美食</h5>
                     <p id="f1-tag-modern">现代创作</p>
                 </div>
+            </div>
+        </div>
+
+        <div class="conversation-panel" id="feature1-conversation-panel">
+            <div class="conversation-header">
+                <h4 id="feature1-conversation-title">互动问答</h4>
+                <div class="conversation-toggles">
+                    <label class="toggle">
+                        <input type="checkbox" id="feature1-auto-detect" checked>
+                        <span id="feature1-auto-label">自动识别语言</span>
+                    </label>
+                    <label class="toggle">
+                        <input type="checkbox" id="feature1-tts-toggle" checked>
+                        <span id="feature1-tts-label">语音播报</span>
+                    </label>
+                    <div class="detected-language">
+                        <span id="feature1-detected-language-label">识别语言：</span>
+                        <span id="feature1-detected-language-text">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="conversation-status" id="feature1-status-text"></div>
+            <div id="feature1-chat-log" class="chat-log"></div>
+            <div class="conversation-input">
+                <button class="btn voice-btn" id="feature1-voice-btn">语音提问</button>
+                <input type="text" id="feature1-question-input" placeholder="输入您的问题..." />
+                <button class="btn" id="feature1-send-btn">发送</button>
             </div>
         </div>
     </div>
@@ -1881,6 +2051,748 @@
         // 当前选择的语言
         let currentLanguage = 'zh-CN';
 
+        const conversationConfigs = {
+            'zh-CN': {
+                title: '互动问答',
+                userLabel: '访客',
+                assistantLabel: '传承人',
+                inputPlaceholder: '请输入您的问题或向我点唱...',
+                sendButton: '发送',
+                voiceButtonIdle: '语音提问',
+                voiceButtonListening: '停止录音',
+                autoDetectLabel: '自动识别语言',
+                ttsLabel: '语音播报',
+                detectedLanguageLabel: '识别语言：',
+                noDetection: '待识别',
+                welcome: '您好，我是白局数字传承人，很高兴与您交流。可以问我白局相关问题，或让我演唱经典唱段。',
+                listening: '正在聆听，请开口说话……',
+                recognitionUnsupported: '当前浏览器暂不支持语音识别，请使用最新版的 Chrome 或 Edge 浏览器。',
+                thinking: '让我想一想……',
+                ttsPlaying: '语音播报中…',
+                ttsStopped: '语音播报已结束。',
+                error: '抱歉，我暂时无法处理，请稍后再试。',
+                languageNames: {
+                    'zh-CN': '中文',
+                    'en': '英语',
+                    'es': '西班牙语',
+                    'fr': '法语',
+                    'ja': '日语',
+                    'ar': '阿拉伯语'
+                },
+                responses: {
+                    greeting: '您好！欢迎来到南京白局数字平台。',
+                    intro: '白局是南京地区的传统曲艺，起源于明代，因演唱时穿着白色长衫而得名，唱词通俗、旋律清亮，是国家级非物质文化遗产。',
+                    history: '白局由明清时期的说唱形式发展而来，融合了民间说唱、琴曲等元素，清末民初进入茶馆戏台，代表人物有朱自清、吴树德等传承人。',
+                    instrument: '白局常用乐器有扬琴、琵琶、三弦、笛子等，演唱者还会以手拍节，形成“口唱手打”的特色表现。',
+                    costume: '传统白局演员多穿白色长衫配腰带，女性还会搭配绣花披肩和头饰，以突出素雅端庄的舞台形象。',
+                    default: '我可以为您介绍白局的历史、曲目、传承人，也可以为您演唱{song1}、{song2}等唱段，欢迎提问！',
+                    singGeneric: '好的，我这就为您献上{song}，请您欣赏。',
+                    singSong1: '好的，马上为您演唱{song}，再现秦淮灯火的风情。',
+                    singSong2: '收到，让我们一起感受{song}中南京四季的光景。',
+                    singSong3: '没问题，{song}将带您品味南京的风味故事。'
+                }
+            },
+            'en': {
+                title: 'Interactive Q&A',
+                userLabel: 'Visitor',
+                assistantLabel: 'Inheritor',
+                inputPlaceholder: 'Ask a question or request a song...',
+                sendButton: 'Send',
+                voiceButtonIdle: 'Voice Question',
+                voiceButtonListening: 'Stop Recording',
+                autoDetectLabel: 'Auto language detection',
+                ttsLabel: 'Voice reply',
+                detectedLanguageLabel: 'Detected language:',
+                noDetection: 'Pending',
+                welcome: 'Hello, I am the digital inheritor of Baiju. Feel free to ask about Baiju or request a classic excerpt.',
+                listening: 'Listening... please speak clearly.',
+                recognitionUnsupported: 'Speech recognition is not supported in this browser. Please try the latest Chrome or Edge.',
+                thinking: 'Let me think...',
+                ttsPlaying: 'Playing voice reply...',
+                ttsStopped: 'Voice reply stopped.',
+                error: 'Sorry, I could not process that. Please try again.',
+                languageNames: {
+                    'zh-CN': 'Chinese',
+                    'en': 'English',
+                    'es': 'Spanish',
+                    'fr': 'French',
+                    'ja': 'Japanese',
+                    'ar': 'Arabic'
+                },
+                responses: {
+                    greeting: 'Hello! Welcome to the Nanjing Baiju digital platform.',
+                    intro: 'Baiju is a traditional narrative singing art from Nanjing. It began in the Ming dynasty and was named after the white robes performers wore. The lyrics are vivid, the melodies bright, and it is listed as a National Intangible Cultural Heritage.',
+                    history: 'Baiju evolved from storytelling arts in the Ming and Qing dynasties, blending folk ballads and instrumental styles. It flourished in teahouses during the late Qing and early Republic eras, with masters such as Zhu Ziqing and Wu Shude carrying it forward.',
+                    instrument: 'Typical Baiju accompaniment includes yangqin, pipa, sanxian, and dizi. Performers also clap rhythm with their hands, creating the signature “singing with handmade percussion” style.',
+                    costume: 'Traditional performers wear long white gowns with sashes, while female artists may add embroidered shawls and hair ornaments to highlight an elegant stage presence.',
+                    default: 'I can introduce Baiju history, repertoire, and inheritors, or sing excerpts such as {song1} and {song2}. Feel free to ask!',
+                    singGeneric: 'Sure, let me sing {song} for you.',
+                    singSong1: 'With pleasure. Enjoy {song} and the festive glow of Qinhuai.',
+                    singSong2: 'Certainly. Let\'s experience the four seasons of Nanjing in {song}.',
+                    singSong3: 'Of course. {song} shares the flavorful stories of Nanjing.'
+                }
+            },
+            'es': {
+                title: 'Preguntas interactivas',
+                userLabel: 'Visitante',
+                assistantLabel: 'Heredero',
+                inputPlaceholder: 'Haz una pregunta o pide una canción...',
+                sendButton: 'Enviar',
+                voiceButtonIdle: 'Pregunta por voz',
+                voiceButtonListening: 'Detener grabación',
+                autoDetectLabel: 'Detectar idioma automáticamente',
+                ttsLabel: 'Respuesta por voz',
+                detectedLanguageLabel: 'Idioma detectado:',
+                noDetection: 'En espera',
+                welcome: 'Hola, soy el heredero digital del Baiju. Puedes preguntarme sobre el Baiju o pedirme un fragmento clásico.',
+                listening: 'Escuchando... por favor habla con claridad.',
+                recognitionUnsupported: 'El reconocimiento de voz no está disponible en este navegador. Prueba con la última versión de Chrome o Edge.',
+                thinking: 'Déjame pensar...',
+                ttsPlaying: 'Reproduciendo respuesta de voz...',
+                ttsStopped: 'Respuesta de voz detenida.',
+                error: 'Lo siento, no pude procesarlo. Inténtalo de nuevo.',
+                languageNames: {
+                    'zh-CN': 'Chino',
+                    'en': 'Inglés',
+                    'es': 'Español',
+                    'fr': 'Francés',
+                    'ja': 'Japonés',
+                    'ar': 'Árabe'
+                },
+                responses: {
+                    greeting: '¡Hola! Bienvenido a la plataforma digital del Baiju de Nankín.',
+                    intro: 'El Baiju es un arte tradicional de canto narrativo originario de Nankín. Surgió en la dinastía Ming y se nombra por las túnicas blancas que usaban los intérpretes. Las letras son populares, las melodías brillantes y está reconocido como Patrimonio Cultural Inmaterial nacional.',
+                    history: 'El Baiju evolucionó a partir de formas narrativas de las épocas Ming y Qing, combinando baladas populares y estilos instrumentales. A finales de la dinastía Qing y comienzos de la República floreció en los salones de té, con maestros como Zhu Ziqing y Wu Shude como referentes.',
+                    instrument: 'Los instrumentos habituales incluyen yangqin, pipa, sanxian y dizi. Los intérpretes también marcan el ritmo con las palmas, creando el estilo característico de “cantar y percutir con las manos”.',
+                    costume: 'Los artistas tradicionales visten largas túnicas blancas con cinturón; las intérpretes suelen añadir chales bordados y adornos en el cabello para resaltar una presencia escénica elegante.',
+                    default: 'Puedo contarte sobre la historia, el repertorio y los herederos del Baiju, o cantar fragmentos como {song1} y {song2}. ¡Pregúntame lo que quieras!',
+                    singGeneric: 'Claro, cantaré {song} para ti.',
+                    singSong1: 'Con gusto, disfruta {song} y el ambiente festivo del Qinhuai.',
+                    singSong2: 'Perfecto, vivamos las cuatro estaciones de Nankín en {song}.',
+                    singSong3: 'Por supuesto, {song} te llevará a saborear las historias gastronómicas de Nankín.'
+                }
+            },
+            'fr': {
+                title: 'Questions interactives',
+                userLabel: 'Visiteur',
+                assistantLabel: 'Héritier',
+                inputPlaceholder: 'Posez une question ou demandez un air...',
+                sendButton: 'Envoyer',
+                voiceButtonIdle: 'Question vocale',
+                voiceButtonListening: 'Arrêter l\'enregistrement',
+                autoDetectLabel: 'Détection automatique de la langue',
+                ttsLabel: 'Réponse vocale',
+                detectedLanguageLabel: 'Langue détectée :',
+                noDetection: 'En attente',
+                welcome: 'Bonjour, je suis l\'héritier numérique du Baiju. N\'hésitez pas à me poser vos questions ou à me demander un extrait.',
+                listening: 'À l\'écoute... veuillez parler clairement.',
+                recognitionUnsupported: 'La reconnaissance vocale n\'est pas disponible sur ce navigateur. Essayez la dernière version de Chrome ou Edge.',
+                thinking: 'Laissez-moi réfléchir...',
+                ttsPlaying: 'Lecture de la réponse vocale...',
+                ttsStopped: 'Réponse vocale terminée.',
+                error: 'Désolé, je ne peux pas traiter votre demande pour le moment.',
+                languageNames: {
+                    'zh-CN': 'Chinois',
+                    'en': 'Anglais',
+                    'es': 'Espagnol',
+                    'fr': 'Français',
+                    'ja': 'Japonais',
+                    'ar': 'Arabe'
+                },
+                responses: {
+                    greeting: 'Bonjour ! Bienvenue sur la plateforme numérique du Baiju de Nankin.',
+                    intro: 'Le Baiju est un art vocal narratif traditionnel de Nankin. Apparu sous la dynastie Ming, il doit son nom aux longues robes blanches des interprètes. Les paroles sont populaires, la mélodie claire, et il est inscrit au patrimoine culturel immatériel national.',
+                    history: 'Le Baiju s\'est développé à partir des arts de récit des époques Ming-Qing, mêlant ballades populaires et accompagnements instrumentaux. À la fin des Qing et au début de la République, il prospère dans les maisons de thé, porté par des maîtres tels que Zhu Ziqing et Wu Shude.',
+                    instrument: 'L\'accompagnement comprend souvent le yangqin, le pipa, le sanxian et la flûte dizi. Les chanteurs marquent aussi le rythme avec les mains, créant le style typique « chanter et frapper ».',
+                    costume: 'Traditionnellement, les artistes portent une longue robe blanche ceinturée ; les interprètes féminines ajoutent un châle brodé et des ornements de coiffure pour souligner l\'élégance scénique.',
+                    default: 'Je peux vous présenter l\'histoire, le répertoire et les héritiers du Baiju, ou chanter des airs comme {song1} et {song2}. Posez-moi vos questions !',
+                    singGeneric: 'Très bien, je vous interprète {song}.',
+                    singSong1: 'Avec plaisir. Profitons ensemble de l\'ambiance festive de {song}.',
+                    singSong2: 'Bien entendu. Découvrons les quatre saisons de Nankin dans {song}.',
+                    singSong3: 'Bien sûr. {song} vous fera goûter aux saveurs de Nankin.'
+                }
+            },
+            'ja': {
+                title: 'インタラクティブQ&A',
+                userLabel: '来訪者',
+                assistantLabel: '伝承者',
+                inputPlaceholder: '質問やリクエストを入力してください...',
+                sendButton: '送信',
+                voiceButtonIdle: '音声で質問',
+                voiceButtonListening: '録音を停止',
+                autoDetectLabel: '言語を自動認識',
+                ttsLabel: '音声で回答',
+                detectedLanguageLabel: '認識言語：',
+                noDetection: '待機中',
+                welcome: 'こんにちは、私は白局のデジタル伝承者です。白局についての質問や演唱のリクエストをどうぞ。',
+                listening: '傾聴中です。はっきりとお話しください。',
+                recognitionUnsupported: 'このブラウザでは音声認識が利用できません。最新版のChromeまたはEdgeをお試しください。',
+                thinking: '少々お待ちください…',
+                ttsPlaying: '音声回答を再生しています...',
+                ttsStopped: '音声再生を終了しました。',
+                error: '申し訳ありません。うまく処理できませんでした。もう一度お試しください。',
+                languageNames: {
+                    'zh-CN': '中国語',
+                    'en': '英語',
+                    'es': 'スペイン語',
+                    'fr': 'フランス語',
+                    'ja': '日本語',
+                    'ar': 'アラビア語'
+                },
+                responses: {
+                    greeting: 'こんにちは！南京白局デジタルプラットフォームへようこそ。',
+                    intro: '白局は南京で生まれた伝統的な語り物の歌芸です。明代に起源をもち、白い長衣を着て演じたことからこの名がつきました。詞は親しみやすく旋律は澄んでおり、国家級非物質文化遺産に指定されています。',
+                    history: '白局は明清期の語り芸から発展し、民間の歌や器楽の要素を取り入れました。清末から民国期には茶館の舞台で盛んになり、朱自清や呉樹徳などの伝承者が活躍しました。',
+                    instrument: '伴奏には揚琴・琵琶・三弦・笛子などが用いられ、演者は手拍子でリズムを取り、独特の「歌って手で打つ」スタイルを生み出します。',
+                    costume: '伝統的な出演者は白い長衣に帯を締め、女性は刺繍のショールや髪飾りを合わせ、清雅な舞台姿を表現します。',
+                    default: '白局の歴史や曲目、伝承者についてご紹介したり、{song1}や{song2}などを演唱することもできます。どうぞお気軽にお尋ねください。',
+                    singGeneric: '承知しました。{song}をお聴きください。',
+                    singSong1: '喜んで。秦淮灯会の華やかさを描く{song}をお届けします。',
+                    singSong2: 'かしこまりました。南京の四季を描く{song}を一緒に味わいましょう。',
+                    singSong3: 'もちろんです。{song}で南京の味わいをご堪能ください。'
+                }
+            },
+            'ar': {
+                title: 'أسئلة تفاعلية',
+                userLabel: 'الزائر',
+                assistantLabel: 'الوارث',
+                inputPlaceholder: 'اكتب سؤالك أو اطلب مقطعاً غنائياً...',
+                sendButton: 'إرسال',
+                voiceButtonIdle: 'سؤال صوتي',
+                voiceButtonListening: 'إيقاف التسجيل',
+                autoDetectLabel: 'التعرّف التلقائي على اللغة',
+                ttsLabel: 'إجابة صوتية',
+                detectedLanguageLabel: 'اللغة المكتشفة:',
+                noDetection: 'بانتظار',
+                welcome: 'مرحباً، أنا الوريث الرقمي لفن البايجو. يمكنك سؤالي عن البايجو أو طلب مقطع غنائي كلاسيكي.',
+                listening: 'أستمع إليك... الرجاء التحدث بوضوح.',
+                recognitionUnsupported: 'التعرّف على الصوت غير متاح في هذا المتصفح. يرجى تجربة أحدث نسخة من Chrome أو Edge.',
+                thinking: 'دعني أفكر...',
+                ttsPlaying: 'جاري تشغيل الإجابة الصوتية...',
+                ttsStopped: 'توقفت الإجابة الصوتية.',
+                error: 'عذراً، تعذّر المعالجة. حاول مرة أخرى.',
+                languageNames: {
+                    'zh-CN': 'الصينية',
+                    'en': 'الإنجليزية',
+                    'es': 'الإسبانية',
+                    'fr': 'الفرنسية',
+                    'ja': 'اليابانية',
+                    'ar': 'العربية'
+                },
+                responses: {
+                    greeting: 'مرحباً! أهلاً بك في المنصة الرقمية لفن البايجو في نانجينغ.',
+                    intro: 'البايجو فن غنائي قصصي تقليدي من نانجينغ، ظهر في عهد أسرة مينغ وسُمّي نسبة إلى الثياب البيضاء التي يرتديها المؤدون. كلماته قريبة من الجمهور وألحانه رقيقة، وقد أُدرج ضمن قائمة التراث الثقافي غير المادي الوطني.',
+                    history: 'تطور البايجو من فنون السرد في عهدي مينغ وتشينغ، ودمج عناصر من الأغاني الشعبية والآلات الموسيقية. ازدهر في مقاهي الشاي أواخر أسرة تشينغ وبداية الجمهورية، ومن رواده البارزين الأساتذة تشو تسي تشينغ ووو شو ده.',
+                    instrument: 'تشمل الآلات المصاحبة عادةً اليانغتشين والبيبا والسانشيان والناي الصيني (دزي). كما يضرب المؤدي الإيقاع بكفيه، فيبرز أسلوب «الغناء مع الإيقاع اليدوي» المميز.',
+                    costume: 'يرتدي الفنانون التقليديون أردية بيضاء طويلة مع حزام، وتضيف المؤديات شالات مطرزة وزينة للشعر لإبراز هيئة مسرحية أنيقة.',
+                    default: 'يمكنني إطلاعك على تاريخ البايجو ومقاطعه وورّاثه، أو أن أؤدي مقاطع مثل {song1} و{song2}. لا تتردد في طرح سؤالك!',
+                    singGeneric: 'بكل سرور، سأؤدي {song} من أجلك.',
+                    singSong1: 'حاضر، استمتع بأجواء مهرجان أضواء تشينهواي مع {song}.',
+                    singSong2: 'بكل تأكيد، فلنعيش معاً فصول نانجينغ الأربعة في {song}.',
+                    singSong3: 'أكيد، {song} سيأخذك في رحلة بين نكهات نانجينغ.'
+                }
+            }
+        };
+
+        const recognitionLangMap = {
+            'zh-CN': 'zh-CN',
+            'en': 'en-US',
+            'es': 'es-ES',
+            'fr': 'fr-FR',
+            'ja': 'ja-JP',
+            'ar': 'ar-SA'
+        };
+
+        const ttsLangMap = {
+            'zh-CN': 'zh-CN',
+            'en': 'en-US',
+            'es': 'es-ES',
+            'fr': 'fr-FR',
+            'ja': 'ja-JP',
+            'ar': 'ar-SA'
+        };
+
+        const conversationState = {
+            autoDetect: true,
+            ttsEnabled: true,
+            recognitionSupported: 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window,
+            speechSupported: 'speechSynthesis' in window,
+            recognition: null,
+            isListening: false,
+            labels: null,
+            elements: {},
+            currentStatusType: 'idle',
+            lastDetectedLang: 'zh-CN',
+            initialized: false
+        };
+
+        function setupConversation() {
+            if (conversationState.initialized) {
+                updateConversationLanguage(currentLanguage);
+                if (conversationState.autoDetect) {
+                    updateDetectedLanguageDisplay(null);
+                } else {
+                    updateDetectedLanguageDisplay(currentLanguage);
+                }
+                updateRecognitionLanguage();
+                return;
+            }
+
+            conversationState.initialized = true;
+            conversationState.elements = {
+                panel: document.getElementById('feature1-conversation-panel'),
+                title: document.getElementById('feature1-conversation-title'),
+                autoDetectCheckbox: document.getElementById('feature1-auto-detect'),
+                autoLabel: document.getElementById('feature1-auto-label'),
+                ttsToggle: document.getElementById('feature1-tts-toggle'),
+                ttsLabel: document.getElementById('feature1-tts-label'),
+                detectedLanguageLabel: document.getElementById('feature1-detected-language-label'),
+                detectedLanguageText: document.getElementById('feature1-detected-language-text'),
+                status: document.getElementById('feature1-status-text'),
+                chatLog: document.getElementById('feature1-chat-log'),
+                voiceBtn: document.getElementById('feature1-voice-btn'),
+                input: document.getElementById('feature1-question-input'),
+                sendBtn: document.getElementById('feature1-send-btn')
+            };
+
+            updateConversationLanguage(currentLanguage);
+            resetConversation(currentLanguage);
+            initSpeechRecognition();
+            updateRecognitionLanguage();
+
+            if (!conversationState.speechSupported && conversationState.elements.ttsToggle) {
+                conversationState.ttsEnabled = false;
+                conversationState.elements.ttsToggle.checked = false;
+                conversationState.elements.ttsToggle.disabled = true;
+            }
+
+            if (conversationState.elements.sendBtn) {
+                conversationState.elements.sendBtn.addEventListener('click', () => {
+                    const value = conversationState.elements.input.value.trim();
+                    if (!value) {
+                        return;
+                    }
+                    conversationState.elements.input.value = '';
+                    handleUserQuery(value);
+                });
+            }
+
+            if (conversationState.elements.input) {
+                conversationState.elements.input.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        const value = conversationState.elements.input.value.trim();
+                        if (!value) {
+                            return;
+                        }
+                        conversationState.elements.input.value = '';
+                        handleUserQuery(value);
+                    }
+                });
+            }
+
+            if (conversationState.elements.autoDetectCheckbox) {
+                conversationState.elements.autoDetectCheckbox.addEventListener('change', (event) => {
+                    conversationState.autoDetect = event.target.checked;
+                    if (conversationState.autoDetect) {
+                        updateDetectedLanguageDisplay(null);
+                    } else {
+                        updateDetectedLanguageDisplay(currentLanguage);
+                    }
+                });
+            }
+
+            if (conversationState.elements.ttsToggle) {
+                conversationState.elements.ttsToggle.addEventListener('change', (event) => {
+                    conversationState.ttsEnabled = event.target.checked;
+                    if (!conversationState.ttsEnabled) {
+                        stopSpeech();
+                        setConversationStatus(conversationState.labels.ttsStopped, 'info');
+                    }
+                });
+            }
+
+            if (conversationState.elements.voiceBtn) {
+                conversationState.elements.voiceBtn.addEventListener('click', toggleVoiceRecognition);
+                if (!conversationState.recognitionSupported) {
+                    conversationState.elements.voiceBtn.disabled = true;
+                }
+            }
+
+            if (!conversationState.recognitionSupported) {
+                setConversationStatus(conversationState.labels.recognitionUnsupported, 'info');
+            }
+        }
+
+        function updateConversationLanguage(lang) {
+            const labels = conversationConfigs[lang] || conversationConfigs['zh-CN'];
+            conversationState.labels = labels;
+
+            if (conversationState.elements.title) {
+                conversationState.elements.title.textContent = labels.title;
+            }
+            if (conversationState.elements.autoLabel) {
+                conversationState.elements.autoLabel.textContent = labels.autoDetectLabel;
+            }
+            if (conversationState.elements.ttsLabel) {
+                conversationState.elements.ttsLabel.textContent = labels.ttsLabel;
+            }
+            if (conversationState.elements.detectedLanguageLabel) {
+                conversationState.elements.detectedLanguageLabel.textContent = labels.detectedLanguageLabel;
+            }
+            if (conversationState.elements.input) {
+                conversationState.elements.input.setAttribute('placeholder', labels.inputPlaceholder);
+            }
+            if (conversationState.elements.sendBtn) {
+                conversationState.elements.sendBtn.textContent = labels.sendButton;
+            }
+
+            updateVoiceButtonLabel(conversationState.isListening ? labels.voiceButtonListening : labels.voiceButtonIdle);
+
+            if (conversationState.autoDetect) {
+                updateDetectedLanguageDisplay(null);
+            } else {
+                updateDetectedLanguageDisplay(lang);
+            }
+
+            if (!conversationState.recognitionSupported) {
+                setConversationStatus(labels.recognitionUnsupported, 'info');
+            }
+        }
+
+        function resetConversation(lang) {
+            const chatLog = conversationState.elements.chatLog;
+            if (chatLog) {
+                chatLog.innerHTML = '';
+            }
+            const labels = conversationConfigs[lang] || conversationConfigs['zh-CN'];
+            appendChatMessage('assistant', labels.welcome, lang);
+            conversationState.lastDetectedLang = lang;
+            if (conversationState.autoDetect) {
+                updateDetectedLanguageDisplay(null);
+            } else {
+                updateDetectedLanguageDisplay(lang);
+            }
+            clearStatusIfMatch('thinking');
+        }
+
+        function appendChatMessage(role, text, lang) {
+            const chatLog = conversationState.elements.chatLog;
+            if (!chatLog) {
+                return;
+            }
+            const message = document.createElement('div');
+            message.classList.add('chat-message', role);
+            message.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+
+            const labelConfig = conversationConfigs[lang] || conversationConfigs[currentLanguage] || conversationConfigs['zh-CN'];
+            const name = role === 'user' ? labelConfig.userLabel : labelConfig.assistantLabel;
+
+            const nameEl = document.createElement('div');
+            nameEl.classList.add('chat-name');
+            nameEl.textContent = name;
+
+            const bubble = document.createElement('div');
+            bubble.classList.add('chat-bubble');
+            bubble.textContent = text;
+
+            message.appendChild(nameEl);
+            message.appendChild(bubble);
+            chatLog.appendChild(message);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function setConversationStatus(text, type = 'info') {
+            conversationState.currentStatusType = type;
+            if (conversationState.elements.status) {
+                conversationState.elements.status.textContent = text || '';
+            }
+        }
+
+        function clearStatusIfMatch(type) {
+            if (conversationState.currentStatusType === type) {
+                setConversationStatus('', 'idle');
+            }
+        }
+
+        function updateDetectedLanguageDisplay(langCode) {
+            const displayEl = conversationState.elements.detectedLanguageText;
+            if (!displayEl) {
+                return;
+            }
+            const labels = conversationState.labels || conversationConfigs[currentLanguage] || conversationConfigs['zh-CN'];
+            if (!langCode) {
+                displayEl.textContent = labels.noDetection;
+                return;
+            }
+            displayEl.textContent = labels.languageNames[langCode] || labels.languageNames[currentLanguage] || langCode;
+        }
+
+        function detectConversationLanguage(text) {
+            if (!text) {
+                return currentLanguage;
+            }
+            if (/[\u4e00-\u9fff]/.test(text)) {
+                return 'zh-CN';
+            }
+            if (/[\u3040-\u30ff]/.test(text)) {
+                return 'ja';
+            }
+            if (/[\u0600-\u06FF]/.test(text)) {
+                return 'ar';
+            }
+            if (/[ñáéíóúü¡¿]/i.test(text)) {
+                return 'es';
+            }
+            if (/[çàâéèêëîïôûùœæ]/i.test(text)) {
+                return 'fr';
+            }
+            return 'en';
+        }
+
+        function getSongDisplayNameByLanguage(langCode, songId) {
+            const langData = languageTexts[langCode] || languageTexts[currentLanguage] || languageTexts['zh-CN'];
+            const f1 = langData?.f1;
+            if (!f1) {
+                return songId;
+            }
+            const map = {
+                song1: f1.song1,
+                song2: f1.song2,
+                song3: f1.song3
+            };
+            return map[songId] || songId;
+        }
+
+        function formatText(template, replacements) {
+            if (typeof template !== 'string') {
+                return '';
+            }
+            return template.replace(/\{(\w+)\}/g, (_, key) => {
+                return replacements && Object.prototype.hasOwnProperty.call(replacements, key)
+                    ? replacements[key]
+                    : '';
+            });
+        }
+
+        function generateAssistantResponse(text, langCode) {
+            const config = conversationConfigs[langCode] || conversationConfigs[currentLanguage] || conversationConfigs['zh-CN'];
+            const responses = config.responses;
+            const lower = text.toLowerCase();
+            const normalized = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+            const replacements = {
+                song1: getSongDisplayNameByLanguage(langCode, 'song1'),
+                song2: getSongDisplayNameByLanguage(langCode, 'song2'),
+                song3: getSongDisplayNameByLanguage(langCode, 'song3')
+            };
+
+            let messageKey = 'default';
+            let songIntent = null;
+
+            if (/(你好|您好|hello|hi|hey|hola|bonjour|salut|こんにちは|こんばんは|やあ|مرحبا|أهلاً|اهلا)/i.test(text)) {
+                messageKey = 'greeting';
+            } else if (/(白局是什么|介绍|what is|what\'s|what is baiju|qué es|qué es el|qu\'est-ce que|de quoi s\'agit-il|とは|って何|とは何ですか|ما هو|ماهي|ما هي)/i.test(text)) {
+                messageKey = 'intro';
+            } else if (/(历史|起源|传承|背景|history|origin|story|background|historia|origen|pasado|histoire|origine|歴史|由来|背景|تاريخ|أصل|خلفية)/i.test(text)) {
+                messageKey = 'history';
+            } else if (/(乐器|伴奏|instrument|instruments|instrumento|instrumentos|instrumentation|楽器|伴奏|آلات|آلة|عزف)/i.test(text)) {
+                messageKey = 'instrument';
+            } else if (/(服饰|服装|衣着|costume|dress|clothes|attire|vestuario|indumentaria|tenue|衣装|衣服|装い|زي|ملابس|أزياء)/i.test(text)) {
+                messageKey = 'costume';
+            } else if (/秦淮灯会/.test(text) || /qinhuai/.test(normalized) || /lantern/.test(normalized)) {
+                messageKey = 'singSong1';
+                songIntent = 'song1';
+            } else if (/金陵四季/.test(text) || /jinling/.test(normalized) || /four seasons/.test(normalized) || /seasons/.test(normalized)) {
+                messageKey = 'singSong2';
+                songIntent = 'song2';
+            } else if (/南京美食/.test(text) || /taste of nanjing/.test(normalized) || /nanjing flavors/.test(normalized) || /sabores de nanjing/.test(normalized) || /saveurs de nanjing/.test(normalized) || /南京の味/.test(text) || /نكهات/.test(text)) {
+                messageKey = 'singSong3';
+                songIntent = 'song3';
+            } else if (/(唱|演唱|来一段|唱一段|歌|点歌|sing|song|perform|singing|cantar|cántame|chanter|chante|歌って|歌を|غن|غناء|أد)/i.test(text)) {
+                messageKey = 'singGeneric';
+                songIntent = 'song1';
+            }
+
+            if (songIntent) {
+                replacements.song = getSongDisplayNameByLanguage(langCode, songIntent);
+                triggerPerformance(songIntent);
+            }
+
+            const template = responses[messageKey] || responses.default;
+            const finalMessage = formatText(template, replacements);
+            return { message: finalMessage, langCode };
+        }
+
+        function triggerPerformance(songId) {
+            isPerforming = true;
+            currentPerformance = songId;
+            playPerformance(songId);
+        }
+
+        function handleUserQuery(text) {
+            if (!text) {
+                return;
+            }
+            if (!conversationState.labels) {
+                updateConversationLanguage(currentLanguage);
+            }
+            const detectedLang = conversationState.autoDetect ? detectConversationLanguage(text) : currentLanguage;
+            conversationState.lastDetectedLang = detectedLang;
+
+            if (conversationState.autoDetect) {
+                updateDetectedLanguageDisplay(detectedLang);
+            } else {
+                updateDetectedLanguageDisplay(currentLanguage);
+            }
+
+            appendChatMessage('user', text, detectedLang);
+            clearStatusIfMatch('listening');
+            setConversationStatus(conversationState.labels.thinking, 'thinking');
+
+            const response = generateAssistantResponse(text, detectedLang);
+            appendChatMessage('assistant', response.message, detectedLang);
+
+            if (conversationState.ttsEnabled && conversationState.speechSupported) {
+                stopSpeech();
+                speakText(response.message, detectedLang);
+            } else {
+                clearStatusIfMatch('thinking');
+            }
+        }
+
+        function updateRecognitionLanguage() {
+            if (!conversationState.recognition) {
+                return;
+            }
+            const lang = recognitionLangMap[currentLanguage] || 'zh-CN';
+            conversationState.recognition.lang = lang;
+        }
+
+        function toggleVoiceRecognition() {
+            if (!conversationState.recognitionSupported || !conversationState.recognition) {
+                setConversationStatus(conversationState.labels.recognitionUnsupported, 'info');
+                return;
+            }
+            if (conversationState.isListening) {
+                conversationState.recognition.stop();
+                return;
+            }
+            try {
+                conversationState.recognition.lang = recognitionLangMap[currentLanguage] || conversationState.recognition.lang;
+                conversationState.recognition.start();
+            } catch (error) {
+                console.error('Speech recognition start error:', error);
+            }
+        }
+
+        function initSpeechRecognition() {
+            if (!conversationState.recognitionSupported || conversationState.recognition) {
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                conversationState.recognitionSupported = false;
+                if (conversationState.elements.voiceBtn) {
+                    conversationState.elements.voiceBtn.disabled = true;
+                }
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = recognitionLangMap[currentLanguage] || 'zh-CN';
+
+            recognition.onstart = () => {
+                conversationState.isListening = true;
+                if (conversationState.elements.voiceBtn) {
+                    conversationState.elements.voiceBtn.classList.add('listening');
+                }
+                updateVoiceButtonLabel(conversationState.labels.voiceButtonListening);
+                setConversationStatus(conversationState.labels.listening, 'listening');
+            };
+
+            recognition.onend = () => {
+                conversationState.isListening = false;
+                if (conversationState.elements.voiceBtn) {
+                    conversationState.elements.voiceBtn.classList.remove('listening');
+                }
+                updateVoiceButtonLabel(conversationState.labels.voiceButtonIdle);
+                if (conversationState.currentStatusType === 'listening') {
+                    clearStatusIfMatch('listening');
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event);
+                setConversationStatus(conversationState.labels.error, 'info');
+            };
+
+            recognition.onresult = (event) => {
+                const result = event.results && event.results[0] && event.results[0][0]
+                    ? event.results[0][0].transcript.trim()
+                    : '';
+                if (result) {
+                    handleUserQuery(result);
+                } else {
+                    setConversationStatus(conversationState.labels.error, 'info');
+                }
+            };
+
+            conversationState.recognition = recognition;
+        }
+
+        function updateVoiceButtonLabel(text) {
+            if (conversationState.elements.voiceBtn) {
+                conversationState.elements.voiceBtn.textContent = text;
+            }
+        }
+
+        function speakText(text, langCode) {
+            if (!conversationState.speechSupported) {
+                return;
+            }
+            const synthesis = window.speechSynthesis;
+            if (!synthesis) {
+                return;
+            }
+            stopSpeech();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const targetLang = ttsLangMap[langCode] || ttsLangMap[currentLanguage] || 'zh-CN';
+            utterance.lang = targetLang;
+
+            const voices = synthesis.getVoices();
+            const matchedVoice = voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith(targetLang.toLowerCase()));
+            if (matchedVoice) {
+                utterance.voice = matchedVoice;
+            }
+
+            utterance.onend = () => {
+                clearStatusIfMatch('tts');
+            };
+
+            utterance.onerror = () => {
+                clearStatusIfMatch('tts');
+                setConversationStatus(conversationState.labels.error, 'info');
+            };
+
+            clearStatusIfMatch('thinking');
+            setConversationStatus(conversationState.labels.ttsPlaying, 'tts');
+            synthesis.speak(utterance);
+        }
+
+        function stopSpeech() {
+            if (!conversationState.speechSupported) {
+                return;
+            }
+            const synthesis = window.speechSynthesis;
+            if (!synthesis) {
+                return;
+            }
+            synthesis.cancel();
+            clearStatusIfMatch('tts');
+        }
+
         // 虚拟人物表演功能
         let isPerforming = false;
         let currentPerformance = null;
@@ -1956,12 +2868,24 @@
             console.log('选择语言:', lang);
             currentLanguage = lang;
             
+            if (!conversationState.initialized) {
+                setupConversation();
+            } else {
+                stopSpeech();
+                updateConversationLanguage(lang);
+                resetConversation(lang);
+                updateRecognitionLanguage();
+            }
+            
             // 更新功能页面的文本
             const featurePage = document.getElementById('feature-page');
+            const detailModals = document.querySelectorAll('.feature-detail');
             if (lang === 'ar') {
                 featurePage.classList.add('arabic-text');
+                detailModals.forEach(modal => modal.classList.add('arabic-text'));
             } else {
                 featurePage.classList.remove('arabic-text');
+                detailModals.forEach(modal => modal.classList.remove('arabic-text'));
             }
             
             document.getElementById('feature-title').textContent = languageTexts[lang].featureTitle;
