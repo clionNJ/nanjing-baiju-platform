@@ -1083,26 +1083,7 @@
             </div>
         </div>
         
-        <div style="margin: 20px 0;">
-            <h4 id="f1-choose">选择唱段</h4>
-            <div style="display: flex; gap: 15px; overflow-x: auto; padding: 10px 0;">
-                <div id="f1-card-song1" style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song1')">
-                    <i class="fas fa-play-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <h5 id="f1-song1">秦淮灯会</h5>
-                    <p id="f1-tag-classic">传统经典</p>
-                </div>
-                <div id="f1-card-song2" style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song2')">
-                    <i class="fas fa-play-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <h5 id="f1-song2">金陵四季</h5>
-                    <p id="f1-tag-classic-2">传统经典</p>
-                </div>
-                <div id="f1-card-song3" style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song3')">
-                    <i class="fas fa-play-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <h5 id="f1-song3">南京美食</h5>
-                    <p id="f1-tag-modern">现代创作</p>
-                </div>
-            </div>
-        </div>
+		
 
         <div class="conversation-panel" id="feature1-conversation-panel">
             <div class="conversation-header">
@@ -2911,13 +2892,20 @@
             if (f1) {
                 document.getElementById('f1-title').textContent = f1.title;
                 document.getElementById('f1-desc').textContent = f1.desc;
-                document.getElementById('f1-choose').textContent = f1.choose;
-                document.getElementById('f1-song1').textContent = f1.song1;
-                document.getElementById('f1-song2').textContent = f1.song2;
-                document.getElementById('f1-song3').textContent = f1.song3;
-                document.getElementById('f1-tag-classic').textContent = f1.tagClassic;
-                document.getElementById('f1-tag-classic-2').textContent = f1.tagClassic;
-                document.getElementById('f1-tag-modern').textContent = f1.tagModern;
+				const elF1Choose = document.getElementById('f1-choose');
+				if (elF1Choose) elF1Choose.textContent = f1.choose;
+				const elF1Song1 = document.getElementById('f1-song1');
+				if (elF1Song1) elF1Song1.textContent = f1.song1;
+				const elF1Song2 = document.getElementById('f1-song2');
+				if (elF1Song2) elF1Song2.textContent = f1.song2;
+				const elF1Song3 = document.getElementById('f1-song3');
+				if (elF1Song3) elF1Song3.textContent = f1.song3;
+				const elF1TagClassic = document.getElementById('f1-tag-classic');
+				if (elF1TagClassic) elF1TagClassic.textContent = f1.tagClassic;
+				const elF1TagClassic2 = document.getElementById('f1-tag-classic-2');
+				if (elF1TagClassic2) elF1TagClassic2.textContent = f1.tagClassic;
+				const elF1TagModern = document.getElementById('f1-tag-modern');
+				if (elF1TagModern) elF1TagModern.textContent = f1.tagModern;
                 document.getElementById('f1-btn-play1').innerHTML = `<i class="fas fa-play"></i> ${f1.btnPlayPrefix}${f1.song1}${f1.btnPlaySuffix}`;
                 document.getElementById('f1-btn-play2').innerHTML = `<i class="fas fa-play"></i> ${f1.btnPlayPrefix}${f1.song2}${f1.btnPlaySuffix}`;
                 document.getElementById('f1-btn-stop').innerHTML = `<i class="fas fa-stop"></i> ${f1.btnStop}`;
