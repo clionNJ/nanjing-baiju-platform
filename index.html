@@ -910,8 +910,8 @@
     <!-- 功能一：虚拟传承人演唱展示 -->
     <div id="feature1-detail" class="feature-detail">
         <button class="close-btn" onclick="closeFeatureDetail('feature1')">&times;</button>
-        <h3>虚拟传承人演唱展示</h3>
-        <p>通过先进的虚拟人技术，我们数字化还原了白局传承人的形象、服饰和动作。虚拟传承人将为您演唱经典白局唱段，展示传统唱腔与表演技巧。</p>
+        <h3 id="f1-title">虚拟传承人演唱展示</h3>
+        <p id="f1-desc">通过先进的虚拟人技术，我们数字化还原了白局传承人的形象、服饰和动作。虚拟传承人将为您演唱经典白局唱段，展示传统唱腔与表演技巧。</p>
         
         <div class="virtual-character">
             <div class="character-container">
@@ -928,35 +928,35 @@
             
             <!-- 控制按钮 -->
             <div class="character-controls">
-                <button class="btn" onclick="playPerformance('song1')">
+                <button class="btn" id="f1-btn-play1" onclick="playPerformance('song1')">
                     <i class="fas fa-play"></i> 播放《秦淮灯会》
                 </button>
-                <button class="btn" onclick="playPerformance('song2')">
+                <button class="btn" id="f1-btn-play2" onclick="playPerformance('song2')">
                     <i class="fas fa-play"></i> 播放《金陵四季》
                 </button>
-                <button class="btn" onclick="stopPerformance()">
+                <button class="btn" id="f1-btn-stop" onclick="stopPerformance()">
                     <i class="fas fa-stop"></i> 停止播放
                 </button>
             </div>
         </div>
         
         <div style="margin: 20px 0;">
-            <h4>选择唱段</h4>
+            <h4 id="f1-choose">选择唱段</h4>
             <div style="display: flex; gap: 15px; overflow-x: auto; padding: 10px 0;">
-                <div style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song1')">
+                <div id="f1-card-song1" style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song1')">
                     <i class="fas fa-play-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <h5>秦淮灯会</h5>
-                    <p>传统经典</p>
+                    <h5 id="f1-song1">秦淮灯会</h5>
+                    <p id="f1-tag-classic">传统经典</p>
                 </div>
-                <div style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song2')">
+                <div id="f1-card-song2" style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song2')">
                     <i class="fas fa-play-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <h5>金陵四季</h5>
-                    <p>传统经典</p>
+                    <h5 id="f1-song2">金陵四季</h5>
+                    <p id="f1-tag-classic-2">传统经典</p>
                 </div>
-                <div style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song3')">
+                <div id="f1-card-song3" style="min-width: 200px; background: #f5f5f5; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer;" onclick="selectSong('song3')">
                     <i class="fas fa-play-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <h5>南京美食</h5>
-                    <p>现代创作</p>
+                    <h5 id="f1-song3">南京美食</h5>
+                    <p id="f1-tag-modern">现代创作</p>
                 </div>
             </div>
         </div>
@@ -965,19 +965,19 @@
     <!-- 功能二：AI语音跟唱训练 -->
     <div id="feature2-detail" class="feature-detail">
         <button class="close-btn" onclick="closeFeatureDetail('feature2')">&times;</button>
-        <h3>AI语音跟唱训练</h3>
-        <p>通过AI技术分析您的跟唱表现，实时提供音高、节奏和发音的反馈，帮助您快速掌握白局唱腔技巧。</p>
+        <h3 id="f2-title">AI语音跟唱训练</h3>
+        <p id="f2-desc">通过AI技术分析您的跟唱表现，实时提供音高、节奏和发音的反馈，帮助您快速掌握白局唱腔技巧。</p>
         
         <div class="singing-interface">
-            <h4>选择唱段</h4>
+            <h4 id="f2-choose">选择唱段</h4>
             <div style="display: flex; gap: 10px; margin: 15px 0;">
-                <button class="btn" style="padding: 8px 15px;" onclick="selectTrainingSong('秦淮灯会')">秦淮灯会</button>
-                <button class="btn" style="padding: 8px 15px;" onclick="selectTrainingSong('金陵四季')">金陵四季</button>
-                <button class="btn" style="padding: 8px 15px;" onclick="selectTrainingSong('南京美食')">南京美食</button>
+                <button class="btn" id="f2-btn-song1" style="padding: 8px 15px;" onclick="selectTrainingSong('song1')">秦淮灯会</button>
+                <button class="btn" id="f2-btn-song2" style="padding: 8px 15px;" onclick="selectTrainingSong('song2')">金陵四季</button>
+                <button class="btn" id="f2-btn-song3" style="padding: 8px 15px;" onclick="selectTrainingSong('song3')">南京美食</button>
             </div>
             
             <div class="lyrics-container">
-                <h4>歌词</h4>
+                <h4 id="f2-lyrics-title">歌词</h4>
                 <div id="lyrics-display">
                     <div class="lyric-line">秦淮河畔灯火明，</div>
                     <div class="lyric-line">游人如织喜盈盈。</div>
@@ -989,15 +989,15 @@
             <div class="score-display">
                 <div class="score-item">
                     <div class="score-value" id="pitch-score">85</div>
-                    <div>音准评分</div>
+                    <div id="label-pitch">音准评分</div>
                 </div>
                 <div class="score-item">
                     <div class="score-value" id="rhythm-score">78</div>
-                    <div>节奏评分</div>
+                    <div id="label-rhythm">节奏评分</div>
                 </div>
                 <div class="score-item">
                     <div class="score-value" id="pronunciation-score">92</div>
-                    <div>发音评分</div>
+                    <div id="label-pronunciation">发音评分</div>
                 </div>
             </div>
             
@@ -1008,43 +1008,43 @@
     <!-- 功能三：虚拟课堂沉浸式教学 -->
     <div id="feature3-detail" class="feature-detail">
         <button class="close-btn" onclick="closeFeatureDetail('feature3')">&times;</button>
-        <h3>虚拟课堂沉浸式教学</h3>
-        <p>在虚拟场景中学习白局历史与唱腔技巧，虚拟老师将为您讲解白局知识，并回答您的提问。</p>
+        <h3 id="f3-title">虚拟课堂沉浸式教学</h3>
+        <p id="f3-desc">在虚拟场景中学习白局历史与唱腔技巧，虚拟老师将为您讲解白局知识，并回答您的提问。</p>
         
         <div class="virtual-scene">
             <div class="scene-content">
                 <i class="fas fa-university" style="font-size: 4rem; color: var(--primary); margin-bottom: 15px;"></i>
-                <h4>秦淮河畔虚拟课堂</h4>
-                <p>选择您想学习的课程内容</p>
+                <h4 id="f3-scene-title">秦淮河畔虚拟课堂</h4>
+                <p id="f3-scene-sub">选择您想学习的课程内容</p>
             </div>
         </div>
         
         <div style="margin: 20px 0;">
-            <h4>课程选择</h4>
+            <h4 id="f3-courses-title">课程选择</h4>
             <div class="knowledge-grid">
                 <div class="knowledge-card" onclick="selectCourse('history')">
                     <i class="fas fa-landmark"></i>
-                    <h5>白局历史</h5>
-                    <p>了解白局的起源与发展历程</p>
+                    <h5 id="f3-course1-title">白局历史</h5>
+                    <p id="f3-course1-desc">了解白局的起源与发展历程</p>
                 </div>
                 <div class="knowledge-card" onclick="selectCourse('technique')">
                     <i class="fas fa-music"></i>
-                    <h5>唱腔技巧</h5>
-                    <p>学习白局的独特唱腔与表演技巧</p>
+                    <h5 id="f3-course2-title">唱腔技巧</h5>
+                    <p id="f3-course2-desc">学习白局的独特唱腔与表演技巧</p>
                 </div>
                 <div class="knowledge-card" onclick="selectCourse('instruments')">
                     <i class="fas fa-drum"></i>
-                    <h5>乐器介绍</h5>
-                    <p>认识白局表演中使用的传统乐器</p>
+                    <h5 id="f3-course3-title">乐器介绍</h5>
+                    <p id="f3-course3-desc">认识白局表演中使用的传统乐器</p>
                 </div>
             </div>
         </div>
         
         <div style="margin: 20px 0;">
-            <h4>语音提问</h4>
+            <h4 id="f3-qa-title">语音提问</h4>
             <div style="display: flex; gap: 10px;">
-                <input type="text" placeholder="输入您的问题..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                <button class="btn" style="padding: 10px 20px;">提问</button>
+                <input id="f3-qa-input" type="text" placeholder="输入您的问题..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <button id="f3-qa-btn" class="btn" style="padding: 10px 20px;">提问</button>
             </div>
         </div>
     </div>
@@ -1052,45 +1052,45 @@
     <!-- 功能四：白局知识库与文化展厅 -->
     <div id="feature4-detail" class="feature-detail">
         <button class="close-btn" onclick="closeFeatureDetail('feature4')">&times;</button>
-        <h3>白局知识库与文化展厅</h3>
-        <p>了解白局起源、发展、代表人物等丰富文化知识，支持多语言展示。</p>
+        <h3 id="f4-title">白局知识库与文化展厅</h3>
+        <p id="f4-desc">了解白局起源、发展、代表人物等丰富文化知识，支持多语言展示。</p>
         
         <div class="knowledge-grid">
             <div class="knowledge-card">
                 <i class="fas fa-history"></i>
-                <h5>历史渊源</h5>
-                <p>白局起源于明代，是南京地区的传统曲艺形式</p>
-                <button class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
+                <h5 id="f4-card1-title">历史渊源</h5>
+                <p id="f4-card1-desc">白局起源于明代，是南京地区的传统曲艺形式</p>
+                <button id="f4-card1-btn" class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
             </div>
             <div class="knowledge-card">
                 <i class="fas fa-user-friends"></i>
-                <h5>代表人物</h5>
-                <p>了解历代白局传承人及其艺术成就</p>
-                <button class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
+                <h5 id="f4-card2-title">代表人物</h5>
+                <p id="f4-card2-desc">了解历代白局传承人及其艺术成就</p>
+                <button id="f4-card2-btn" class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
             </div>
             <div class="knowledge-card">
                 <i class="fas fa-drum"></i>
-                <h5>乐器介绍</h5>
-                <p>认识白局表演中使用的传统乐器</p>
-                <button class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
+                <h5 id="f4-card3-title">乐器介绍</h5>
+                <p id="f4-card3-desc">认识白局表演中使用的传统乐器</p>
+                <button id="f4-card3-btn" class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
             </div>
             <div class="knowledge-card">
                 <i class="fas fa-tshirt"></i>
-                <h5>服饰文化</h5>
-                <p>了解白局表演的传统服饰与装扮</p>
-                <button class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
+                <h5 id="f4-card4-title">服饰文化</h5>
+                <p id="f4-card4-desc">了解白局表演的传统服饰与装扮</p>
+                <button id="f4-card4-btn" class="btn" style="padding: 5px 10px; margin-top: 10px; font-size: 0.9rem;">了解更多</button>
             </div>
         </div>
         
         <div style="margin: 20px 0;">
-            <h4>语言切换</h4>
+            <h4 id="f4-lang-title">语言切换</h4>
             <div class="language-selector">
-                <div class="lang-option active">中文</div>
-                <div class="lang-option">English</div>
-                <div class="lang-option">Español</div>
-                <div class="lang-option">Français</div>
-                <div class="lang-option">日本語</div>
-                <div class="lang-option">العربية</div>
+                <div class="lang-option active" id="f4-lang-zh">中文</div>
+                <div class="lang-option" id="f4-lang-en">English</div>
+                <div class="lang-option" id="f4-lang-es">Español</div>
+                <div class="lang-option" id="f4-lang-fr">Français</div>
+                <div class="lang-option" id="f4-lang-ja">日本語</div>
+                <div class="lang-option" id="f4-lang-ar">العربية</div>
             </div>
         </div>
     </div>
@@ -1098,14 +1098,14 @@
     <!-- 功能五：AI创作与分享中心 -->
     <div id="feature5-detail" class="feature-detail">
         <button class="close-btn" onclick="closeFeatureDetail('feature5')">&times;</button>
-        <h3>AI创作与分享中心</h3>
-        <p>输入主题词，AI将自动生成新的白局唱词与旋律，支持多语言输出。</p>
+        <h3 id="f5-title">AI创作与分享中心</h3>
+        <p id="f5-desc">输入主题词，AI将自动生成新的白局唱词与旋律，支持多语言输出。</p>
         
         <div class="ai-creation">
-            <h4>输入创作主题</h4>
-            <input type="text" class="theme-input" placeholder="例如：南京美食、龙舟节、金陵秋色...">
+            <h4 id="f5-input-title">输入创作主题</h4>
+            <input id="f5-input" type="text" class="theme-input" placeholder="例如：南京美食、龙舟节、金陵秋色...">
             
-            <h4>选择输出语言</h4>
+            <h4 id="f5-select-lang-title">选择输出语言</h4>
             <div class="language-selector">
                 <div class="lang-option active">中文</div>
                 <div class="lang-option">English</div>
@@ -1115,53 +1115,53 @@
                 <div class="lang-option">العربية</div>
             </div>
             
-            <button class="btn" style="width: 100%; margin: 15px 0;">生成白局作品</button>
+            <button id="f5-generate-btn" class="btn" style="width: 100%; margin: 15px 0;">生成白局作品</button>
             
             <div class="creation-result">
-                <h4>创作结果</h4>
+                <h4 id="f5-output-title">创作结果</h4>
                 <p id="creation-text">输入主题后，AI将在这里生成白局唱词...</p>
             </div>
             
-            <button class="btn" style="width: 100%;">试听作品</button>
-            <button class="btn" style="width: 100%; margin-top: 10px; background: var(--accent);">分享到社交平台</button>
+            <button id="f5-preview-btn" class="btn" style="width: 100%;">试听作品</button>
+            <button id="f5-share-btn" class="btn" style="width: 100%; margin-top: 10px; background: var(--accent);">分享到社交平台</button>
         </div>
     </div>
 <!-- 在功能详情弹窗部分添加 -->
 <!-- 功能六：意见与反馈 -->
 <div id="feature6-detail" class="feature-detail">
     <button class="close-btn" onclick="closeFeatureDetail('feature6')">&times;</button>
-    <h3>意见与反馈</h3>
-    <p>您的宝贵意见将帮助我们不断改进平台，为您提供更好的服务体验。</p>
+    <h3 id="f6-title">意见与反馈</h3>
+    <p id="f6-desc">您的宝贵意见将帮助我们不断改进平台，为您提供更好的服务体验。</p>
     
     <div class="feedback-interface">
         <div class="feedback-form">
             <div class="form-group">
-                <label for="feedback-type">反馈类型</label>
+                <label id="f6-type-label" for="feedback-type">反馈类型</label>
                 <select id="feedback-type" class="form-select">
-                    <option value="suggestion">功能建议</option>
-                    <option value="bug">问题反馈</option>
-                    <option value="content">内容建议</option>
-                    <option value="other">其他</option>
+                    <option id="f6-type-suggestion" value="suggestion">功能建议</option>
+                    <option id="f6-type-bug" value="bug">问题反馈</option>
+                    <option id="f6-type-content" value="content">内容建议</option>
+                    <option id="f6-type-other" value="other">其他</option>
                 </select>
             </div>
             
             <div class="form-group">
-                <label for="feedback-title">标题</label>
+                <label id="f6-title-label" for="feedback-title">标题</label>
                 <input type="text" id="feedback-title" class="form-input" placeholder="请简要描述您的反馈">
             </div>
             
             <div class="form-group">
-                <label for="feedback-content">详细内容</label>
+                <label id="f6-content-label" for="feedback-content">详细内容</label>
                 <textarea id="feedback-content" class="form-textarea" placeholder="请详细描述您的建议或遇到的问题..." rows="6"></textarea>
             </div>
             
             <div class="form-group">
-                <label for="contact-info">联系方式（选填）</label>
+                <label id="f6-contact-label" for="contact-info">联系方式（选填）</label>
                 <input type="text" id="contact-info" class="form-input" placeholder="邮箱或电话，方便我们回复您">
             </div>
             
             <div class="form-group">
-                <label>满意度评分</label>
+                <label id="f6-rating-label">满意度评分</label>
                 <div class="rating-stars">
                     <span class="star" data-rating="1">★</span>
                     <span class="star" data-rating="2">★</span>
@@ -1172,11 +1172,11 @@
                 <div class="rating-text" id="rating-text">请选择评分</div>
             </div>
             
-            <button class="btn" style="width: 100%;" onclick="submitFeedback()">提交反馈</button>
+            <button id="f6-submit-btn" class="btn" style="width: 100%;" onclick="submitFeedback()">提交反馈</button>
         </div>
         
         <div class="feedback-history" style="margin-top: 30px; display: none;" id="feedback-history">
-            <h4>反馈记录</h4>
+            <h4 id="f6-history-title">反馈记录</h4>
             <div id="feedback-list" class="feedback-list">
                 <!-- 反馈记录将在这里显示 -->
             </div>
@@ -1191,16 +1191,113 @@
                 featureDescription: '探索南京白局非遗文化的数字化体验，感受传统与现代科技的完美融合',
                 feature1Title: '虚拟传承人演唱展示',
                 feature1Desc: '数字化还原的白局传承人虚拟形象，展示传统唱腔与表演',
+                f1: {
+                    title: '虚拟传承人演唱展示',
+                    desc: '通过先进的虚拟人技术，我们数字化还原了白局传承人的形象、服饰和动作。虚拟传承人将为您演唱经典白局唱段，展示传统唱腔与表演技巧。',
+                    choose: '选择唱段',
+                    song1: '秦淮灯会',
+                    song2: '金陵四季',
+                    song3: '南京美食',
+                    tagClassic: '传统经典',
+                    tagModern: '现代创作',
+                    btnPlayPrefix: '播放《',
+                    btnPlaySuffix: '》',
+                    btnStop: '停止播放',
+                    statusPlaying: '正在播放: ',
+                    statusStopped: '播放已停止',
+                    statusSelected: '已选择: ',
+                    statusHint: '，点击播放按钮开始表演',
+                    performanceEnded: '表演结束'
+                },
                 feature2Title: 'AI语音跟唱训练',
                 feature2Desc: '实时分析音高、节奏、发音，提供专业跟唱指导',
+                f2: {
+                    title: 'AI语音跟唱训练',
+                    desc: '通过AI技术分析您的跟唱表现，实时提供音高、节奏和发音的反馈，帮助您快速掌握白局唱腔技巧。',
+                    choose: '选择唱段',
+                    lyricsTitle: '歌词',
+                    song1: '秦淮灯会',
+                    song2: '金陵四季',
+                    song3: '南京美食',
+                    pitch: '音准评分',
+                    rhythm: '节奏评分',
+                    pronunciation: '发音评分',
+                    start: '开始跟唱',
+                    sampleLyrics: {
+                        song1: ['秦淮河畔灯火明，','游人如织喜盈盈。','白局一曲传千古，','文化传承永不停。'],
+                        song2: ['春到金陵花满枝，','夏日荷塘映日辉。','秋风送爽桂花香，','冬雪纷飞兆丰年。'],
+                        song3: ['盐水鸭香飘十里，','鸭血粉丝暖人心。','金陵美味传千载，','市井烟火最动人。']
+                    }
+                },
                 feature3Title: '虚拟课堂沉浸式教学',
                 feature3Desc: '在虚拟场景中学习白局历史与唱腔技巧',
+                f3: {
+                    title: '虚拟课堂沉浸式教学',
+                    desc: '在虚拟场景中学习白局历史与唱腔技巧，虚拟老师将为您讲解白局知识，并回答您的提问。',
+                    sceneTitle: '秦淮河畔虚拟课堂',
+                    sceneSub: '选择您想学习的课程内容',
+                    coursesTitle: '课程选择',
+                    course1Title: '白局历史',
+                    course1Desc: '了解白局的起源与发展历程',
+                    course2Title: '唱腔技巧',
+                    course2Desc: '学习白局的独特唱腔与表演技巧',
+                    course3Title: '乐器介绍',
+                    course3Desc: '认识白局表演中使用的传统乐器',
+                    qaTitle: '语音提问',
+                    qaPlaceholder: '输入您的问题...',
+                    qaBtn: '提问'
+                },
                 feature4Title: '白局知识库与文化展厅',
                 feature4Desc: '了解白局起源、发展、代表人物等丰富文化知识',
+                f4: {
+                    title: '白局知识库与文化展厅',
+                    desc: '了解白局起源、发展、代表人物等丰富文化知识，支持多语言展示。',
+                    card1Title: '历史渊源',
+                    card1Desc: '白局起源于明代，是南京地区的传统曲艺形式',
+                    card2Title: '代表人物',
+                    card2Desc: '了解历代白局传承人及其艺术成就',
+                    card3Title: '乐器介绍',
+                    card3Desc: '认识白局表演中使用的传统乐器',
+                    card4Title: '服饰文化',
+                    card4Desc: '了解白局表演的传统服饰与装扮',
+                    more: '了解更多',
+                    langTitle: '语言切换'
+                },
                 feature5Title: 'AI创作与分享中心',
                 feature5Desc: 'AI自动生成白局唱词与旋律，一键分享至社交平台',
+                f5: {
+                    title: 'AI创作与分享中心',
+                    desc: '输入主题词，AI将自动生成新的白局唱词与旋律，支持多语言输出。',
+                    inputTitle: '输入创作主题',
+                    inputPlaceholder: '例如：南京美食、龙舟节、金陵秋色...',
+                    selectLangTitle: '选择输出语言',
+                    generateBtn: '生成白局作品',
+                    outputTitle: '创作结果',
+                    previewBtn: '试听作品',
+                    shareBtn: '分享到社交平台',
+                    resultPlaceholder: '输入主题后，AI将在这里生成白局唱词...'
+                },
                 feature6Title: '意见与反馈',  
                 feature6Desc: '提出宝贵建议，帮助我们改进平台体验',
+                f6: {
+                    title: '意见与反馈',
+                    desc: '您的宝贵意见将帮助我们不断改进平台，为您提供更好的服务体验。',
+                    typeLabel: '反馈类型',
+                    typeSuggestion: '功能建议',
+                    typeBug: '问题反馈',
+                    typeContent: '内容建议',
+                    typeOther: '其他',
+                    titleLabel: '标题',
+                    titlePlaceholder: '请简要描述您的反馈',
+                    contentLabel: '详细内容',
+                    contentPlaceholder: '请详细描述您的建议或遇到的问题...',
+                    contactLabel: '联系方式（选填）',
+                    contactPlaceholder: '邮箱或电话，方便我们回复您',
+                    ratingLabel: '满意度评分',
+                    ratingText: '请选择评分',
+                    submitBtn: '提交反馈',
+                    historyTitle: '反馈记录'
+                },
                 backBtn: '返回语言选择',
                 helpBtn: '获取帮助'
             },
@@ -1209,16 +1306,113 @@
                 featureDescription: 'Explore the digital experience of Nanjing Baiju intangible cultural heritage, feel the perfect integration of tradition and modern technology',
                 feature1Title: 'Virtual Inheritor Performance',
                 feature1Desc: 'Digitally restored Baiju inheritor virtual image, showcasing traditional singing and performance',
+                f1: {
+                    title: 'Virtual Inheritor Performance',
+                    desc: 'Using advanced virtual human technology, we digitally restore the image, costume and actions of Baiju inheritors. The virtual inheritor will perform classic Baiju sections to showcase traditional singing and performance skills.',
+                    choose: 'Select Section',
+                    song1: 'Qinhuai Lantern Festival',
+                    song2: 'Four Seasons of Jinling',
+                    song3: 'Nanjing Cuisine',
+                    tagClassic: 'Classic',
+                    tagModern: 'Modern',
+                    btnPlayPrefix: 'Play "',
+                    btnPlaySuffix: '"',
+                    btnStop: 'Stop',
+                    statusPlaying: 'Playing: ',
+                    statusStopped: 'Playback stopped',
+                    statusSelected: 'Selected: ',
+                    statusHint: ', click Play to start',
+                    performanceEnded: 'Performance ended'
+                },
                 feature2Title: 'AI Voice Sing-Along Training',
                 feature2Desc: 'Real-time analysis of pitch, rhythm, and pronunciation, providing professional guidance',
+                f2: {
+                    title: 'AI Voice Sing-Along Training',
+                    desc: 'Analyze your sing-along performance with AI and provide real-time feedback on pitch, rhythm and pronunciation to help you master Baiju singing techniques.',
+                    choose: 'Select Section',
+                    lyricsTitle: 'Lyrics',
+                    song1: 'Qinhuai Lantern Festival',
+                    song2: 'Four Seasons of Jinling',
+                    song3: 'Nanjing Cuisine',
+                    pitch: 'Pitch',
+                    rhythm: 'Rhythm',
+                    pronunciation: 'Pronunciation',
+                    start: 'Start Singing',
+                    sampleLyrics: {
+                        song1: ['By Qinhuai River lights are bright,','Crowds of people feel delight.','A Baiju song through ages long,','Heritage keeps shining strong.'],
+                        song2: ['Spring in Jinling blossoms high,','Summer lotus kisses sky.','Autumn breeze with osmanthus scent,','Winter snow a harvest sent.'],
+                        song3: ['Salted duck with fragrant steam,','Duck blood vermicelli dream.','Flavors passed through history,','Street life sings its symphony.']
+                    }
+                },
                 feature3Title: 'Virtual Classroom Immersive Teaching',
                 feature3Desc: 'Learn Baiju history and singing techniques in virtual scenes',
+                f3: {
+                    title: 'Virtual Classroom Immersive Teaching',
+                    desc: 'Learn Baiju history and singing techniques in virtual scenes. The virtual teacher explains and answers your questions.',
+                    sceneTitle: 'Virtual Classroom by Qinhuai River',
+                    sceneSub: 'Choose what you want to learn',
+                    coursesTitle: 'Course Selection',
+                    course1Title: 'Baiju History',
+                    course1Desc: 'Learn the origin and development of Baiju',
+                    course2Title: 'Singing Techniques',
+                    course2Desc: 'Study unique Baiju singing and performance skills',
+                    course3Title: 'Instruments',
+                    course3Desc: 'Traditional instruments used in Baiju',
+                    qaTitle: 'Voice Q&A',
+                    qaPlaceholder: 'Enter your question...',
+                    qaBtn: 'Ask'
+                },
                 feature4Title: 'Baiju Knowledge Base and Cultural Exhibition Hall',
                 feature4Desc: 'Learn about the origin, development, and representatives of Baiju',
+                f4: {
+                    title: 'Baiju Knowledge Base and Cultural Exhibition Hall',
+                    desc: 'Learn the origin, development and representatives of Baiju, with multilingual display.',
+                    card1Title: 'Historical Origins',
+                    card1Desc: 'Baiju originated in the Ming dynasty, a traditional art of Nanjing',
+                    card2Title: 'Representative Figures',
+                    card2Desc: 'Learn about Baiju inheritors and their achievements',
+                    card3Title: 'Instruments',
+                    card3Desc: 'Traditional instruments used in Baiju performances',
+                    card4Title: 'Costume Culture',
+                    card4Desc: 'Traditional costumes and dress of Baiju performance',
+                    more: 'Learn More',
+                    langTitle: 'Language Switch'
+                },
                 feature5Title: 'AI Creation and Sharing Center',
                 feature5Desc: 'AI automatically generates Baiju lyrics and melodies, one-click sharing to social platforms',
+                f5: {
+                    title: 'AI Creation and Sharing Center',
+                    desc: 'Enter a theme, AI generates Baiju lyrics and melodies with multilingual output.',
+                    inputTitle: 'Enter Creation Theme',
+                    inputPlaceholder: 'e.g., Nanjing Cuisine, Dragon Boat Festival, Jinling Autumn...',
+                    selectLangTitle: 'Select Output Language',
+                    generateBtn: 'Generate Baiju Work',
+                    outputTitle: 'Creation Result',
+                    previewBtn: 'Preview Audio',
+                    shareBtn: 'Share to Social Platforms',
+                    resultPlaceholder: 'After entering a theme, AI will generate lyrics here...'
+                },
                 feature6Title: 'Feedback',  
                 feature6Desc: 'Provide valuable suggestions to help us improve' ,
+                f6: {
+                    title: 'Feedback',
+                    desc: 'Your valuable feedback helps us improve the platform for you.',
+                    typeLabel: 'Feedback Type',
+                    typeSuggestion: 'Feature Suggestion',
+                    typeBug: 'Bug Report',
+                    typeContent: 'Content Suggestion',
+                    typeOther: 'Other',
+                    titleLabel: 'Title',
+                    titlePlaceholder: 'Briefly describe your feedback',
+                    contentLabel: 'Details',
+                    contentPlaceholder: 'Describe your suggestion or issue in detail...',
+                    contactLabel: 'Contact (optional)',
+                    contactPlaceholder: 'Email or phone for reply',
+                    ratingLabel: 'Satisfaction Rating',
+                    ratingText: 'Please select rating',
+                    submitBtn: 'Submit Feedback',
+                    historyTitle: 'Feedback History'
+                },
                 backBtn: 'Back to Language Selection',
                 helpBtn: 'Get Help'
             },
@@ -1227,16 +1421,113 @@
                 featureDescription: 'Explore la experiencia digital del patrimonio cultural inmaterial de Baiju de Nanjing, sienta la integración perfecta de la tradición y la tecnología moderna',
                 feature1Title: 'Presentación de Interpretación del Heredero Virtual',
                 feature1Desc: 'Imagen virtual del heredero de Baiju restaurado digitalmente, mostrando canto y actuación tradicionales',
+                f1: {
+                    title: 'Presentación del Heredero Virtual',
+                    desc: 'Con tecnología avanzada de humanos virtuales, restauramos digitalmente la imagen, vestimenta y movimientos de los herederos de Baiju. El heredero virtual interpretará secciones clásicas para mostrar el canto y la actuación tradicionales.',
+                    choose: 'Seleccionar sección',
+                    song1: 'Festival de Linternas de Qinhuai',
+                    song2: 'Cuatro Estaciones de Jinling',
+                    song3: 'Gastronomía de Nankín',
+                    tagClassic: 'Clásico',
+                    tagModern: 'Moderno',
+                    btnPlayPrefix: 'Reproducir "',
+                    btnPlaySuffix: '"',
+                    btnStop: 'Detener',
+                    statusPlaying: 'Reproduciendo: ',
+                    statusStopped: 'Reproducción detenida',
+                    statusSelected: 'Seleccionado: ',
+                    statusHint: ', haga clic en Reproducir para iniciar',
+                    performanceEnded: 'Actuación finalizada'
+                },
                 feature2Title: 'Entrenamiento de Canto con IA',
                 feature2Desc: 'Análisis en tiempo real del tono, ritmo y pronunciación, proporcionando orientación profesional',
+                f2: {
+                    title: 'Entrenamiento de Canto con IA',
+                    desc: 'Analiza tu interpretación con IA y proporciona retroalimentación en tiempo real sobre tono, ritmo y pronunciación.',
+                    choose: 'Seleccionar sección',
+                    lyricsTitle: 'Letra',
+                    song1: 'Festival de Linternas de Qinhuai',
+                    song2: 'Cuatro Estaciones de Jinling',
+                    song3: 'Gastronomía de Nankín',
+                    pitch: 'Tono',
+                    rhythm: 'Ritmo',
+                    pronunciation: 'Pronunciación',
+                    start: 'Comenzar a cantar',
+                    sampleLyrics: {
+                        song1: ['A orillas de Qinhuai luces van,','Multitudes felices pasarán.','Una canción de Baiju sin fin,','El patrimonio sigue en trajín.'],
+                        song2: ['Primavera en Jinling floreció,','Verano el loto resplandeció.','Otoño trae perfume especial,','Invierno anuncia cosecha total.'],
+                        song3: ['Pato salado aroma sutil,','Sopa de pato, calor gentil.','Sabores que el tiempo guardó,','Vida de calle los celebró.']
+                    }
+                },
                 feature3Title: 'Enseñanza Inmersiva en Aula Virtual',
                 feature3Desc: 'Aprenda la historia y las técnicas de canto de Baiju en escenas virtuales',
+                f3: {
+                    title: 'Enseñanza Inmersiva en Aula Virtual',
+                    desc: 'Aprenda historia y técnicas de canto de Baiju en escenas virtuales. El profesor virtual explicará y responderá.',
+                    sceneTitle: 'Aula virtual junto al Qinhuai',
+                    sceneSub: 'Elige lo que deseas aprender',
+                    coursesTitle: 'Selección de cursos',
+                    course1Title: 'Historia del Baiju',
+                    course1Desc: 'Conozca el origen y desarrollo del Baiju',
+                    course2Title: 'Técnicas de canto',
+                    course2Desc: 'Estudie las técnicas únicas de Baiju',
+                    course3Title: 'Instrumentos',
+                    course3Desc: 'Instrumentos tradicionales usados en Baiju',
+                    qaTitle: 'Preguntas por voz',
+                    qaPlaceholder: 'Escribe tu pregunta...',
+                    qaBtn: 'Preguntar'
+                },
                 feature4Title: 'Base de Conocimiento de Baiju y Sala de Exposición Cultural',
                 feature4Desc: 'Conozca el origen, desarrollo y representantes de Baiju',
+                f4: {
+                    title: 'Base de Conocimiento de Baiju y Sala de Exposición Cultural',
+                    desc: 'Conozca el origen, desarrollo y representantes de Baiju, con visualización multilingüe.',
+                    card1Title: 'Orígenes históricos',
+                    card1Desc: 'Baiju se originó en la dinastía Ming, arte tradicional de Nankín',
+                    card2Title: 'Figuras representativas',
+                    card2Desc: 'Conozca a los herederos de Baiju y sus logros',
+                    card3Title: 'Instrumentos',
+                    card3Desc: 'Instrumentos tradicionales usados en actuaciones de Baiju',
+                    card4Title: 'Cultura del vestuario',
+                    card4Desc: 'Vestimenta tradicional en las actuaciones de Baiju',
+                    more: 'Saber más',
+                    langTitle: 'Cambio de idioma'
+                },
                 feature5Title: 'Centro de Creación y Compartición con IA',
                 feature5Desc: 'La IA genera automáticamente letras y melodías de Baiju, compartiendo con un clic en plataformas sociales',
+                f5: {
+                    title: 'Centro de Creación y Compartición con IA',
+                    desc: 'Ingrese un tema; la IA genera letras y melodías de Baiju con salida multilingüe.',
+                    inputTitle: 'Ingresar tema de creación',
+                    inputPlaceholder: 'p.ej., Gastronomía de Nankín, Festival de Botes Dragón...',
+                    selectLangTitle: 'Seleccionar idioma de salida',
+                    generateBtn: 'Generar obra de Baiju',
+                    outputTitle: 'Resultado de la creación',
+                    previewBtn: 'Previsualizar audio',
+                    shareBtn: 'Compartir a redes sociales',
+                    resultPlaceholder: 'Tras ingresar un tema, la IA generará letras aquí...'
+                },
                 feature6Title: 'Comentarios y Sugerencias',  
                 feature6Desc: 'Presente sugerencias valiosas para mejorar la plataforma' ,
+                f6: {
+                    title: 'Comentarios y Sugerencias',
+                    desc: 'Sus valiosos comentarios nos ayudan a mejorar la plataforma.',
+                    typeLabel: 'Tipo de comentario',
+                    typeSuggestion: 'Sugerencia de función',
+                    typeBug: 'Informe de error',
+                    typeContent: 'Sugerencia de contenido',
+                    typeOther: 'Otro',
+                    titleLabel: 'Título',
+                    titlePlaceholder: 'Describa brevemente su comentario',
+                    contentLabel: 'Contenido',
+                    contentPlaceholder: 'Describa su sugerencia o problema en detalle...',
+                    contactLabel: 'Contacto (opcional)',
+                    contactPlaceholder: 'Correo o teléfono para respuesta',
+                    ratingLabel: 'Calificación de satisfacción',
+                    ratingText: 'Seleccione una calificación',
+                    submitBtn: 'Enviar comentario',
+                    historyTitle: 'Historial de comentarios'
+                },
                 backBtn: 'Volver a la Selección de Idioma',
                 helpBtn: 'Obtener Ayuda'
             },
@@ -1245,16 +1536,113 @@
                 featureDescription: 'Explorez l\'expérience numérique du patrimoine culturel immatériel de Baiju de Nanjing, ressentez l\'intégration parfaite de la tradition et de la technologie moderne',
                 feature1Title: 'Présentation de Performance de l\'Héritier Virtuel',
                 feature1Desc: 'Image virtuelle de l\'héritier de Baiju restaurée numériquement, présentant le chant et la performance traditionnels',
+                f1: {
+                    title: 'Performance de l\'Héritier Virtuel',
+                    desc: 'Grâce à la technologie des humains virtuels, nous restaurons numériquement l\'image, les costumes et les gestes des héritiers du Baiju. L\'héritier virtuel interprétera des sections classiques.',
+                    choose: 'Choisir une section',
+                    song1: 'Fête des Lanternes de Qinhuai',
+                    song2: 'Quatre Saisons de Jinling',
+                    song3: 'Cuisine de Nankin',
+                    tagClassic: 'Classique',
+                    tagModern: 'Moderne',
+                    btnPlayPrefix: 'Lire "',
+                    btnPlaySuffix: '"',
+                    btnStop: 'Arrêter',
+                    statusPlaying: 'Lecture: ',
+                    statusStopped: 'Lecture arrêtée',
+                    statusSelected: 'Sélectionné: ',
+                    statusHint: ', cliquez sur Lire pour démarrer',
+                    performanceEnded: 'Performance terminée'
+                },
                 feature2Title: 'Formation au Chant avec IA',
                 feature2Desc: 'Analyse en temps réel de la hauteur, du rythme et de la prononciation, fournissant des conseils professionnels',
+                f2: {
+                    title: 'Formation au Chant avec IA',
+                    desc: 'Analysez votre performance avec l\'IA et recevez des retours en temps réel sur la hauteur, le rythme et la prononciation.',
+                    choose: 'Choisir une section',
+                    lyricsTitle: 'Paroles',
+                    song1: 'Fête des Lanternes de Qinhuai',
+                    song2: 'Quatre Saisons de Jinling',
+                    song3: 'Cuisine de Nankin',
+                    pitch: 'Hauteur',
+                    rhythm: 'Rythme',
+                    pronunciation: 'Prononciation',
+                    start: 'Commencer à chanter',
+                    sampleLyrics: {
+                        song1: ['Au bord Qinhuai, lueurs la nuit,','La foule passe, le coeur ébloui.','Un chant Baiju traverse le temps,','Le patrimoine vit vraiment.'],
+                        song2: ['Printemps à Jinling, fleurs partout,','Été lotus brille beaucoup.','Automne parfume d\'osmanthe fin,','Hiver promet un bon destin.'],
+                        song3: ['Canard salé au doux parfum,','Soupe de canard réchauffe chacun.','Saveurs de Nankin au fil des ans,','La rue chante ses accents.']
+                    }
+                },
                 feature3Title: 'Enseignement Immersif en Classe Virtuelle',
                 feature3Desc: 'Apprenez l\'histoire et les techniques de chant de Baiju dans des scènes virtuelles',
+                f3: {
+                    title: 'Enseignement Immersif en Classe Virtuelle',
+                    desc: 'Apprenez l\'histoire et les techniques de chant du Baiju dans des scènes virtuelles. Le professeur virtuel explique et répond.',
+                    sceneTitle: 'Classe virtuelle au bord du Qinhuai',
+                    sceneSub: 'Choisissez ce que vous voulez apprendre',
+                    coursesTitle: 'Sélection des cours',
+                    course1Title: 'Histoire du Baiju',
+                    course1Desc: 'Origine et développement du Baiju',
+                    course2Title: 'Techniques de chant',
+                    course2Desc: 'Techniques uniques de chant et performance',
+                    course3Title: 'Instruments',
+                    course3Desc: 'Instruments traditionnels utilisés au Baiju',
+                    qaTitle: 'Questions vocales',
+                    qaPlaceholder: 'Entrez votre question...',
+                    qaBtn: 'Poser'
+                },
                 feature4Title: 'Base de Connaissances de Baiju et Hall d\'Exposition Culturelle',
                 feature4Desc: 'Apprenez l\'origine, le développement et les représentants de Baiju',
+                f4: {
+                    title: 'Base de Connaissances de Baiju et Hall d\'Exposition Culturelle',
+                    desc: 'Découvrez l\'origine, le développement et les représentants du Baiju, avec affichage multilingue.',
+                    card1Title: 'Origines historiques',
+                    card1Desc: 'Baiju vient de la dynastie Ming, art traditionnel de Nankin',
+                    card2Title: 'Figures représentatives',
+                    card2Desc: 'Héritiers du Baiju et leurs réalisations',
+                    card3Title: 'Instruments',
+                    card3Desc: 'Instruments traditionnels du Baiju',
+                    card4Title: 'Culture vestimentaire',
+                    card4Desc: 'Costumes traditionnels des performances de Baiju',
+                    more: 'En savoir plus',
+                    langTitle: 'Changement de langue'
+                },
                 feature5Title: 'Centre de Création et de Partage avec IA',
                 feature5Desc: 'L\'IA génère automatiquement des paroles et des mélodies de Baiju, partage en un clic sur les plateformes sociales',
+                f5: {
+                    title: 'Centre de Création et de Partage avec IA',
+                    desc: 'Saisissez un thème, l’IA génère des paroles et des mélodies de Baiju en plusieurs langues.',
+                    inputTitle: 'Saisir le thème de création',
+                    inputPlaceholder: 'ex. Cuisine de Nankin, Fête des bateaux-dragons...',
+                    selectLangTitle: 'Choisir la langue de sortie',
+                    generateBtn: 'Générer une œuvre de Baiju',
+                    outputTitle: 'Résultat de la création',
+                    previewBtn: 'Préécouter l’œuvre',
+                    shareBtn: 'Partager sur les réseaux sociaux',
+                    resultPlaceholder: 'Après avoir saisi un thème, l’IA générera des paroles ici...'
+                },
                 feature6Title: 'Commentaires et Suggestions',  
                 feature6Desc: 'Faites des suggestions précieuses pour améliorer l\'expérience' , 
+                f6: {
+                    title: 'Commentaires et Suggestions',
+                    desc: 'Vos retours nous aident à améliorer la plateforme.',
+                    typeLabel: 'Type de commentaire',
+                    typeSuggestion: 'Suggestion de fonctionnalité',
+                    typeBug: 'Rapport de bug',
+                    typeContent: 'Suggestion de contenu',
+                    typeOther: 'Autre',
+                    titleLabel: 'Titre',
+                    titlePlaceholder: 'Décrivez brièvement votre retour',
+                    contentLabel: 'Détails',
+                    contentPlaceholder: 'Décrivez en détail votre suggestion ou problème...',
+                    contactLabel: 'Contact (optionnel)',
+                    contactPlaceholder: 'Email ou téléphone pour réponse',
+                    ratingLabel: 'Évaluation de satisfaction',
+                    ratingText: 'Veuillez sélectionner une note',
+                    submitBtn: 'Envoyer',
+                    historyTitle: 'Historique des commentaires'
+                },
                 backBtn: 'Retour à la Sélection de la Langue',
                 helpBtn: 'Obtenir de l\'Aide'
             },
@@ -1263,16 +1651,113 @@
                 featureDescription: '南京白局無形文化遺産のデジタル体験を探索し、伝統と現代技術の完璧な融合を感じてください',
                 feature1Title: '仮想継承者演唱展示',
                 feature1Desc: 'デジタル復元された白局継承者の仮想イメージ、伝統的な唱腔とパフォーマンスを展示',
+                f1: {
+                    title: '仮想継承者演唱展示',
+                    desc: '先進的なバーチャル技術で継承者の姿・衣装・動作を再現。古典的な唱段を披露します。',
+                    choose: '唱段を選択',
+                    song1: '秦淮灯会',
+                    song2: '金陵四季',
+                    song3: '南京グルメ',
+                    tagClassic: 'クラシック',
+                    tagModern: 'モダン',
+                    btnPlayPrefix: '再生「',
+                    btnPlaySuffix: '」',
+                    btnStop: '停止',
+                    statusPlaying: '再生中: ',
+                    statusStopped: '再生停止',
+                    statusSelected: '選択済み: ',
+                    statusHint: '、再生をクリックしてください',
+                    performanceEnded: '公演終了'
+                },
                 feature2Title: 'AI音声付き歌唱トレーニング',
                 feature2Desc: '音高、リズム、発音をリアルタイム分析し、専門的な歌唱指導を提供',
+                f2: {
+                    title: 'AI音声付き歌唱トレーニング',
+                    desc: 'AIで歌唱を分析し、音高・リズム・発音をリアルタイムでフィードバックします。',
+                    choose: '唱段を選択',
+                    lyricsTitle: '歌詞',
+                    song1: '秦淮灯会',
+                    song2: '金陵四季',
+                    song3: '南京グルメ',
+                    pitch: 'ピッチ',
+                    rhythm: 'リズム',
+                    pronunciation: '発音',
+                    start: '歌唱開始',
+                    sampleLyrics: {
+                        song1: ['秦淮川に灯りともり、','人波賑わい喜び満ち。','白局の歌は千古の伝、','文化の継承止まず続く。'],
+                        song2: ['春の金陵花満ちて、','夏は蓮池陽に輝く。','秋風清し桂花香り、','冬雪舞いて豊年告ぐ。'],
+                        song3: ['塩水鴨の香り広がり、','鴨血春雨心を温める。','金陵の味わい受け継ぎ、','街の息遣い歌になる。']
+                    }
+                },
                 feature3Title: '仮想教室没入型教育',
                 feature3Desc: '仮想シーンで白局の歴史と歌唱技巧を学ぶ',
+                f3: {
+                    title: '仮想教室没入型教育',
+                    desc: '仮想シーンで白局の歴史と歌唱技巧を学び、バーチャル先生が解説・回答します。',
+                    sceneTitle: '秦淮川バーチャル教室',
+                    sceneSub: '学びたい内容を選んでください',
+                    coursesTitle: 'コース選択',
+                    course1Title: '白局の歴史',
+                    course1Desc: '白局の起源と発展を学ぶ',
+                    course2Title: '歌唱テクニック',
+                    course2Desc: '白局特有の唱法と演技を学ぶ',
+                    course3Title: '楽器紹介',
+                    course3Desc: '白局で使用される伝統楽器',
+                    qaTitle: '音声質問',
+                    qaPlaceholder: '質問を入力してください...',
+                    qaBtn: '質問する'
+                },
                 feature4Title: '白局知識庫と文化展示ホール',
                 feature4Desc: '白局の起源、発展、代表者などの豊富な文化知識を学ぶ',
+                f4: {
+                    title: '白局知識庫と文化展示ホール',
+                    desc: '白局の起源・発展・代表人物などを多言語で紹介します。',
+                    card1Title: '歴史的源流',
+                    card1Desc: '白局は明代に起源を持つ南京の伝統芸能',
+                    card2Title: '代表人物',
+                    card2Desc: '歴代の継承者とその業績',
+                    card3Title: '楽器紹介',
+                    card3Desc: '白局の演奏に用いられる伝統楽器',
+                    card4Title: '衣装文化',
+                    card4Desc: '白局の伝統衣装と装い',
+                    more: '詳しく見る',
+                    langTitle: '言語切替'
+                },
                 feature5Title: 'AI創作と共有センター',
                 feature5Desc: 'AIが自動的に白局の歌詞とメロディを生成し、ソーシャルプラットフォームにワンクリックで共有',
+                f5: {
+                    title: 'AI創作と共有センター',
+                    desc: 'テーマを入力すると、AIが白局の歌詞と旋律を生成し、多言語で出力します。',
+                    inputTitle: '創作テーマを入力',
+                    inputPlaceholder: '例：南京グルメ、ドラゴンボート祭、金陵の秋...',
+                    selectLangTitle: '出力言語を選択',
+                    generateBtn: '白局作品を生成',
+                    outputTitle: '創作結果',
+                    previewBtn: '試聴する',
+                    shareBtn: 'SNSに共有',
+                    resultPlaceholder: 'テーマ入力後、ここに歌詞が生成されます...'
+                },
                 feature6Title: '意見とフィードバック',  
                 feature6Desc: '貴重なご意見を提出し、プラットフォームを改善するのに役立てます' ,
+                f6: {
+                    title: '意見とフィードバック',
+                    desc: '貴重なご意見は、プラットフォーム改善に役立ちます。',
+                    typeLabel: 'フィードバック種類',
+                    typeSuggestion: '機能提案',
+                    typeBug: '不具合報告',
+                    typeContent: '内容提案',
+                    typeOther: 'その他',
+                    titleLabel: 'タイトル',
+                    titlePlaceholder: 'フィードバックの概要を入力',
+                    contentLabel: '詳細',
+                    contentPlaceholder: '提案や問題を詳しくご記入ください...',
+                    contactLabel: '連絡先（任意）',
+                    contactPlaceholder: '返信用メールまたは電話',
+                    ratingLabel: '満足度評価',
+                    ratingText: '評価を選択してください',
+                    submitBtn: '送信',
+                    historyTitle: 'フィードバック履歴'
+                },
                 backBtn: '言語選択に戻る',
                 helpBtn: 'ヘルプを取得'
             },
@@ -1281,16 +1766,113 @@
                 featureDescription: 'استكشف التجربة الرقمية للتراث الثقافي غير المادي لبايجو في نانجينغ، وشعر بالتكامل المثالي بين التقاليد والتكنولوجيا الحديثة',
                 feature1Title: 'عرض أداء الوريث الافتراضي',
                 feature1Desc: 'صورة افتراضية لوريث بايجو المستعاد رقميًا، تعرض الغناء والأداء التقليدي',
+                f1: {
+                    title: 'عرض أداء الوريث الافتراضي',
+                    desc: 'باستخدام تقنية الإنسان الافتراضي المتقدمة، نعيد تصوير صورة وملابس وحركات ورثة بايجو. سيؤدي الوريث الافتراضي مقاطع كلاسيكية.',
+                    choose: 'اختر المقطع',
+                    song1: 'مهرجان فوانيس تشينهواي',
+                    song2: 'فصول جينلينغ الأربعة',
+                    song3: 'مأكولات نانجينغ',
+                    tagClassic: 'كلاسيكي',
+                    tagModern: 'حديث',
+                    btnPlayPrefix: 'تشغيل "',
+                    btnPlaySuffix: '"',
+                    btnStop: 'إيقاف',
+                    statusPlaying: 'يشغّل: ',
+                    statusStopped: 'تم الإيقاف',
+                    statusSelected: 'تم الاختيار: ',
+                    statusHint: '، انقر تشغيل للبدء',
+                    performanceEnded: 'انتهى العرض'
+                },
                 feature2Title: 'تدريب الغناء بصوت الذكاء الاصطناعي',
                 feature2Desc: 'تحليل في الوقت الحقيقي للنغمة والإيقاع والنطق، وتقديم إرشادات احترافية',
+                f2: {
+                    title: 'تدريب الغناء بالذكاء الاصطناعي',
+                    desc: 'يحلّل الأداء ويقدّم ملاحظات فورية حول النغمة والإيقاع والنطق.',
+                    choose: 'اختر المقطع',
+                    lyricsTitle: 'الكلمات',
+                    song1: 'مهرجان فوانيس تشينهواي',
+                    song2: 'فصول جينلينغ الأربعة',
+                    song3: 'مأكولات نانجينغ',
+                    pitch: 'طبقة الصوت',
+                    rhythm: 'الإيقاع',
+                    pronunciation: 'النطق',
+                    start: 'ابدأ الغناء',
+                    sampleLyrics: {
+                        song1: ['عند نهر تشينهواي الأنوار تضيء،','والناس فرِحون في المسير.','أغنية بايجو عبر العصور،','والإرث باقٍ لا يزول.'],
+                        song2: ['ربيع جنلينغ زهور تعلو،','صيف اللوتس يلمع سطوعًا.','نسيم الخريف عطر أوسمانثوس،','ثلج الشتاء يبشّر بحصاد.'],
+                        song3: ['بطة مالحة عطرها يسري،','حساء بطة يدفئ القلوب.','نكهات نانجينغ عبر السنين،','حياة الشارع تُنشِد الطيوب.']
+                    }
+                },
                 feature3Title: 'التدريس التغميسي في الفصل الافتراضي',
                 feature3Desc: 'تعلم تاريخ بايجو وتقنيات الغناء في مشاهد افتراضية',
+                f3: {
+                    title: 'التدريس التغميسي في الفصل الافتراضي',
+                    desc: 'تعلم تاريخ بايجو وتقنيات الغناء في مشاهد افتراضية. يشرح المعلم الافتراضي ويجيب عن أسئلتك.',
+                    sceneTitle: 'فصل افتراضي على ضفاف تشينهواي',
+                    sceneSub: 'اختر ما تريد تعلمه',
+                    coursesTitle: 'اختيار الدروس',
+                    course1Title: 'تاريخ بايجو',
+                    course1Desc: 'تعرف على أصل وتطور بايجو',
+                    course2Title: 'تقنيات الغناء',
+                    course2Desc: 'تقنيات الغناء والأداء الخاصة ببايجو',
+                    course3Title: 'الآلات',
+                    course3Desc: 'الآلات التقليدية المستخدمة في بايجو',
+                    qaTitle: 'أسئلة صوتية',
+                    qaPlaceholder: 'أدخل سؤالك...',
+                    qaBtn: 'اسأل'
+                },
                 feature4Title: 'قاعدة معرفة بايجو وقاعة المعرض الثقافي',
                 feature4Desc: 'تعرف على أصل وتطور وممثلي بايجو',
+                f4: {
+                    title: 'قاعدة معرفة بايجو وقاعة المعرض الثقافي',
+                    desc: 'تعرف على أصل وتطور وممثلي بايجو مع عرض متعدد اللغات.',
+                    card1Title: 'الأصول التاريخية',
+                    card1Desc: 'نشأ بايجو في سلالة مينغ، فن تقليدي في نانجينغ',
+                    card2Title: 'الشخصيات الممثلة',
+                    card2Desc: 'تعرّف على ورثة بايجو وإنجازاتهم',
+                    card3Title: 'الآلات',
+                    card3Desc: 'الآلات التقليدية المستخدمة في عروض بايجو',
+                    card4Title: 'ثقافة الأزياء',
+                    card4Desc: 'الأزياء التقليدية في عروض بايجو',
+                    more: 'المزيد',
+                    langTitle: 'تبديل اللغة'
+                },
                 feature5Title: 'مركز الإبداع والمشاركة بالذكاء الاصطناعي',
                 feature5Desc: 'الذكاء الاصطناعي يولد تلقائيًا كلمات وألحان بايجو، ومشاركة بنقرة واحدة إلى المنصات الاجتماعية',
+                f5: {
+                    title: 'مركز الإبداع والمشاركة بالذكاء الاصطناعي',
+                    desc: 'أدخل موضوعًا؛ سيُنشئ الذكاء الاصطناعي كلمات وألحان بايجو مع مخرجات متعددة اللغات.',
+                    inputTitle: 'أدخل موضوع الإبداع',
+                    inputPlaceholder: 'مثل: مأكولات نانجينغ، مهرجان قوارب التنين...',
+                    selectLangTitle: 'اختر لغة الإخراج',
+                    generateBtn: 'إنشاء عمل بايجو',
+                    outputTitle: 'نتيجة الإبداع',
+                    previewBtn: 'استمع للعمل',
+                    shareBtn: 'مشاركة على المنصات الاجتماعية',
+                    resultPlaceholder: 'بعد إدخال الموضوع، سيولد الذكاء الاصطناعي كلمات هنا...'
+                },
                 feature6Title: 'الآراء والملاحظات',  
                 feature6Desc: 'قدم اقتراحات قيمة للمساعدة في تحسين تجربة المنصة' ,
+                f6: {
+                    title: 'الآراء والملاحظات',
+                    desc: 'ملاحظاتك القيّمة تساعدنا على تحسين المنصة.',
+                    typeLabel: 'نوع الملاحظة',
+                    typeSuggestion: 'اقتراح ميزة',
+                    typeBug: 'تبليغ عن مشكلة',
+                    typeContent: 'اقتراح محتوى',
+                    typeOther: 'أخرى',
+                    titleLabel: 'العنوان',
+                    titlePlaceholder: 'صف بإيجاز ملاحظتك',
+                    contentLabel: 'المحتوى',
+                    contentPlaceholder: 'صف اقتراحك أو مشكلتك بالتفصيل...',
+                    contactLabel: 'معلومات الاتصال (اختياري)',
+                    contactPlaceholder: 'البريد الإلكتروني أو الهاتف للرد',
+                    ratingLabel: 'تقييم الرضا',
+                    ratingText: 'يرجى اختيار تقييم',
+                    submitBtn: 'إرسال',
+                    historyTitle: 'سجل الملاحظات'
+                },
                 backBtn: 'العودة إلى اختيار اللغة',
                 helpBtn: 'الحصول على المساعدة'
             }
@@ -1317,14 +1899,14 @@
 
             // 更新表演状态文本
             const performanceText = document.getElementById('performance-text');
-            performanceText.textContent = `正在播放: ${getSongName(songId)}`;
+            performanceText.textContent = `${languageTexts[currentLanguage].f1.statusPlaying}${getSongName(songId)}`;
         }
 
 
         function stopPerformance() {
         	video.pause();
             const performanceText = document.getElementById('performance-text');
-            performanceText.textContent = '播放已停止';
+            performanceText.textContent = languageTexts[currentLanguage].f1.statusStopped;
         }
 
         function simulatePerformance(songName, duration) {
@@ -1332,7 +1914,7 @@
             
             // 更新表演状态
             const performanceText = document.getElementById('performance-text');
-            performanceText.textContent = `正在表演: ${songName}...`;
+            performanceText.textContent = `${languageTexts[currentLanguage].f1.statusPlaying}${songName}...`;
             
             // 模拟歌词显示
             const lyrics = getLyrics(songName);
@@ -1354,7 +1936,7 @@
             setTimeout(() => {
                 if (isPerforming) {
                     stopPerformance();
-                    performanceText.textContent = '表演结束';
+                    performanceText.textContent = languageTexts[currentLanguage].f1.performanceEnded;
                     
                     // 3秒后清空文本
                     setTimeout(() => {
@@ -1365,22 +1947,8 @@
         }
 
         function getLyrics(songName) {
-            const lyrics = {
-                '秦淮灯会': [
-                    '🎵 秦淮河畔灯火明，',
-                    '🎵 游人如织喜盈盈。',
-                    '🎵 白局一曲传千古，',
-                    '🎵 文化传承永不停。'
-                ],
-                '金陵四季': [
-                    '🎵 春到金陵花满枝，',
-                    '🎵 夏日荷塘映日辉，',
-                    '🎵 秋风送爽桂花香，',
-                    '🎵 冬雪纷飞兆丰年。'
-                ]
-            };
-            
-            return lyrics[songName] || ['正在加载歌词...'];
+            // 这里保持旧函数未使用，歌词由 f2.sampleLyrics 提供
+            return [songName];
         }
 
         // 选择语言函数
@@ -1414,6 +1982,117 @@
             document.getElementById('back-btn').textContent = languageTexts[lang].backBtn;
             document.getElementById('help-btn').textContent = languageTexts[lang].helpBtn;
             
+            // 功能一弹窗文本
+            const f1 = languageTexts[lang].f1;
+            if (f1) {
+                document.getElementById('f1-title').textContent = f1.title;
+                document.getElementById('f1-desc').textContent = f1.desc;
+                document.getElementById('f1-choose').textContent = f1.choose;
+                document.getElementById('f1-song1').textContent = f1.song1;
+                document.getElementById('f1-song2').textContent = f1.song2;
+                document.getElementById('f1-song3').textContent = f1.song3;
+                document.getElementById('f1-tag-classic').textContent = f1.tagClassic;
+                document.getElementById('f1-tag-classic-2').textContent = f1.tagClassic;
+                document.getElementById('f1-tag-modern').textContent = f1.tagModern;
+                document.getElementById('f1-btn-play1').innerHTML = `<i class="fas fa-play"></i> ${f1.btnPlayPrefix}${f1.song1}${f1.btnPlaySuffix}`;
+                document.getElementById('f1-btn-play2').innerHTML = `<i class="fas fa-play"></i> ${f1.btnPlayPrefix}${f1.song2}${f1.btnPlaySuffix}`;
+                document.getElementById('f1-btn-stop').innerHTML = `<i class="fas fa-stop"></i> ${f1.btnStop}`;
+            }
+
+            // 功能二弹窗文本
+            const f2 = languageTexts[lang].f2;
+            if (f2) {
+                document.getElementById('f2-title').textContent = f2.title;
+                document.getElementById('f2-desc').textContent = f2.desc;
+                document.getElementById('f2-choose').textContent = f2.choose;
+                document.getElementById('f2-lyrics-title').textContent = f2.lyricsTitle;
+                document.getElementById('f2-btn-song1').textContent = f2.song1;
+                document.getElementById('f2-btn-song2').textContent = f2.song2;
+                document.getElementById('f2-btn-song3').textContent = f2.song3;
+                document.getElementById('label-pitch').textContent = f2.pitch;
+                document.getElementById('label-rhythm').textContent = f2.rhythm;
+                document.getElementById('label-pronunciation').textContent = f2.pronunciation;
+                document.getElementById('start-singing').textContent = f2.start;
+                // 初始化歌词为 song1
+                setTrainingLyrics('song1');
+            }
+
+            // 功能三弹窗文本
+            const f3 = languageTexts[lang].f3;
+            if (f3) {
+                document.getElementById('f3-title').textContent = f3.title;
+                document.getElementById('f3-desc').textContent = f3.desc;
+                document.getElementById('f3-scene-title').textContent = f3.sceneTitle;
+                document.getElementById('f3-scene-sub').textContent = f3.sceneSub;
+                document.getElementById('f3-courses-title').textContent = f3.coursesTitle;
+                document.getElementById('f3-course1-title').textContent = f3.course1Title;
+                document.getElementById('f3-course1-desc').textContent = f3.course1Desc;
+                document.getElementById('f3-course2-title').textContent = f3.course2Title;
+                document.getElementById('f3-course2-desc').textContent = f3.course2Desc;
+                document.getElementById('f3-course3-title').textContent = f3.course3Title;
+                document.getElementById('f3-course3-desc').textContent = f3.course3Desc;
+                document.getElementById('f3-qa-title').textContent = f3.qaTitle;
+                document.getElementById('f3-qa-input').setAttribute('placeholder', f3.qaPlaceholder);
+                document.getElementById('f3-qa-btn').textContent = f3.qaBtn;
+            }
+
+            // 功能四弹窗文本
+            const f4 = languageTexts[lang].f4;
+            if (f4) {
+                document.getElementById('f4-title').textContent = f4.title;
+                document.getElementById('f4-desc').textContent = f4.desc;
+                document.getElementById('f4-card1-title').textContent = f4.card1Title;
+                document.getElementById('f4-card1-desc').textContent = f4.card1Desc;
+                document.getElementById('f4-card2-title').textContent = f4.card2Title;
+                document.getElementById('f4-card2-desc').textContent = f4.card2Desc;
+                document.getElementById('f4-card3-title').textContent = f4.card3Title;
+                document.getElementById('f4-card3-desc').textContent = f4.card3Desc;
+                document.getElementById('f4-card4-title').textContent = f4.card4Title;
+                document.getElementById('f4-card4-desc').textContent = f4.card4Desc;
+                document.getElementById('f4-card1-btn').textContent = f4.more;
+                document.getElementById('f4-card2-btn').textContent = f4.more;
+                document.getElementById('f4-card3-btn').textContent = f4.more;
+                document.getElementById('f4-card4-btn').textContent = f4.more;
+                document.getElementById('f4-lang-title').textContent = f4.langTitle;
+            }
+
+            // 功能五弹窗文本
+            const f5 = languageTexts[lang].f5;
+            if (f5) {
+                document.getElementById('f5-title').textContent = f5.title;
+                document.getElementById('f5-desc').textContent = f5.desc;
+                document.getElementById('f5-input-title').textContent = f5.inputTitle;
+                document.getElementById('f5-input').setAttribute('placeholder', f5.inputPlaceholder);
+                document.getElementById('f5-select-lang-title').textContent = f5.selectLangTitle;
+                document.getElementById('f5-generate-btn').textContent = f5.generateBtn;
+                document.getElementById('f5-output-title').textContent = f5.outputTitle;
+                document.getElementById('creation-text').textContent = f5.resultPlaceholder;
+                document.getElementById('f5-preview-btn').textContent = f5.previewBtn;
+                document.getElementById('f5-share-btn').textContent = f5.shareBtn;
+            }
+
+            // 功能六弹窗文本
+            const f6 = languageTexts[lang].f6;
+            if (f6) {
+                document.getElementById('f6-title').textContent = f6.title;
+                document.getElementById('f6-desc').textContent = f6.desc;
+                document.getElementById('f6-type-label').textContent = f6.typeLabel;
+                document.getElementById('f6-type-suggestion').textContent = f6.typeSuggestion;
+                document.getElementById('f6-type-bug').textContent = f6.typeBug;
+                document.getElementById('f6-type-content').textContent = f6.typeContent;
+                document.getElementById('f6-type-other').textContent = f6.typeOther;
+                document.getElementById('f6-title-label').textContent = f6.titleLabel;
+                document.getElementById('feedback-title').setAttribute('placeholder', f6.titlePlaceholder);
+                document.getElementById('f6-content-label').textContent = f6.contentLabel;
+                document.getElementById('feedback-content').setAttribute('placeholder', f6.contentPlaceholder);
+                document.getElementById('f6-contact-label').textContent = f6.contactLabel;
+                document.getElementById('contact-info').setAttribute('placeholder', f6.contactPlaceholder);
+                document.getElementById('f6-rating-label').textContent = f6.ratingLabel;
+                document.getElementById('rating-text').textContent = f6.ratingText;
+                document.getElementById('f6-submit-btn').textContent = f6.submitBtn;
+                document.getElementById('f6-history-title').textContent = f6.historyTitle;
+            }
+
             // 切换到功能页面
             document.getElementById('language-page').classList.remove('active');
             document.getElementById('feature-page').classList.add('active');
@@ -1460,29 +2139,38 @@
             console.log('选择唱段:', songId);
             // 可以选择唱段但不立即播放
             const performanceText = document.getElementById('performance-text');
-            performanceText.textContent = `已选择: ${getSongName(songId)}，点击播放按钮开始表演`;
+            const f1 = languageTexts[currentLanguage].f1;
+            performanceText.textContent = `${f1.statusSelected}${getSongName(songId)}${f1.statusHint}`;
         }
 
         function getSongName(songId) {
-            const songNames = {
-                'song1': '《秦淮灯会》',
-                'song2': '《金陵四季》',
-                'song3': '《南京美食》'
+            const f1 = languageTexts[currentLanguage].f1;
+            const map = {
+                'song1': f1 ? f1.song1 : 'song1',
+                'song2': f1 ? f1.song2 : 'song2',
+                'song3': f1 ? f1.song3 : 'song3'
             };
-            return songNames[songId] || '未知唱段';
+            const name = map[songId] || 'Unknown';
+            // 返回不带引号的名称，在按钮里已处理引号
+            return name;
         }
 
         // 选择训练唱段
-        function selectTrainingSong(songName) {
-            console.log('选择训练唱段:', songName);
-            // 这里可以更新歌词显示
+        function selectTrainingSong(songId) {
+            console.log('选择训练唱段:', songId);
+            setTrainingLyrics(songId);
+        }
+
+        function setTrainingLyrics(songId) {
+            const f2 = languageTexts[currentLanguage].f2;
+            const key = songId;
+            const lines = (f2 && f2.sampleLyrics && f2.sampleLyrics[key]) ? f2.sampleLyrics[key] : [];
             const lyrics = document.getElementById('lyrics-display');
-            lyrics.innerHTML = `
-                <div class="lyric-line">${songName}第一句，</div>
-                <div class="lyric-line">${songName}第二句。</div>
-                <div class="lyric-line">${songName}第三句，</div>
-                <div class="lyric-line">${songName}第四句。</div>
-            `;
+            if (lines.length) {
+                lyrics.innerHTML = lines.map(line => `<div class="lyric-line">${line}</div>`).join('');
+            } else {
+                lyrics.innerHTML = `<div class="lyric-line">...</div>`;
+            }
         }
 
         // 选择课程
