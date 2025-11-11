@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function initAccessibilityFeatures() {
     initVoiceControl();
     initContrastControl();
+    initCareMode();
 }
 
 // 初始化语音控制功能
@@ -103,6 +104,58 @@ function initVoiceControl() {
             alert('您的浏览器不支持语音识别功能，请使用Chrome浏览器以获得最佳体验。');
         });
     }
+}
+
+// 关怀模式（简洁语言）
+function initCareMode() {
+    const careBtn = document.getElementById('care-mode-btn');
+    if (!careBtn) return;
+
+    // 恢复持久化状态
+    const saved = localStorage.getItem('careModeEnabled');
+    const enabled = saved === 'true';
+    applyCareMode(enabled);
+
+    careBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const nowEnabled = !document.documentElement.classList.contains('care-mode');
+        applyCareMode(nowEnabled);
+        localStorage.setItem('careModeEnabled', nowEnabled ? 'true' : 'false');
+        speakText(nowEnabled ? '已开启关怀模式' : '已关闭关怀模式');
+    });
+}
+
+function applyCareMode(enable) {
+    const root = document.documentElement; // <html>
+    if (enable) {
+        root.classList.add('care-mode');
+        // 将带有 data-simple 的元素切换为简洁文本
+        swapSimpleText(true);
+    } else {
+        // 先还原文本，再移除类
+        swapSimpleText(false);
+        root.classList.remove('care-mode');
+    }
+}
+
+function swapSimpleText(useSimple) {
+    const nodes = document.querySelectorAll('[data-simple]');
+    nodes.forEach(node => {
+        // 仅处理文本节点容器，避免覆盖复杂 HTML 结构
+        // 如果包含子元素，则跳过（可按需扩展为 data-simple-html）
+        if (node.children && node.children.length > 0) return;
+
+        const simpleText = node.getAttribute('data-simple');
+        if (simpleText == null) return;
+
+        // 缓存原始文本
+        if (!node.hasAttribute('data-original')) {
+            node.setAttribute('data-original', node.textContent);
+        }
+        const original = node.getAttribute('data-original');
+
+        node.textContent = useSimple ? simpleText : original;
+    });
 }
 
 // 处理语音命令

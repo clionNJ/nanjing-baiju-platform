@@ -402,6 +402,43 @@
             transform: scale(1.1);
         }
 
+        /* 关怀模式（简洁语言 + 低认知负担排版） */
+        .care-mode {
+            --care-font-size: 18px;
+            --care-line-height: 1.9;
+            --care-letter-spacing: 0.3px;
+        }
+        .care-mode body,
+        .care-mode .page,
+        .care-mode p,
+        .care-mode li,
+        .care-mode span,
+        .care-mode a,
+        .care-mode button {
+            font-size: var(--care-font-size) !important;
+            line-height: var(--care-line-height) !important;
+            letter-spacing: var(--care-letter-spacing) !important;
+        }
+        .care-mode h1 { font-size: 1.8em !important; }
+        .care-mode h2 { font-size: 1.6em !important; }
+        .care-mode h3 { font-size: 1.35em !important; }
+        .care-mode .container,
+        .care-mode .page {
+            max-width: 880px;
+        }
+        /* 隐藏装饰性元素（为装饰加 data-decorative="true" 可在关怀模式隐藏） */
+        .care-mode [data-decorative="true"] {
+            display: none !important;
+        }
+        /* 强化分隔与可读性 */
+        .care-mode p + p {
+            margin-top: 0.8em;
+        }
+        .care-mode .btn {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
         /* 语音识别状态指示器 */
         .voice-status {
             position: fixed;
@@ -1125,6 +1162,9 @@
             <button id="contrast-control-btn" class="accessibility-btn" title="对比度调节">
                 <i class="fas fa-adjust"></i>
             </button>
+            <button id="care-mode-btn" class="accessibility-btn" title="关怀模式（简洁语言）">
+                <i class="fas fa-hand-holding-heart"></i>
+            </button>
         </div>
         
         <!-- 语音识别状态指示器 -->
@@ -1138,16 +1178,12 @@
                 <i class="fas fa-dragon"></i>
                 <span>南京白局非遗文化数字平台</span>
             </div>
-            <div class="nav-links">
-                <a href="#" onclick="goBackToLanguage()">切换语言</a>
-                <a href="#" id="help-nav">帮助</a>
-            </div>
         </div>
         
         <!-- 语言选择页面 -->
         <div id="language-page" class="page active">
-            <h1>选择您的语言 / Select Your Language</h1>
-            <p>请选择您偏好的语言界面 / Please select your preferred language interface</p>
+            <h1 data-simple="选择语言">选择您的语言 / Select Your Language</h1>
+            <p data-simple="请选择一种语言">请选择您偏好的语言界面 / Please select your preferred language interface</p>
             
             <div class="language-grid">
                 <div class="language-card" onclick="selectLanguage('zh-CN')">
@@ -1187,54 +1223,225 @@
                     <h3>العربية</h3>
                 </div>
             </div>
+
+            <div class="button-container" style="margin-top: 16px;">
+                <!-- 占位：语言页没有返回按钮 -->
+            </div>
+        </div>
+
+        <!-- 曲种选择页面（风格与语言选择一致，复用样式） -->
+        <div id="genre-page" class="page" style="display: none;">
+            <h1 data-simple="选择曲种">请选择曲种</h1>
+            <p data-simple="请选择白局、昆曲、苏州评弹或扬剧">请选择白局、昆曲、苏州评弹或扬剧</p>
+
+            <div class="language-grid">
+                <div class="language-card" onclick="selectGenre('baiju')">
+                    <i class="fas fa-theater-masks" style="font-size: 42px; color: var(--primary);"></i>
+                    <h3>白局</h3>
+                </div>
+                <div class="language-card" onclick="selectGenre('kunqu')">
+                    <i class="fas fa-music" style="font-size: 42px; color: var(--primary);"></i>
+                    <h3>昆曲</h3>
+                </div>
+                <div class="language-card" onclick="selectGenre('pintang')">
+                    <i class="fas fa-guitar" style="font-size: 42px; color: var(--primary);"></i>
+                    <h3>苏州评弹</h3>
+                </div>
+                <div class="language-card" onclick="selectGenre('yangju')">
+                    <i class="fas fa-theater-masks" style="font-size: 42px; color: var(--primary);"></i>
+                    <h3>扬剧</h3>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="btn back-btn" onclick="goBackToLanguageFromGenre()" id="genre-back-btn">返回语言选择</button>
+            </div>
         </div>
         
         <!-- 功能页面 -->
         <div id="feature-page" class="page">
-            <h1 id="feature-title">南京白局非遗文化数字平台</h1>
-            <p id="feature-description">探索南京白局非遗文化的数字化体验，感受传统与现代科技的完美融合</p>
+            <h1 id="feature-title" data-simple="白局数字平台">南京白局非遗文化数字平台</h1>
+            <p id="feature-description" data-simple="探索南京白局的数字体验">探索南京白局非遗文化的数字化体验，感受传统与现代科技的完美融合</p>
             
             <div class="feature-grid">
                 <div class="feature-card" onclick="showFeatureDetail('feature1')">
                     <i class="fas fa-user-circle"></i>
                     <div class="badge">热门</div>
-                    <h3 id="feature1-title">虚拟传承人演唱展示</h3>
-                    <p id="feature1-desc">数字化还原的白局传承人虚拟形象，展示传统唱腔与表演</p>
+                    <h3 id="feature1-title" data-simple="虚拟演唱">虚拟传承人演唱展示</h3>
+                    <p id="feature1-desc" data-simple="虚拟形象演唱白局">数字化还原的白局传承人虚拟形象，展示传统唱腔与表演</p>
                 </div>
                 <div class="feature-card" onclick="showFeatureDetail('feature2')">
                     <i class="fas fa-microphone-alt"></i>
                     <div class="badge">新功能</div>
-                    <h3 id="feature2-title">AI语音跟唱训练</h3>
-                    <p id="feature2-desc">实时分析音高、节奏、发音，提供专业跟唱指导</p>
+                    <h3 id="feature2-title" data-simple="AI跟唱">AI语音跟唱训练</h3>
+                    <p id="feature2-desc" data-simple="分析歌声并给出建议">实时分析音高、节奏、发音，提供专业跟唱指导</p>
                 </div>
                 <div class="feature-card" onclick="showFeatureDetail('feature3')">
                     <i class="fas fa-chalkboard-teacher"></i>
-                    <h3 id="feature3-title">虚拟课堂沉浸式教学</h3>
-                    <p id="feature3-desc">在虚拟场景中学习白局历史与唱腔技巧</p>
+                    <h3 id="feature3-title" data-simple="虚拟课堂">虚拟课堂沉浸式教学</h3>
+                    <p id="feature3-desc" data-simple="学历史与唱腔">在虚拟场景中学习白局历史与唱腔技巧</p>
                 </div>
                 <div class="feature-card" onclick="showFeatureDetail('feature4')">
                     <i class="fas fa-book-open"></i>
-                    <h3 id="feature4-title">白局知识库与文化展厅</h3>
-                    <p id="feature4-desc">了解白局起源、发展、代表人物等丰富文化知识</p>
+                    <h3 id="feature4-title" data-simple="知识库与展厅">白局知识库与文化展厅</h3>
+                    <p id="feature4-desc" data-simple="了解白局的起源与人物">了解白局起源、发展、代表人物等丰富文化知识</p>
                 </div>
                 <div class="feature-card" onclick="showFeatureDetail('feature5')">
                     <i class="fas fa-paint-brush"></i>
                     <div class="badge">创意</div>
         
-        <h3 id="feature5-title">AI创作与分享中心</h3>
-        <p id="feature5-desc">AI自动生成白局唱词与旋律，一键分享至社交平台</p>
+        <h3 id="feature5-title" data-simple="AI创作">AI创作与分享中心</h3>
+        <p id="feature5-desc" data-simple="生成唱词旋律并分享">AI自动生成白局唱词与旋律，一键分享至社交平台</p>
     </div>
  
     <div class="feature-card" onclick="showFeatureDetail('feature6')">
         <i class="fas fa-comment-dots"></i>
         <div class="badge">互动</div>
-        <h3 id="feature6-title">意见与反馈</h3>
-        <p id="feature6-desc">提出宝贵建议，帮助我们改进平台体验</p>
+        <h3 id="feature6-title" data-simple="意见反馈">意见与反馈</h3>
+        <p id="feature6-desc" data-simple="欢迎给我们建议">提出宝贵建议，帮助我们改进平台体验</p>
     </div>
 </div>
             <div class="button-container">
-                <button class="btn back-btn" onclick="goBackToLanguage()" id="back-btn">返回语言选择</button>
-                <button class="btn" id="help-btn">获取帮助</button>
+                <button class="btn back-btn" onclick="goBackToLanguage()" id="back-btn" data-simple="返回语言">返回语言选择</button>
+                <button class="btn" id="help-btn" onclick="showHelp()" data-simple="帮助">获取帮助</button>
+            </div>
+        </div>
+
+        <!-- 功能页面：昆曲 -->
+        <div id="feature-page-kunqu" class="page" style="display: none;">
+            <h1>南京昆曲非遗文化数字平台</h1>
+            <p>探索昆曲的数字化体验，感受传统与现代科技的完美融合</p>
+            <div class="feature-grid">
+                <div class="feature-card" onclick="showFeatureDetail('feature1')">
+                    <i class="fas fa-user-circle"></i>
+                    <div class="badge">热门</div>
+                    <h3>虚拟传承人演唱展示</h3>
+                    <p>数字化还原的传承人虚拟形象，展示传统唱腔与表演</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature2')">
+                    <i class="fas fa-microphone-alt"></i>
+                    <div class="badge">新功能</div>
+                    <h3>AI语音跟唱训练</h3>
+                    <p>实时分析音高、节奏、发音，提供专业跟唱指导</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature3')">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h3>虚拟课堂沉浸式教学</h3>
+                    <p>在虚拟场景中学习昆曲历史与唱腔技巧</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature4')">
+                    <i class="fas fa-book-open"></i>
+                    <h3>昆曲知识库与文化展厅</h3>
+                    <p>了解昆曲起源、发展、代表人物等文化知识</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature5')">
+                    <i class="fas fa-paint-brush"></i>
+                    <div class="badge">创意</div>
+                    <h3>AI创作与分享中心</h3>
+                    <p>AI自动生成唱词与旋律，一键分享至社交平台</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature6')">
+                    <i class="fas fa-comment-dots"></i>
+                    <div class="badge">互动</div>
+                    <h3>意见与反馈</h3>
+                    <p>提出宝贵建议，帮助我们改进平台体验</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn back-btn" onclick="goBackToLanguage()" id="back-btn-kunqu">返回曲种选择</button>
+                <button class="btn" onclick="showHelp()">获取帮助</button>
+            </div>
+        </div>
+
+        <!-- 功能页面：苏州评弹 -->
+        <div id="feature-page-pintang" class="page" style="display: none;">
+            <h1>苏州评弹非遗文化数字平台</h1>
+            <p>探索苏州评弹的数字化体验，感受传统与现代科技的完美融合</p>
+            <div class="feature-grid">
+                <div class="feature-card" onclick="showFeatureDetail('feature1')">
+                    <i class="fas fa-user-circle"></i>
+                    <div class="badge">热门</div>
+                    <h3>虚拟传承人演唱展示</h3>
+                    <p>数字化还原的传承人虚拟形象，展示传统唱腔与表演</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature2')">
+                    <i class="fas fa-microphone-alt"></i>
+                    <div class="badge">新功能</div>
+                    <h3>AI语音跟唱训练</h3>
+                    <p>实时分析音高、节奏、发音，提供专业跟唱指导</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature3')">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h3>虚拟课堂沉浸式教学</h3>
+                    <p>在虚拟场景中学习评弹历史与表演技巧</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature4')">
+                    <i class="fas fa-book-open"></i>
+                    <h3>评弹知识库与文化展厅</h3>
+                    <p>了解评弹起源、发展、代表人物等文化知识</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature5')">
+                    <i class="fas fa-paint-brush"></i>
+                    <div class="badge">创意</div>
+                    <h3>AI创作与分享中心</h3>
+                    <p>AI自动生成唱词与旋律，一键分享至社交平台</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature6')">
+                    <i class="fas fa-comment-dots"></i>
+                    <div class="badge">互动</div>
+                    <h3>意见与反馈</h3>
+                    <p>提出宝贵建议，帮助我们改进平台体验</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn back-btn" onclick="goBackToLanguage()" id="back-btn-pintang">返回曲种选择</button>
+                <button class="btn" onclick="showHelp()">获取帮助</button>
+            </div>
+        </div>
+
+        <!-- 功能页面：扬剧 -->
+        <div id="feature-page-yangju" class="page" style="display: none;">
+            <h1>扬剧非遗文化数字平台</h1>
+            <p>探索扬剧的数字化体验，感受传统与现代科技的完美融合</p>
+            <div class="feature-grid">
+                <div class="feature-card" onclick="showFeatureDetail('feature1')">
+                    <i class="fas fa-user-circle"></i>
+                    <div class="badge">热门</div>
+                    <h3>虚拟传承人演唱展示</h3>
+                    <p>数字化还原的传承人虚拟形象，展示传统唱腔与表演</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature2')">
+                    <i class="fas fa-microphone-alt"></i>
+                    <div class="badge">新功能</div>
+                    <h3>AI语音跟唱训练</h3>
+                    <p>实时分析音高、节奏、发音，提供专业跟唱指导</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature3')">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h3>虚拟课堂沉浸式教学</h3>
+                    <p>在虚拟场景中学习扬剧历史与唱腔技巧</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature4')">
+                    <i class="fas fa-book-open"></i>
+                    <h3>扬剧知识库与文化展厅</h3>
+                    <p>了解扬剧起源、发展、代表人物等文化知识</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature5')">
+                    <i class="fas fa-paint-brush"></i>
+                    <div class="badge">创意</div>
+                    <h3>AI创作与分享中心</h3>
+                    <p>AI自动生成唱词与旋律，一键分享至社交平台</p>
+                </div>
+                <div class="feature-card" onclick="showFeatureDetail('feature6')">
+                    <i class="fas fa-comment-dots"></i>
+                    <div class="badge">互动</div>
+                    <h3>意见与反馈</h3>
+                    <p>提出宝贵建议，帮助我们改进平台体验</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="btn back-btn" onclick="goBackToLanguage()" id="back-btn-yangju">返回曲种选择</button>
+                <button class="btn" onclick="showHelp()">获取帮助</button>
             </div>
         </div>
     </div>
@@ -1306,8 +1513,8 @@
     <!-- 功能二：AI语音跟唱训练 -->
     <div id="feature2-detail" class="feature-detail">
         <button class="close-btn" onclick="closeFeatureDetail('feature2')">&times;</button>
-        <h3 id="f2-title">AI语音跟唱训练</h3>
-        <p id="f2-desc">通过AI技术分析您的跟唱表现，实时提供音高、节奏和发音的反馈，帮助您快速掌握白局唱腔技巧。</p>
+        <h3 id="f2-title" data-simple="AI跟唱">AI语音跟唱训练</h3>
+        <p id="f2-desc" data-simple="分析歌声并给出建议">通过AI技术分析您的跟唱表现，实时提供音高、节奏和发音的反馈，帮助您快速掌握白局唱腔技巧。</p>
         
         <div class="singing-interface">
             <h4 id="f2-choose">选择唱段</h4>
@@ -1471,8 +1678,8 @@
 <!-- 功能六：意见与反馈 -->
 <div id="feature6-detail" class="feature-detail">
     <button class="close-btn" onclick="closeFeatureDetail('feature6')">&times;</button>
-    <h3 id="f6-title">意见与反馈</h3>
-    <p id="f6-desc">您的宝贵意见将帮助我们不断改进平台，为您提供更好的服务体验。</p>
+    <h3 id="f6-title" data-simple="意见反馈">意见与反馈</h3>
+    <p id="f6-desc" data-simple="欢迎提出建议">您的宝贵意见将帮助我们不断改进平台，为您提供更好的服务体验。</p>
     
     <div class="feedback-interface">
         <div class="feedback-form">
@@ -2221,6 +2428,27 @@
 
         // 当前选择的语言
         let currentLanguage = 'zh-CN';
+        // 当前选择的曲种（默认白局）
+        let currentGenre = 'baiju';
+        // 记录基线文本，用于不同曲种的动态替换（避免多次替换叠加）
+        const originalTexts = {};
+        const replaceTextIds = [
+            'feature-title',
+            'feature-description',
+            'feature1-desc',
+            'feature3-desc',
+            'feature4-desc',
+            'f2-desc',
+            'f3-desc',
+            'f4-desc',
+            'f5-desc'
+        ];
+        const genreNameMap = {
+            baiju: '白局',
+            kunqu: '昆曲',
+            pintang: '苏州评弹',
+            yangju: '扬剧'
+        };
 
         const conversationConfigs = {
             'zh-CN': {
@@ -3295,9 +3523,87 @@
                 document.getElementById('f6-history-title').textContent = f6.historyTitle;
             }
 
-            // 切换到功能页面
+            // 刷新基线文本（切换语言后需要更新）
+            replaceTextIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) originalTexts[id] = el.textContent;
+            });
+
+            // 语言选择完成，进入曲种选择页
             document.getElementById('language-page').classList.remove('active');
+            document.getElementById('genre-page').style.display = ''; // 确保可见
+            document.getElementById('genre-page').classList.add('active');
+        }
+
+        // 选择曲种后进入功能展示页面（暂时与白局相同）
+        function selectGenre(genre) {
+            console.log('选择曲种:', genre);
+            currentGenre = genre;
+            // 更新功能页返回按钮文字（暂时以中文为主）
+            const backBtn = document.getElementById('back-btn');
+            if (backBtn) backBtn.textContent = '返回曲种选择';
+            // 进入对应功能页
+            document.getElementById('genre-page').classList.remove('active');
+            // 先隐藏所有功能页
+            document.getElementById('feature-page').classList.remove('active');
+            const pageKun = document.getElementById('feature-page-kunqu');
+            const pagePin = document.getElementById('feature-page-pintang');
+            const pageYan = document.getElementById('feature-page-yangju');
+            if (pageKun) pageKun.classList.remove('active');
+            if (pagePin) pagePin.classList.remove('active');
+            if (pageYan) pageYan.classList.remove('active');
+            if (genre === 'baiju') {
             document.getElementById('feature-page').classList.add('active');
+                document.getElementById('feature-page').style.display = '';
+            } else if (genre === 'kunqu') {
+                if (pageKun) {
+                    pageKun.style.display = '';
+                    pageKun.classList.add('active');
+                }
+            } else if (genre === 'pintang') {
+                if (pagePin) {
+                    pagePin.style.display = '';
+                    pagePin.classList.add('active');
+                }
+            } else if (genre === 'yangju') {
+                if (pageYan) {
+                    pageYan.style.display = '';
+                    pageYan.classList.add('active');
+                }
+            }
+            applyGenreTexts();
+        }
+
+        // 根据当前曲种，动态调整页面标题及涉及“白局”的文案
+        function applyGenreTexts() {
+            const displayName = genreNameMap[currentGenre] || '白局';
+            // 主标题与简介：如果基线存在“白局”，则替换；否则拼一个通用标题
+            const titleEl = document.getElementById('feature-title');
+            if (titleEl) {
+                const base = originalTexts['feature-title'] || titleEl.textContent;
+                if (base.includes('白局')) {
+                    titleEl.textContent = base.replace(/白局/g, displayName);
+                } else {
+                    titleEl.textContent = `${displayName}非遗文化数字平台`;
+                }
+            }
+            const descEl = document.getElementById('feature-description');
+            if (descEl) {
+                const base = originalTexts['feature-description'] || descEl.textContent;
+                if (base.includes('白局')) {
+                    descEl.textContent = base.replace(/白局/g, displayName);
+                } else {
+                    descEl.textContent = `探索${displayName}的数字化体验，感受传统与现代科技的融合`;
+                }
+            }
+            // 替换部分包含“白局”的功能描述/弹窗描述
+            replaceTextIds.forEach(id => {
+                if (id === 'feature-title' || id === 'feature-description') return;
+                const el = document.getElementById(id);
+                if (!el) return;
+                const base = originalTexts[id] || el.textContent;
+                el.textContent = base.replace(/白局/g, displayName);
+            });
         }
 
         // 显示功能详情
@@ -3318,14 +3624,22 @@
         function closeFeatureDetail(featureId) {
             // 隐藏遮罩层
             document.getElementById('overlay').classList.remove('active');
-            document.getElementById(`${featureId}-detail`).classList.remove('active');
+            const activeId = document.getElementById(`${featureId}-detail-${currentGenre}`) ? 
+                `${featureId}-detail-${currentGenre}` : `${featureId}-detail`;
+            document.getElementById(activeId).classList.remove('active');
         }
 
-        // 返回语言选择页面
+        // 从功能页面返回（回到曲种选择页面）
         function goBackToLanguage() {
-            console.log('返回语言选择');
+            console.log('返回曲种选择');
             document.getElementById('feature-page').classList.remove('active');
-            document.getElementById('language-page').classList.add('active');
+            const pageKun = document.getElementById('feature-page-kunqu');
+            const pagePin = document.getElementById('feature-page-pintang');
+            const pageYan = document.getElementById('feature-page-yangju');
+            if (pageKun) pageKun.classList.remove('active');
+            if (pagePin) pagePin.classList.remove('active');
+            if (pageYan) pageYan.classList.remove('active');
+            document.getElementById('genre-page').classList.add('active');
             
             // 关闭所有功能详情
             document.querySelectorAll('.feature-detail').forEach(detail => {
@@ -3334,6 +3648,13 @@
             
             // 隐藏遮罩层
             document.getElementById('overlay').classList.remove('active');
+        }
+
+        // 从曲种选择页面返回到语言选择
+        function goBackToLanguageFromGenre() {
+            console.log('返回语言选择');
+            document.getElementById('genre-page').classList.remove('active');
+            document.getElementById('language-page').classList.add('active');
         }
 
         // 选择唱段
@@ -3427,7 +3748,7 @@
         }
 
         // 帮助按钮点击事件
-        document.getElementById('help-btn').addEventListener('click', function() {
+        function showHelp() {
             let message = '';
             if (currentLanguage === 'zh-CN') {
                 message = '如需帮助，请联系我们的客服团队。\n电话: 400-123-4567\n邮箱: support@baiju-nj.com';
@@ -3443,7 +3764,12 @@
                 message = 'للحصول على المساعدة، يرجى الاتصال بفريق خدمة العملاء.\nهاتف: 400-123-4567\nالبريد الإلكتروني: support@baiju-nj.com';
             }
             alert(message);
-        });
+        }
+        // 兼容已有按钮（白局页）
+        const helpBtnLegacy = document.getElementById('help-btn');
+        if (helpBtnLegacy) {
+            helpBtnLegacy.addEventListener('click', showHelp);
+        }
 
         // 导航帮助链接
         document.getElementById('help-nav').addEventListener('click', function(e) {
@@ -3485,7 +3811,15 @@
             console.log('页面加载完成');
             // 确保语言选择页面是激活状态
             document.getElementById('language-page').classList.add('active');
+            document.getElementById('genre-page').classList.remove('active');
+            document.getElementById('genre-page').style.display = 'none';
             document.getElementById('feature-page').classList.remove('active');
+
+            // 初始化基线文本
+            replaceTextIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) originalTexts[id] = el.textContent;
+            });
             
             // 初始化语言选项点击事件
             document.querySelectorAll('.lang-option').forEach(option => {
