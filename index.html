@@ -7,6 +7,35 @@
     <!-- 使用国内CDN加速，如果失败则回退到原CDN -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
           onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'">
+    
+    <!-- 色盲友好的SVG滤镜定义 -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <filter id="protanopia-filter">
+            <feColorMatrix type="matrix" values="
+                0.567, 0.433, 0,     0, 0
+                0.558, 0.442, 0,     0, 0
+                0,     0.242, 0.758, 0, 0
+                0,     0,     0,     1, 0
+            "/>
+        </filter>
+        <filter id="deuteranopia-filter">
+            <feColorMatrix type="matrix" values="
+                0.625, 0.375, 0,     0, 0
+                0.7,   0.3,   0,     0, 0
+                0,     0.3,   0.7,   0, 0
+                0,     0,     0,     1, 0
+            "/>
+        </filter>
+        <filter id="tritanopia-filter">
+            <feColorMatrix type="matrix" values="
+                0.95, 0.05,  0,     0, 0
+                0,    0.433, 0.567, 0, 0
+                0,    0.475, 0.525, 0, 0
+                0,    0,     0,     1, 0
+            "/>
+        </filter>
+    </svg>
+    
     <style>
         * {
             margin: 0;
@@ -340,6 +369,138 @@
 
         .nav-links a:hover {
             background: rgba(255,255,255,0.2);
+        }
+
+        /* 助残功能控制按钮样式 */
+        .accessibility-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .accessibility-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .accessibility-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* 语音识别状态指示器 */
+        .voice-status {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* 高对比度模式样式 */
+        .high-contrast {
+            filter: contrast(1.5) saturate(1.5);
+        }
+
+        .high-contrast .feature-card,
+        .high-contrast .language-card {
+            border: 3px solid yellow !important;
+            background-color: black !important;
+            color: white !important;
+        }
+
+        .high-contrast .btn {
+            background-color: yellow !important;
+            color: black !important;
+            border: 2px solid black !important;
+        }
+
+        .high-contrast h1, 
+        .high-contrast h2, 
+        .high-contrast h3, 
+        .high-contrast h4, 
+        .high-contrast h5, 
+        .high-contrast h6 {
+            color: yellow !important;
+        }
+
+        .high-contrast p {
+            color: white !important;
+        }
+
+        /* 色盲友好调色板 */
+        .colorblind-protanopia {
+            /* 红绿色盲（第一种）调色板 */
+        }
+
+        .colorblind-deuteranopia {
+            /* 红绿色盲（第二种）调色板 */
+        }
+
+        .colorblind-tritanopia {
+            /* 蓝黄色盲调色板 */
+        }
+
+        /* 对比度菜单样式 */
+        .contrast-menu {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+            min-width: 200px;
+            overflow: hidden;
+        }
+
+        .contrast-menu .menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+
+        .contrast-menu .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .contrast-menu .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* 色盲友好的具体调色板实现 */
+        .colorblind-protanopia {
+            filter: url(#protanopia-filter);
+        }
+
+        .colorblind-deuteranopia {
+            filter: url(#deuteranopia-filter);
+        }
+
+        .colorblind-tritanopia {
+            filter: url(#tritanopia-filter);
         }
 
         /* 功能详情区域 */
@@ -956,6 +1117,21 @@
     <div class="overlay" id="overlay"></div>
 
     <div class="container">
+        <!-- 助残功能控制按钮 -->
+        <div class="accessibility-controls">
+            <button id="voice-control-btn" class="accessibility-btn" title="语音控制">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button id="contrast-control-btn" class="accessibility-btn" title="对比度调节">
+                <i class="fas fa-adjust"></i>
+            </button>
+        </div>
+        
+        <!-- 语音识别状态指示器 -->
+        <div id="voice-status" class="voice-status">
+            <span id="voice-status-text">正在聆听...</span>
+        </div>
+        
         <!-- 顶部导航 -->
         <div class="header">
             <div class="logo">
@@ -3343,5 +3519,6 @@
             });
         });
     </script>
+    <script src="js/accessibility.js"></script>
 </body>
 </html>
