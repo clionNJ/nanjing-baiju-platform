@@ -123,6 +123,9 @@ function initVoiceIntroPrompt() {
     overlay.classList.add('active');
     modal.style.display = 'block';
 
+    // 语音播报提示（视障可感知）
+    speakText('是否需要开启语音模式以便通过语音快速操作？您可以说，需要，或，不需要。');
+
     const closeModal = () => {
         overlay.classList.remove('active');
         modal.style.display = 'none';
@@ -142,7 +145,7 @@ function initVoiceIntroPrompt() {
         } else if (recognition) {
             try { recognition.start(); } catch(e) {}
         }
-        speakText('已开启语音模式');
+        speakText('已开启语音模式。您可以说：我要看白局、我要反馈意见、返回语言等。');
     };
 
     const decline = () => {
@@ -163,13 +166,40 @@ function initVoiceIntroPrompt() {
 
         let decided = false;
         const decideFromText = (text) => {
-            const t = text.toLowerCase();
-            if (t.includes('需要') || t.includes('开启') || t.includes('打开') || t.includes('是')) {
+            const t = (text || '').toLowerCase().trim();
+            // 更丰富的肯定/否定表达
+            const yesList = ['需要','开启','打开','是','好','好的','行','可以','要','yes','ok','okay','sure'];
+            const noList  = ['不需要','不用','否','不要','先不要','不用了','取消','no','not','later'];
+            const hit = (arr) => arr.some(k => t.includes(k));
+
+            // 直接导航意图（同时视为同意开启）
+            const goBaiju = /(我要看白局|看白局|进入白局|白局)/.test(t);
+            const goFeedback = /(我要反馈|反馈意见|意见与反馈|feedback)/.test(t);
+
+            if (goBaiju) {
                 decided = true;
                 acceptAndStart();
-            } else if (t.includes('不需要') || t.includes('不用') || t.includes('否') || t.includes('不要')) {
+                // 启动后导航到功能页
+                try { navigateToPage('feature-page'); } catch(e) {}
+                speakText('已为您打开白局功能页面。');
+                return;
+            }
+            if (goFeedback) {
+                decided = true;
+                acceptAndStart();
+                try { openFeedback(); } catch(e) { try { navigateToPage('feature-page'); } catch(_) {} }
+                return;
+            }
+
+            if (hit(yesList)) {
+                decided = true;
+                acceptAndStart();
+                return;
+            }
+            if (hit(noList)) {
                 decided = true;
                 decline();
+                return;
             }
         };
 
@@ -188,6 +218,13 @@ function initVoiceIntroPrompt() {
         introRecognition.onend = () => { /* 等待超时或用户点击 */ };
 
         try { introRecognition.start(); } catch(e) {}
+
+        // 3 秒后若仍未决定，进行一次重复播报提示
+        setTimeout(() => {
+            if (!decided && modal.style.display === 'block') {
+                speakText('请说，需要，或说，不需要。也可以直接说：我要看白局，或者我要反馈意见。');
+            }
+        }, 3000);
 
         // 8 秒无应答自动关闭
         setTimeout(() => {
@@ -226,30 +263,141 @@ function applyCareMode(enable) {
         root.classList.add('care-mode');
         // 将带有 data-simple 的元素切换为简洁文本
         swapSimpleText(true);
+        ensureCareModeObserver();
     } else {
         // 先还原文本，再移除类
         swapSimpleText(false);
         root.classList.remove('care-mode');
+        disconnectCareModeObserver();
+    }
+}
+
+let careModeObserver = null;
+let careModeDebounceTimer = null;
+function ensureCareModeObserver() {
+    if (careModeObserver) return;
+    try {
+        careModeObserver = new MutationObserver(() => {
+            if (careModeDebounceTimer) clearTimeout(careModeDebounceTimer);
+            careModeDebounceTimer = setTimeout(() => {
+                if (document.documentElement.classList.contains('care-mode')) {
+                    swapSimpleText(true);
+                }
+            }, 60);
+        });
+        careModeObserver.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['data-simple','data-simple-html','data-simple-title','data-simple-aria-label','data-simple-placeholder']
+        });
+    } catch (e) {
+        // 忽略观察器错误（如 document.body 未就绪）
+    }
+}
+function disconnectCareModeObserver() {
+    if (careModeObserver) {
+        try { careModeObserver.disconnect(); } catch(e) {}
+        careModeObserver = null;
+    }
+    if (careModeDebounceTimer) {
+        clearTimeout(careModeDebounceTimer);
+        careModeDebounceTimer = null;
     }
 }
 
 function swapSimpleText(useSimple) {
-    const nodes = document.querySelectorAll('[data-simple]');
+    // 统一处理多类型简洁内容：文本、HTML 和常见属性
+    const selector = [
+        '[data-simple]',
+        '[data-simple-html]',
+        '[data-simple-title]',
+        '[data-simple-aria-label]',
+        '[data-simple-placeholder]'
+    ].join(',');
+
+    const nodes = document.querySelectorAll(selector);
     nodes.forEach(node => {
-        // 仅处理文本节点容器，避免覆盖复杂 HTML 结构
-        // 如果包含子元素，则跳过（可按需扩展为 data-simple-html）
-        if (node.children && node.children.length > 0) return;
-
-        const simpleText = node.getAttribute('data-simple');
-        if (simpleText == null) return;
-
-        // 缓存原始文本
-        if (!node.hasAttribute('data-original')) {
-            node.setAttribute('data-original', node.textContent);
+        // 1) 优先处理 data-simple-html：允许替换富文本（明确标注才会替换）
+        const simpleHtml = node.getAttribute('data-simple-html');
+        if (simpleHtml != null) {
+            if (!node.hasAttribute('data-original-html')) {
+                node.setAttribute('data-original-html', node.innerHTML);
+            }
+            const originalHtml = node.getAttribute('data-original-html') || '';
+            if (useSimple) node.innerHTML = simpleHtml;
+            else node.innerHTML = originalHtml;
         }
-        const original = node.getAttribute('data-original');
 
-        node.textContent = useSimple ? simpleText : original;
+        // 2) 处理 data-simple 纯文本：
+        //    - 无子元素：直接替换 textContent
+        //    - 有子元素：为了不破坏结构，仅在关怀模式下提供 aria-label/title 的简洁描述
+        const simpleText = node.getAttribute('data-simple');
+        if (simpleText != null) {
+            const hasChildren = !!(node.children && node.children.length > 0);
+
+            if (!hasChildren) {
+                if (!node.hasAttribute('data-original')) {
+                    node.setAttribute('data-original', node.textContent);
+                }
+                const original = node.getAttribute('data-original') ?? '';
+                node.textContent = useSimple ? simpleText : original;
+            } else {
+                // 缓存并覆盖 aria-label / title，尽量不改动原有可视结构
+                if (!node.hasAttribute('data-original-aria-label') && node.hasAttribute('aria-label')) {
+                    node.setAttribute('data-original-aria-label', node.getAttribute('aria-label') || '');
+                }
+                if (!node.hasAttribute('data-original-title') && node.hasAttribute('title')) {
+                    node.setAttribute('data-original-title', node.getAttribute('title') || '');
+                }
+                if (useSimple) {
+                    // 仅在缺省时补充，避免覆盖作者显式指定的 data-simple-aria-label / data-simple-title
+                    if (!node.hasAttribute('data-simple-aria-label') && !node.hasAttribute('aria-label')) {
+                        node.setAttribute('aria-label', simpleText);
+                    }
+                    if (!node.hasAttribute('data-simple-title') && !node.hasAttribute('title')) {
+                        node.setAttribute('title', simpleText);
+                    }
+                } else {
+                    // 还原
+                    if (node.hasAttribute('data-original-aria-label')) {
+                        node.setAttribute('aria-label', node.getAttribute('data-original-aria-label') || '');
+                        node.removeAttribute('data-original-aria-label');
+                    } else if (!node.hasAttribute('data-simple-aria-label')) {
+                        node.removeAttribute('aria-label');
+                    }
+                    if (node.hasAttribute('data-original-title')) {
+                        node.setAttribute('title', node.getAttribute('data-original-title') || '');
+                        node.removeAttribute('data-original-title');
+                    } else if (!node.hasAttribute('data-simple-title')) {
+                        node.removeAttribute('title');
+                    }
+                }
+            }
+        }
+
+        // 3) 处理常见属性型简洁内容
+        const attrMappings = [
+            ['data-simple-title', 'title', 'data-original-title-only'],
+            ['data-simple-aria-label', 'aria-label', 'data-original-aria-label-only'],
+            ['data-simple-placeholder', 'placeholder', 'data-original-placeholder-only']
+        ];
+        attrMappings.forEach(([dataAttr, realAttr, backupAttr]) => {
+            const simpleVal = node.getAttribute(dataAttr);
+            if (simpleVal == null) return;
+
+            if (!node.hasAttribute(backupAttr)) {
+                node.setAttribute(backupAttr, node.getAttribute(realAttr) || '');
+            }
+            const originalVal = node.getAttribute(backupAttr) || '';
+
+            if (useSimple) node.setAttribute(realAttr, simpleVal);
+            else {
+                if (originalVal) node.setAttribute(realAttr, originalVal);
+                else node.removeAttribute(realAttr);
+                node.removeAttribute(backupAttr);
+            }
+        });
     });
 }
 
