@@ -16,6 +16,7 @@ function initAccessibilityFeatures() {
     initVoiceControl();
     initContrastControl();
     initCareMode();
+    initVoiceIntroPrompt();
 }
 
 // 初始化语音控制功能
@@ -106,6 +107,100 @@ function initVoiceControl() {
     }
 }
 
+// 进入站点语音模式询问
+let introRecognition = null;
+function initVoiceIntroPrompt() {
+    // 每个会话只询问一次
+    if (sessionStorage.getItem('voiceIntroHandled') === 'true') return;
+
+    const modal = document.getElementById('voice-intro-modal');
+    const overlay = document.getElementById('overlay');
+    const btnYes = document.getElementById('voice-intro-yes');
+    const btnNo = document.getElementById('voice-intro-no');
+    if (!modal || !overlay || !btnYes || !btnNo) return;
+
+    // 打开弹窗
+    overlay.classList.add('active');
+    modal.style.display = 'block';
+
+    const closeModal = () => {
+        overlay.classList.remove('active');
+        modal.style.display = 'none';
+        if (introRecognition) {
+            try { introRecognition.stop(); } catch(e) {}
+            introRecognition = null;
+        }
+        sessionStorage.setItem('voiceIntroHandled', 'true');
+    };
+
+    const acceptAndStart = () => {
+        closeModal();
+        // 启动主语音识别
+        const voiceBtn = document.getElementById('voice-control-btn');
+        if (voiceBtn) {
+            voiceBtn.click();
+        } else if (recognition) {
+            try { recognition.start(); } catch(e) {}
+        }
+        speakText('已开启语音模式');
+    };
+
+    const decline = () => {
+        closeModal();
+        speakText('已关闭语音模式');
+    };
+
+    btnYes.addEventListener('click', acceptAndStart);
+    btnNo.addEventListener('click', decline);
+
+    // 若浏览器支持语音识别，开始短暂监听关键词
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        introRecognition = new SpeechRecognition();
+        introRecognition.lang = 'zh-CN';
+        introRecognition.continuous = false;
+        introRecognition.interimResults = true;
+
+        let decided = false;
+        const decideFromText = (text) => {
+            const t = text.toLowerCase();
+            if (t.includes('需要') || t.includes('开启') || t.includes('打开') || t.includes('是')) {
+                decided = true;
+                acceptAndStart();
+            } else if (t.includes('不需要') || t.includes('不用') || t.includes('否') || t.includes('不要')) {
+                decided = true;
+                decline();
+            }
+        };
+
+        introRecognition.onresult = (event) => {
+            let interim = '';
+            let finalText = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const tx = event.results[i][0].transcript;
+                if (event.results[i].isFinal) finalText += tx;
+                else interim += tx;
+            }
+            if (finalText) decideFromText(finalText);
+            else if (interim) decideFromText(interim);
+        };
+        introRecognition.onerror = () => { /* 忽略错误，继续走超时兜底 */ };
+        introRecognition.onend = () => { /* 等待超时或用户点击 */ };
+
+        try { introRecognition.start(); } catch(e) {}
+
+        // 8 秒无应答自动关闭
+        setTimeout(() => {
+            if (!decided) decline();
+        }, 8000);
+    } else {
+        // 不支持语音：保留按钮选择，6秒后默认关闭
+        setTimeout(() => {
+            if (modal.style.display === 'block') decline();
+        }, 6000);
+    }
+}
+
 // 关怀模式（简洁语言）
 function initCareMode() {
     const careBtn = document.getElementById('care-mode-btn');
@@ -166,7 +261,9 @@ function handleVoiceCommand(command) {
     const commands = {
         // 页面导航命令
         '首页': () => navigateToPage('language-page'),
-        '功能': () => navigateToPage('features-page'),
+        '功能': () => navigateToPage('feature-page'),
+        '我要看白局': () => navigateToPage('feature-page'),
+        '看白局': () => navigateToPage('feature-page'),
         '返回': () => goBack(),
         '主页': () => navigateToPage('language-page'),
         
@@ -191,6 +288,11 @@ function handleVoiceCommand(command) {
         '演唱白局': () => selectFeature('performance'),
         '白局历史': () => selectFeature('history'),
         '白局特点': () => selectFeature('characteristics'),
+
+        // 反馈页快捷
+        '反馈意见': () => openFeedback(),
+        '我要反馈意见': () => openFeedback(),
+        '意见与反馈': () => openFeedback(),
         
         // 控制命令
         '停止': () => stopAll(),
@@ -214,6 +316,19 @@ function handleVoiceCommand(command) {
     }
 }
 
+// 打开意见反馈（feature6）
+function openFeedback() {
+    navigateToPage('feature-page');
+    if (typeof window.showFeatureDetail === 'function') {
+        window.showFeatureDetail('feature6');
+    } else {
+        // 兜底：滚动到卡片
+        const card = document.querySelector('.feature-card [id="feature6-title"]')?.closest('.feature-card');
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    speakText('已进入意见与反馈');
+}
+
 // 页面导航
 function navigateToPage(pageId) {
     // 隐藏所有页面
@@ -232,12 +347,12 @@ function navigateToPage(pageId) {
 // 返回上一页
 function goBack() {
     const activePage = document.querySelector('.page.active');
-    if (activePage && activePage.id === 'features-page') {
+    if (activePage && activePage.id === 'feature-page') {
         navigateToPage('language-page');
         speakText('已返回语言选择页面');
     } else if (activePage && activePage.id === 'feature-detail') {
         document.getElementById('feature-detail').style.display = 'none';
-        document.getElementById('features-page').classList.add('active');
+        document.getElementById('feature-page').classList.add('active');
         speakText('已返回功能页面');
     }
 }

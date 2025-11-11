@@ -439,6 +439,45 @@
             min-width: 44px;
         }
 
+        /* 语音模式询问弹窗 */
+        .voice-intro-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 520px;
+            z-index: 1200;
+            padding: 22px 24px;
+            display: none;
+        }
+        .voice-intro-modal h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+        .voice-intro-modal p {
+            margin: 8px 0 16px 0;
+        }
+        .voice-intro-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .voice-intro-actions .btn {
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+        .voice-intro-hint {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .overlay.active { display: block; }
+
         /* 语音识别状态指示器 */
         .voice-status {
             position: fixed;
@@ -1152,6 +1191,17 @@
 <body>
     <!-- 遮罩层 -->
     <div class="overlay" id="overlay"></div>
+
+    <!-- 语音模式询问弹窗 -->
+    <div id="voice-intro-modal" class="voice-intro-modal" role="dialog" aria-modal="true" aria-labelledby="voice-intro-title" aria-describedby="voice-intro-desc">
+        <h3 id="voice-intro-title" data-simple="开启语音模式？">是否需要开启语音模式以便通过语音快速操作？</h3>
+        <p id="voice-intro-desc" data-simple="你可以说“需要”或“不要”。">你可以说“需要/开启/是”进入语音模式，或说“不需要/不用/否”关闭。若保持沉默，数秒后自动关闭。</p>
+        <p class="voice-intro-hint" data-simple="也可点按钮">也可直接点击下面的按钮：</p>
+        <div class="voice-intro-actions">
+            <button id="voice-intro-yes" class="btn" data-simple="需要">需要语音模式</button>
+            <button id="voice-intro-no" class="btn back-btn" data-simple="不需要">暂不需要</button>
+        </div>
+    </div>
 
     <div class="container">
         <!-- 助残功能控制按钮 -->
