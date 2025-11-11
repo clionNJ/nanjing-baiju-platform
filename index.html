@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>南京白局非遗文化数字平台</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 使用国内CDN加速，如果失败则回退到原CDN -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'">
     <style>
         * {
             margin: 0;
@@ -973,27 +975,39 @@
             
             <div class="language-grid">
                 <div class="language-card" onclick="selectLanguage('zh-CN')">
-                    <img src="https://flagcdn.com/w80/cn.png" alt="中文">
+                    <img src="https://flagcdn.com/w80/cn.png" 
+                         onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/CN.svg'" 
+                         alt="中文">
                     <h3>中文</h3>
                 </div>
                 <div class="language-card" onclick="selectLanguage('en')">
-                    <img src="https://flagcdn.com/w80/us.png" alt="English">
+                    <img src="https://flagcdn.com/w80/us.png" 
+                         onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/US.svg'" 
+                         alt="English">
                     <h3>English</h3>
                 </div>
                 <div class="language-card" onclick="selectLanguage('es')">
-                    <img src="https://flagcdn.com/w80/es.png" alt="Español">
+                    <img src="https://flagcdn.com/w80/es.png" 
+                         onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/ES.svg'" 
+                         alt="Español">
                     <h3>Español</h3>
                 </div>
                 <div class="language-card" onclick="selectLanguage('fr')">
-                    <img src="https://flagcdn.com/w80/fr.png" alt="Français">
+                    <img src="https://flagcdn.com/w80/fr.png" 
+                         onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/FR.svg'" 
+                         alt="Français">
                     <h3>Français</h3>
                 </div>
                 <div class="language-card" onclick="selectLanguage('ja')">
-                    <img src="https://flagcdn.com/w80/jp.png" alt="日本語">
+                    <img src="https://flagcdn.com/w80/jp.png" 
+                         onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/JP.svg'" 
+                         alt="日本語">
                     <h3>日本語</h3>
                 </div>
                 <div class="language-card" onclick="selectLanguage('ar')">
-                    <img src="https://flagcdn.com/w80/sa.png" alt="العربية">
+                    <img src="https://flagcdn.com/w80/sa.png" 
+                         onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/SA.svg'" 
+                         alt="العربية">
                     <h3>العربية</h3>
                 </div>
             </div>
@@ -2052,6 +2066,12 @@
                 ttsPlaying: '语音播报中…',
                 ttsStopped: '语音播报已结束。',
                 error: '抱歉，我暂时无法处理，请稍后再试。',
+                noSpeech: '未检测到语音，请重试。',
+                audioCapture: '无法访问麦克风，请检查权限设置。',
+                networkError: '网络错误，请检查网络连接。',
+                permissionDenied: '麦克风权限被拒绝，请在浏览器设置中允许访问麦克风。',
+                serviceNotAllowed: '语音识别服务不可用，请稍后再试。',
+                httpsRequired: '语音识别需要HTTPS连接，请使用安全连接访问。',
                 languageNames: {
                     'zh-CN': '中文',
                     'en': '英语',
@@ -2092,6 +2112,12 @@
                 ttsPlaying: 'Playing voice reply...',
                 ttsStopped: 'Voice reply stopped.',
                 error: 'Sorry, I could not process that. Please try again.',
+                noSpeech: 'No speech detected. Please try again.',
+                audioCapture: 'Cannot access microphone. Please check permissions.',
+                networkError: 'Network error. Please check your connection.',
+                permissionDenied: 'Microphone permission denied. Please allow microphone access in browser settings.',
+                serviceNotAllowed: 'Speech recognition service unavailable. Please try again later.',
+                httpsRequired: 'Speech recognition requires HTTPS. Please use a secure connection.',
                 languageNames: {
                     'zh-CN': 'Chinese',
                     'en': 'English',
@@ -2132,6 +2158,12 @@
                 ttsPlaying: 'Reproduciendo respuesta de voz...',
                 ttsStopped: 'Respuesta de voz detenida.',
                 error: 'Lo siento, no pude procesarlo. Inténtalo de nuevo.',
+                noSpeech: 'No se detectó voz. Por favor, inténtalo de nuevo.',
+                audioCapture: 'No se puede acceder al micrófono. Por favor, verifica los permisos.',
+                networkError: 'Error de red. Por favor, verifica tu conexión.',
+                permissionDenied: 'Permiso de micrófono denegado. Por favor, permite el acceso al micrófono en la configuración del navegador.',
+                serviceNotAllowed: 'El servicio de reconocimiento de voz no está disponible. Por favor, inténtalo más tarde.',
+                httpsRequired: 'El reconocimiento de voz requiere HTTPS. Por favor, usa una conexión segura.',
                 languageNames: {
                     'zh-CN': 'Chino',
                     'en': 'Inglés',
@@ -2172,6 +2204,12 @@
                 ttsPlaying: 'Lecture de la réponse vocale...',
                 ttsStopped: 'Réponse vocale terminée.',
                 error: 'Désolé, je ne peux pas traiter votre demande pour le moment.',
+                noSpeech: 'Aucune voix détectée. Veuillez réessayer.',
+                audioCapture: 'Impossible d\'accéder au microphone. Veuillez vérifier les permissions.',
+                networkError: 'Erreur réseau. Veuillez vérifier votre connexion.',
+                permissionDenied: 'Permission du microphone refusée. Veuillez autoriser l\'accès au microphone dans les paramètres du navigateur.',
+                serviceNotAllowed: 'Le service de reconnaissance vocale n\'est pas disponible. Veuillez réessayer plus tard.',
+                httpsRequired: 'La reconnaissance vocale nécessite HTTPS. Veuillez utiliser une connexion sécurisée.',
                 languageNames: {
                     'zh-CN': 'Chinois',
                     'en': 'Anglais',
@@ -2212,6 +2250,12 @@
                 ttsPlaying: '音声回答を再生しています...',
                 ttsStopped: '音声再生を終了しました。',
                 error: '申し訳ありません。うまく処理できませんでした。もう一度お試しください。',
+                noSpeech: '音声が検出されませんでした。もう一度お試しください。',
+                audioCapture: 'マイクにアクセスできません。権限設定を確認してください。',
+                networkError: 'ネットワークエラー。接続を確認してください。',
+                permissionDenied: 'マイクの権限が拒否されました。ブラウザの設定でマイクへのアクセスを許可してください。',
+                serviceNotAllowed: '音声認識サービスが利用できません。後でもう一度お試しください。',
+                httpsRequired: '音声認識にはHTTPS接続が必要です。安全な接続を使用してください。',
                 languageNames: {
                     'zh-CN': '中国語',
                     'en': '英語',
@@ -2252,6 +2296,12 @@
                 ttsPlaying: 'جاري تشغيل الإجابة الصوتية...',
                 ttsStopped: 'توقفت الإجابة الصوتية.',
                 error: 'عذراً، تعذّر المعالجة. حاول مرة أخرى.',
+                noSpeech: 'لم يتم اكتشاف صوت. يرجى المحاولة مرة أخرى.',
+                audioCapture: 'لا يمكن الوصول إلى الميكروفون. يرجى التحقق من الصلاحيات.',
+                networkError: 'خطأ في الشبكة. يرجى التحقق من الاتصال.',
+                permissionDenied: 'تم رفض إذن الميكروفون. يرجى السماح بالوصول إلى الميكروفون في إعدادات المتصفح.',
+                serviceNotAllowed: 'خدمة التعرف على الصوت غير متاحة. يرجى المحاولة لاحقاً.',
+                httpsRequired: 'التعرف على الصوت يتطلب HTTPS. يرجى استخدام اتصال آمن.',
                 languageNames: {
                     'zh-CN': 'الصينية',
                     'en': 'الإنجليزية',
@@ -2650,20 +2700,48 @@
             conversationState.recognition.lang = lang;
         }
 
-        function toggleVoiceRecognition() {
+        async function toggleVoiceRecognition() {
             if (!conversationState.recognitionSupported || !conversationState.recognition) {
                 setConversationStatus(conversationState.labels.recognitionUnsupported, 'info');
                 return;
             }
+            
+            // 检查HTTPS（移动设备上语音识别需要HTTPS）
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                setConversationStatus(conversationState.labels.httpsRequired, 'info');
+                return;
+            }
+            
             if (conversationState.isListening) {
                 conversationState.recognition.stop();
                 return;
             }
+            
+            // 检查麦克风权限
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // 权限已授予，关闭流
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                    setConversationStatus(conversationState.labels.permissionDenied, 'info');
+                    return;
+                } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                    setConversationStatus(conversationState.labels.audioCapture, 'info');
+                    return;
+                } else {
+                    console.error('Microphone access error:', error);
+                    setConversationStatus(conversationState.labels.audioCapture, 'info');
+                    return;
+                }
+            }
+            
             try {
                 conversationState.recognition.lang = recognitionLangMap[currentLanguage] || conversationState.recognition.lang;
                 conversationState.recognition.start();
             } catch (error) {
                 console.error('Speech recognition start error:', error);
+                setConversationStatus(conversationState.labels.error, 'info');
             }
         }
 
@@ -2706,7 +2784,43 @@
 
             recognition.onerror = (event) => {
                 console.error('Speech recognition error:', event);
-                setConversationStatus(conversationState.labels.error, 'info');
+                let errorMessage = conversationState.labels.error;
+                
+                if (event.error) {
+                    switch (event.error) {
+                        case 'no-speech':
+                            // no-speech 不是严重错误，只是超时，不显示错误消息
+                            errorMessage = conversationState.labels.noSpeech;
+                            break;
+                        case 'audio-capture':
+                            errorMessage = conversationState.labels.audioCapture;
+                            break;
+                        case 'network':
+                            errorMessage = conversationState.labels.networkError;
+                            break;
+                        case 'not-allowed':
+                            // 检查是否是权限问题
+                            if (event.message && event.message.includes('permission')) {
+                                errorMessage = conversationState.labels.permissionDenied;
+                            } else {
+                                errorMessage = conversationState.labels.serviceNotAllowed;
+                            }
+                            break;
+                        case 'service-not-allowed':
+                            errorMessage = conversationState.labels.serviceNotAllowed;
+                            break;
+                        default:
+                            errorMessage = conversationState.labels.error;
+                    }
+                }
+                
+                // 对于 no-speech 错误，只在控制台记录，不显示给用户（因为这是正常的超时）
+                if (event.error === 'no-speech') {
+                    console.log('Speech recognition timeout (no speech detected)');
+                    // 不显示错误消息，让用户知道可以重试
+                } else {
+                    setConversationStatus(errorMessage, 'info');
+                }
             };
 
             recognition.onresult = (event) => {
