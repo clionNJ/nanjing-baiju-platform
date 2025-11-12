@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>南京白局非遗文化数字平台</title>
+    <title>江苏国家级戏曲类非遗数字平台</title>
     <!-- 使用国内CDN加速，如果失败则回退到原CDN -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
           onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'">
@@ -1226,7 +1226,7 @@
         <div class="header">
             <div class="logo">
                 <i class="fas fa-dragon"></i>
-                <span>南京白局非遗文化数字平台</span>
+                <span>江苏国家级戏曲类非遗数字平台</span>
             </div>
         </div>
         
@@ -1281,25 +1281,25 @@
 
         <!-- 曲种选择页面（风格与语言选择一致，复用样式） -->
         <div id="genre-page" class="page" style="display: none;">
-            <h1 data-simple="选择曲种">请选择曲种</h1>
-            <p data-simple="请选择白局、昆曲、苏州评弹或扬剧">请选择白局、昆曲、苏州评弹或扬剧</p>
+            <h1 id="genre-page-title" data-simple="选择曲种">请选择曲种</h1>
+            <p id="genre-page-desc" data-simple="请选择白局、昆曲、苏州评弹或扬剧">请选择白局、昆曲、苏州评弹或扬剧</p>
 
             <div class="language-grid">
                 <div class="language-card" onclick="selectGenre('baiju')">
                     <i class="fas fa-theater-masks" style="font-size: 42px; color: var(--primary);"></i>
-                    <h3>白局</h3>
+                    <h3 id="genre-option-baiju">白局</h3>
                 </div>
                 <div class="language-card" onclick="selectGenre('kunqu')">
                     <i class="fas fa-music" style="font-size: 42px; color: var(--primary);"></i>
-                    <h3>昆曲</h3>
+                    <h3 id="genre-option-kunqu">昆曲</h3>
                 </div>
                 <div class="language-card" onclick="selectGenre('pintang')">
                     <i class="fas fa-guitar" style="font-size: 42px; color: var(--primary);"></i>
-                    <h3>苏州评弹</h3>
+                    <h3 id="genre-option-pintang">苏州评弹</h3>
                 </div>
                 <div class="language-card" onclick="selectGenre('yangju')">
                     <i class="fas fa-theater-masks" style="font-size: 42px; color: var(--primary);"></i>
-                    <h3>扬剧</h3>
+                    <h3 id="genre-option-yangju">扬剧</h3>
                 </div>
             </div>
 
@@ -1310,7 +1310,7 @@
         
         <!-- 功能页面 -->
         <div id="feature-page" class="page">
-            <h1 id="feature-title" data-simple="白局数字平台">南京白局非遗文化数字平台</h1>
+            <h1 id="feature-title" data-simple="白局数字平台">江苏国家级戏曲类非遗数字平台</h1>
             <p id="feature-description" data-simple="探索南京白局的数字体验">探索南京白局非遗文化的数字化体验，感受传统与现代科技的完美融合</p>
             
             <div class="feature-grid">
@@ -1785,7 +1785,7 @@
         // 语言文本映射
         const languageTexts = {
             'zh-CN': {
-                featureTitle: '南京白局非遗文化数字平台',
+                featureTitle: '江苏国家级戏曲类非遗数字平台',
                 featureDescription: '探索南京白局非遗文化的数字化体验，感受传统与现代科技的完美融合',
                 feature1Title: '虚拟传承人演唱展示',
                 feature1Desc: '数字化还原的白局传承人虚拟形象，展示传统唱腔与表演',
@@ -1897,7 +1897,21 @@
                     historyTitle: '反馈记录'
                 },
                 backBtn: '返回语言选择',
-                helpBtn: '获取帮助'
+                helpBtn: '获取帮助',
+                backToGenres: '返回曲种选择',
+                genreBaseName: '白局',
+                genreTitleTemplate: '南京{genre}非遗文化数字平台',
+                genreSelection: {
+                    title: '选择曲种',
+                    description: '请选择白局、昆曲、苏州评弹或扬剧',
+                    options: {
+                        baiju: '白局',
+                        kunqu: '昆曲',
+                        pintang: '苏州评弹',
+                        yangju: '扬剧'
+                    },
+                    backToLanguage: '返回语言选择'
+                }
             },
             'en': {
                 featureTitle: 'Nanjing Baiju Intangible Cultural Heritage Digital Platform',
@@ -2012,7 +2026,21 @@
                     historyTitle: 'Feedback History'
                 },
                 backBtn: 'Back to Language Selection',
-                helpBtn: 'Get Help'
+                helpBtn: 'Get Help',
+                backToGenres: 'Back to Genre Selection',
+                genreBaseName: 'Baiju',
+                genreTitleTemplate: 'Nanjing {genre} Intangible Cultural Heritage Digital Platform',
+                genreSelection: {
+                    title: 'Choose a Genre',
+                    description: 'Select Baiju, Kunqu Opera, Suzhou Pingtan or Yangju Opera',
+                    options: {
+                        baiju: 'Baiju',
+                        kunqu: 'Kunqu Opera',
+                        pintang: 'Suzhou Pingtan',
+                        yangju: 'Yangju Opera'
+                    },
+                    backToLanguage: 'Back to Language Selection'
+                }
             },
             'es': {
                 featureTitle: 'Plataforma Digital del Patrimonio Cultural Inmaterial de Baiju de Nanjing',
@@ -2127,7 +2155,21 @@
                     historyTitle: 'Historial de comentarios'
                 },
                 backBtn: 'Volver a la Selección de Idioma',
-                helpBtn: 'Obtener Ayuda'
+                helpBtn: 'Obtener Ayuda',
+                backToGenres: 'Volver a la selección de género',
+                genreBaseName: 'Baiju',
+                genreTitleTemplate: 'Plataforma Digital del Patrimonio Cultural Inmaterial de {genre} de Nankín',
+                genreSelection: {
+                    title: 'Elige un género',
+                    description: 'Selecciona Baiju, Ópera Kunqu, Pingtan de Suzhou o Ópera Yangju',
+                    options: {
+                        baiju: 'Baiju',
+                        kunqu: 'Ópera Kunqu',
+                        pintang: 'Pingtan de Suzhou',
+                        yangju: 'Ópera Yangju'
+                    },
+                    backToLanguage: 'Volver a la selección de idioma'
+                }
             },
             'fr': {
                 featureTitle: 'Plateforme Numérique du Patrimoine Culturel Immatériel de Baiju de Nanjing',
@@ -2242,7 +2284,21 @@
                     historyTitle: 'Historique des commentaires'
                 },
                 backBtn: 'Retour à la Sélection de la Langue',
-                helpBtn: 'Obtenir de l\'Aide'
+                helpBtn: 'Obtenir de l\'Aide',
+                backToGenres: 'Retour à la sélection de genre',
+                genreBaseName: 'Baiju',
+                genreTitleTemplate: 'Plateforme Numérique du Patrimoine Culturel Immatériel de {genre} de Nanjing',
+                genreSelection: {
+                    title: 'Choisissez un genre',
+                    description: 'Sélectionnez Baiju, Opéra Kunqu, Pingtan de Suzhou ou Opéra Yangju',
+                    options: {
+                        baiju: 'Baiju',
+                        kunqu: 'Opéra Kunqu',
+                        pintang: 'Pingtan de Suzhou',
+                        yangju: 'Opéra Yangju'
+                    },
+                    backToLanguage: 'Retour à la sélection de la langue'
+                }
             },
             'ja': {
                 featureTitle: '南京白局無形文化遺産デジタルプラットフォーム',
@@ -2357,7 +2413,21 @@
                     historyTitle: 'フィードバック履歴'
                 },
                 backBtn: '言語選択に戻る',
-                helpBtn: 'ヘルプを取得'
+                helpBtn: 'ヘルプを取得',
+                backToGenres: '曲種選択に戻る',
+                genreBaseName: '白局',
+                genreTitleTemplate: '南京{genre}無形文化遺産デジタルプラットフォーム',
+                genreSelection: {
+                    title: '曲種を選択',
+                    description: '白局・昆曲・蘇州評弾・揚劇から選択してください',
+                    options: {
+                        baiju: '白局',
+                        kunqu: '昆曲',
+                        pintang: '蘇州評弾',
+                        yangju: '揚劇'
+                    },
+                    backToLanguage: '言語選択に戻る'
+                }
             },
             'ar': {
                 featureTitle: 'منصة التراث الثقافي غير المادي لبايجو في نانجينغ الرقمية',
@@ -2472,7 +2542,21 @@
                     historyTitle: 'سجل الملاحظات'
                 },
                 backBtn: 'العودة إلى اختيار اللغة',
-                helpBtn: 'الحصول على المساعدة'
+                helpBtn: 'الحصول على المساعدة',
+                backToGenres: 'العودة إلى اختيار النوع',
+                genreBaseName: 'بايجو',
+                genreTitleTemplate: 'منصة نانجينغ الرقمية للتراث الثقافي غير المادي لـ{genre}',
+                genreSelection: {
+                    title: 'اختر نوع الفن',
+                    description: 'اختر بايجو أو أوبرا كونتشو أو بينغتان سوتشو أو أوبرا يانغجو',
+                    options: {
+                        baiju: 'بايجو',
+                        kunqu: 'أوبرا كونتشو',
+                        pintang: 'بينغتان سوتشو',
+                        yangju: 'أوبرا يانغجو'
+                    },
+                    backToLanguage: 'العودة إلى اختيار اللغة'
+                }
             }
         };
 
@@ -2485,20 +2569,89 @@
         const replaceTextIds = [
             'feature-title',
             'feature-description',
+            'feature1-title',
             'feature1-desc',
+            'feature2-title',
+            'feature2-desc',
+            'feature3-title',
             'feature3-desc',
+            'feature4-title',
             'feature4-desc',
+            'feature5-title',
+            'feature5-desc',
+            'feature6-title',
+            'feature6-desc',
+            'f1-title',
+            'f1-desc',
+            'f2-title',
             'f2-desc',
+            'f3-title',
             'f3-desc',
+            'f4-title',
             'f4-desc',
-            'f5-desc'
+            'f5-title',
+            'f5-desc',
+            'f6-title',
+            'f6-desc'
         ];
-        const genreNameMap = {
+        const defaultGenreNames = {
             baiju: '白局',
             kunqu: '昆曲',
             pintang: '苏州评弹',
             yangju: '扬剧'
         };
+        let currentBaseGenreName = defaultGenreNames.baiju;
+
+        function getGenreDisplayName(genre, lang = currentLanguage) {
+            const langConfig = languageTexts[lang];
+            const nameFromConfig = langConfig?.genreSelection?.options?.[genre];
+            if (nameFromConfig) {
+                return nameFromConfig;
+            }
+            return defaultGenreNames[genre] || genre;
+        }
+
+        function getGenreTitle(lang, genre) {
+            const langConfig = languageTexts[lang];
+            const template = langConfig?.genreTitleTemplate;
+            const displayName = getGenreDisplayName(genre, lang);
+            if (template) {
+                return template.replace(/\{genre\}/g, displayName);
+            }
+            return `${displayName}非遗文化数字平台`;
+        }
+
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function updateGenrePageContent(lang) {
+            const langConfig = languageTexts[lang];
+            const genreContent = langConfig?.genreSelection;
+            const titleEl = document.getElementById('genre-page-title');
+            const descEl = document.getElementById('genre-page-desc');
+            const backBtn = document.getElementById('genre-back-btn');
+            if (titleEl) {
+                titleEl.textContent = genreContent?.title || getGenreTitle(lang, 'baiju');
+            }
+            if (descEl) {
+                descEl.textContent = genreContent?.description || '请选择曲种';
+            }
+            const optionIds = {
+                baiju: 'genre-option-baiju',
+                kunqu: 'genre-option-kunqu',
+                pintang: 'genre-option-pintang',
+                yangju: 'genre-option-yangju'
+            };
+            Object.entries(optionIds).forEach(([genreKey, elementId]) => {
+                const el = document.getElementById(elementId);
+                if (!el) return;
+                el.textContent = getGenreDisplayName(genreKey, lang);
+            });
+            if (backBtn) {
+                backBtn.textContent = genreContent?.backToLanguage || langConfig?.backBtn || '返回语言选择';
+            }
+        }
 
         const conversationConfigs = {
             'zh-CN': {
@@ -3416,6 +3569,9 @@
         function selectLanguage(lang) {
             console.log('选择语言:', lang);
             currentLanguage = lang;
+            const langConfig = languageTexts[lang] || languageTexts['zh-CN'];
+            currentBaseGenreName = langConfig?.genreBaseName || getGenreDisplayName('baiju', lang);
+            currentGenre = 'baiju';
             
             if (!conversationState.initialized) {
                 setupConversation();
@@ -3428,35 +3584,39 @@
             
             // 更新功能页面的文本
             const featurePage = document.getElementById('feature-page');
+            const genrePage = document.getElementById('genre-page');
             const detailModals = document.querySelectorAll('.feature-detail');
             if (lang === 'ar') {
                 featurePage.classList.add('arabic-text');
+                genrePage.classList.add('arabic-text');
                 detailModals.forEach(modal => modal.classList.add('arabic-text'));
             } else {
                 featurePage.classList.remove('arabic-text');
+                genrePage.classList.remove('arabic-text');
                 detailModals.forEach(modal => modal.classList.remove('arabic-text'));
             }
             
-            document.getElementById('feature-title').textContent = languageTexts[lang].featureTitle;
-            document.getElementById('feature-description').textContent = languageTexts[lang].featureDescription;
-            document.getElementById('feature1-title').textContent = languageTexts[lang].feature1Title;
-            document.getElementById('feature1-desc').textContent = languageTexts[lang].feature1Desc;
-            document.getElementById('feature2-title').textContent = languageTexts[lang].feature2Title;
-            document.getElementById('feature2-desc').textContent = languageTexts[lang].feature2Desc;
-            document.getElementById('feature3-title').textContent = languageTexts[lang].feature3Title;
-            document.getElementById('feature3-desc').textContent = languageTexts[lang].feature3Desc;
-            document.getElementById('feature4-title').textContent = languageTexts[lang].feature4Title;
-            document.getElementById('feature4-desc').textContent = languageTexts[lang].feature4Desc;
-            document.getElementById('feature5-title').textContent = languageTexts[lang].feature5Title;
-            document.getElementById('feature5-desc').textContent = languageTexts[lang].feature5Desc;
+            document.getElementById('feature-title').textContent = langConfig.featureTitle;
+            document.getElementById('feature-description').textContent = langConfig.featureDescription;
+            document.getElementById('feature1-title').textContent = langConfig.feature1Title;
+            document.getElementById('feature1-desc').textContent = langConfig.feature1Desc;
+            document.getElementById('feature2-title').textContent = langConfig.feature2Title;
+            document.getElementById('feature2-desc').textContent = langConfig.feature2Desc;
+            document.getElementById('feature3-title').textContent = langConfig.feature3Title;
+            document.getElementById('feature3-desc').textContent = langConfig.feature3Desc;
+            document.getElementById('feature4-title').textContent = langConfig.feature4Title;
+            document.getElementById('feature4-desc').textContent = langConfig.feature4Desc;
+            document.getElementById('feature5-title').textContent = langConfig.feature5Title;
+            document.getElementById('feature5-desc').textContent = langConfig.feature5Desc;
             const feedbackCard = document.querySelectorAll('.feature-card')[5];  
-            feedbackCard.querySelector('h3').textContent = languageTexts[lang].feature6Title;  
-            feedbackCard.querySelector('p').textContent = languageTexts[lang].feature6Desc;
-            document.getElementById('back-btn').textContent = languageTexts[lang].backBtn;
-            document.getElementById('help-btn').textContent = languageTexts[lang].helpBtn;
+            feedbackCard.querySelector('h3').textContent = langConfig.feature6Title;  
+            feedbackCard.querySelector('p').textContent = langConfig.feature6Desc;
+            document.getElementById('back-btn').textContent = langConfig.backToGenres || langConfig.backBtn || '返回曲种选择';
+            document.getElementById('help-btn').textContent = langConfig.helpBtn;
+            updateGenrePageContent(lang);
             
             // 功能一弹窗文本
-            const f1 = languageTexts[lang].f1;
+            const f1 = langConfig.f1;
             if (f1) {
                 document.getElementById('f1-title').textContent = f1.title;
                 document.getElementById('f1-desc').textContent = f1.desc;
@@ -3480,7 +3640,7 @@
             }
 
             // 功能二弹窗文本
-            const f2 = languageTexts[lang].f2;
+            const f2 = langConfig.f2;
             if (f2) {
                 document.getElementById('f2-title').textContent = f2.title;
                 document.getElementById('f2-desc').textContent = f2.desc;
@@ -3498,7 +3658,7 @@
             }
 
             // 功能三弹窗文本
-            const f3 = languageTexts[lang].f3;
+            const f3 = langConfig.f3;
             if (f3) {
                 document.getElementById('f3-title').textContent = f3.title;
                 document.getElementById('f3-desc').textContent = f3.desc;
@@ -3517,7 +3677,7 @@
             }
 
             // 功能四弹窗文本
-            const f4 = languageTexts[lang].f4;
+            const f4 = langConfig.f4;
             if (f4) {
                 document.getElementById('f4-title').textContent = f4.title;
                 document.getElementById('f4-desc').textContent = f4.desc;
@@ -3537,7 +3697,7 @@
             }
 
             // 功能五弹窗文本
-            const f5 = languageTexts[lang].f5;
+            const f5 = langConfig.f5;
             if (f5) {
                 document.getElementById('f5-title').textContent = f5.title;
                 document.getElementById('f5-desc').textContent = f5.desc;
@@ -3552,7 +3712,7 @@
             }
 
             // 功能六弹窗文本
-            const f6 = languageTexts[lang].f6;
+            const f6 = langConfig.f6;
             if (f6) {
                 document.getElementById('f6-title').textContent = f6.title;
                 document.getElementById('f6-desc').textContent = f6.desc;
@@ -3579,6 +3739,8 @@
                 if (el) originalTexts[id] = el.textContent;
             });
 
+            applyGenreTexts();
+
             // 语言选择完成，进入曲种选择页
             document.getElementById('language-page').classList.remove('active');
             document.getElementById('genre-page').style.display = ''; // 确保可见
@@ -3589,61 +3751,65 @@
         function selectGenre(genre) {
             console.log('选择曲种:', genre);
             currentGenre = genre;
-            // 更新功能页返回按钮文字（暂时以中文为主）
+            // 更新功能页返回按钮文字
             const backBtn = document.getElementById('back-btn');
-            if (backBtn) backBtn.textContent = '返回曲种选择';
-            // 进入对应功能页
+            if (backBtn) {
+                const langConfig = languageTexts[currentLanguage] || languageTexts['zh-CN'];
+                backBtn.textContent = langConfig?.backToGenres || langConfig?.backBtn || '返回曲种选择';
+            }
+            // 进入功能页
             document.getElementById('genre-page').classList.remove('active');
-            // 先隐藏所有功能页
-            document.getElementById('feature-page').classList.remove('active');
             const pageKun = document.getElementById('feature-page-kunqu');
             const pagePin = document.getElementById('feature-page-pintang');
             const pageYan = document.getElementById('feature-page-yangju');
-            if (pageKun) pageKun.classList.remove('active');
-            if (pagePin) pagePin.classList.remove('active');
-            if (pageYan) pageYan.classList.remove('active');
-            if (genre === 'baiju') {
             document.getElementById('feature-page').classList.add('active');
-                document.getElementById('feature-page').style.display = '';
-            } else if (genre === 'kunqu') {
-                if (pageKun) {
-                    pageKun.style.display = '';
-                    pageKun.classList.add('active');
-                }
-            } else if (genre === 'pintang') {
-                if (pagePin) {
-                    pagePin.style.display = '';
-                    pagePin.classList.add('active');
-                }
-            } else if (genre === 'yangju') {
-                if (pageYan) {
-                    pageYan.style.display = '';
-                    pageYan.classList.add('active');
-                }
+            document.getElementById('feature-page').style.display = '';
+            if (pageKun) {
+                pageKun.classList.remove('active');
+                pageKun.style.display = 'none';
+            }
+            if (pagePin) {
+                pagePin.classList.remove('active');
+                pagePin.style.display = 'none';
+            }
+            if (pageYan) {
+                pageYan.classList.remove('active');
+                pageYan.style.display = 'none';
             }
             applyGenreTexts();
         }
 
         // 根据当前曲种，动态调整页面标题及涉及“白局”的文案
         function applyGenreTexts() {
-            const displayName = genreNameMap[currentGenre] || '白局';
-            // 主标题与简介：如果基线存在“白局”，则替换；否则拼一个通用标题
+            const langConfig = languageTexts[currentLanguage] || languageTexts['zh-CN'];
+            const baseName = langConfig?.genreBaseName || currentBaseGenreName || getGenreDisplayName('baiju', currentLanguage);
+            const displayName = getGenreDisplayName(currentGenre, currentLanguage);
+            const baseNameReg = baseName ? new RegExp(escapeRegExp(baseName), 'g') : null;
+            // 主标题与简介：如果基线存在基线名称，则替换；否则使用模板
             const titleEl = document.getElementById('feature-title');
             if (titleEl) {
                 const base = originalTexts['feature-title'] || titleEl.textContent;
-                if (base.includes('白局')) {
-                    titleEl.textContent = base.replace(/白局/g, displayName);
+                if (baseNameReg && baseName && base.includes(baseName)) {
+                    titleEl.textContent = base.replace(baseNameReg, displayName);
                 } else {
-                    titleEl.textContent = `${displayName}非遗文化数字平台`;
+                    titleEl.textContent = getGenreTitle(currentLanguage, currentGenre);
                 }
             }
             const descEl = document.getElementById('feature-description');
             if (descEl) {
                 const base = originalTexts['feature-description'] || descEl.textContent;
-                if (base.includes('白局')) {
-                    descEl.textContent = base.replace(/白局/g, displayName);
+                if (baseNameReg && baseName && base.includes(baseName)) {
+                    descEl.textContent = base.replace(baseNameReg, displayName);
                 } else {
-                    descEl.textContent = `探索${displayName}的数字化体验，感受传统与现代科技的融合`;
+                    const defaultDescTemplates = {
+                        'zh-CN': `探索${displayName}的数字化体验，感受传统与现代科技的融合`,
+                        'en': `Explore the digital experience of ${displayName} intangible cultural heritage, feel the integration of tradition and modern technology`,
+                        'es': `Explore la experiencia digital del patrimonio cultural inmaterial de ${displayName} y sienta la unión entre tradición y tecnología moderna`,
+                        'fr': `Explorez l'expérience numérique du patrimoine culturel immatériel de ${displayName} et ressentez la fusion entre tradition et technologie moderne`,
+                        'ja': `${displayName}の無形文化遺産デジタル体験を探り、伝統と現代技術の融合を感じましょう`,
+                        'ar': `استكشف التجربة الرقمية لتراث ${displayName} الثقافي غير المادي وشاهد تكامل التقاليد مع التكنولوجيا الحديثة`
+                    };
+                    descEl.textContent = defaultDescTemplates[currentLanguage] || `Explore the digital experience of ${displayName}.`;
                 }
             }
             // 替换部分包含“白局”的功能描述/弹窗描述
@@ -3652,7 +3818,11 @@
                 const el = document.getElementById(id);
                 if (!el) return;
                 const base = originalTexts[id] || el.textContent;
-                el.textContent = base.replace(/白局/g, displayName);
+                if (baseNameReg && baseName && base.includes(baseName)) {
+                    el.textContent = base.replace(baseNameReg, displayName);
+                } else {
+                    el.textContent = base;
+                }
             });
         }
 
@@ -3690,6 +3860,8 @@
             if (pagePin) pagePin.classList.remove('active');
             if (pageYan) pageYan.classList.remove('active');
             document.getElementById('genre-page').classList.add('active');
+            currentGenre = 'baiju';
+            applyGenreTexts();
             
             // 关闭所有功能详情
             document.querySelectorAll('.feature-detail').forEach(detail => {
@@ -3705,6 +3877,8 @@
             console.log('返回语言选择');
             document.getElementById('genre-page').classList.remove('active');
             document.getElementById('language-page').classList.add('active');
+            currentGenre = 'baiju';
+            applyGenreTexts();
         }
 
         // 选择唱段

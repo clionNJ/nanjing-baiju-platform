@@ -24,6 +24,34 @@ function initVoiceControl() {
     const voiceBtn = document.getElementById('voice-control-btn');
     const voiceStatus = document.getElementById('voice-status');
     
+    // 检查是否在HTTPS环境下
+    if (window.location.protocol !== 'https:') {
+        console.warn('语音识别需要HTTPS环境');
+        if (voiceBtn) {
+            voiceBtn.addEventListener('click', function() {
+                alert('语音识别功能需要在HTTPS环境下运行，请切换到HTTPS页面。');
+            });
+        }
+        return;
+    }
+    
+    // 请求麦克风权限
+    function requestMicrophonePermission() {
+        return new Promise((resolve, reject) => {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(() => resolve(true))
+                    .catch((err) => {
+                        console.error('麦克风权限请求失败:', err);
+                        reject(err);
+                    });
+            } else {
+                // 浏览器不支持getUserMedia
+                reject(new Error('浏览器不支持麦克风权限请求'));
+            }
+        });
+    }
+    
     // 检查浏览器是否支持语音识别
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         // 创建语音识别对象
@@ -70,10 +98,18 @@ function initVoiceControl() {
         recognition.onerror = function(event) {
             console.error('语音识别错误:', event.error);
             voiceStatus.style.display = 'block';
-            document.getElementById('voice-status-text').textContent = '识别错误: ' + event.error;
+            let errorMessage = '识别错误: ' + event.error;
+            if (event.error === 'not-allowed') {
+                errorMessage = '麦克风权限被拒绝，请在浏览器设置中启用麦克风权限。';
+            } else if (event.error === 'no-speech') {
+                errorMessage = '未检测到语音，请尝试大声说话。';
+            } else if (event.error === 'audio-capture') {
+                errorMessage = '无法访问麦克风，请确保麦克风正常工作。';
+            }
+            document.getElementById('voice-status-text').textContent = errorMessage;
             setTimeout(() => {
                 voiceStatus.style.display = 'none';
-            }, 3000);
+            }, 5000);
         };
         
         recognition.onend = function() {
@@ -88,7 +124,24 @@ function initVoiceControl() {
                 recognition.stop();
             } else {
                 try {
-                    recognition.start();
+                    requestMicrophonePermission()
+                            .then(() => recognition.start())
+                            .catch((err) => {
+                                if (err.name === 'NotAllowedError') {
+                                    voiceStatus.style.display = 'block';
+                                    document.getElementById('voice-status-text').textContent = '麦克风权限被拒绝，请在浏览器设置中启用麦克风权限。';
+                                    setTimeout(() => {
+                                        voiceStatus.style.display = 'none';
+                                    }, 5000);
+                                } else {
+                                    console.error('语音识别启动失败:', err);
+                                    voiceStatus.style.display = 'block';
+                                    document.getElementById('voice-status-text').textContent = '语音识别启动失败，请检查麦克风是否可用。';
+                                    setTimeout(() => {
+                                        voiceStatus.style.display = 'none';
+                                    }, 3000);
+                                }
+                            });
                 } catch (e) {
                     console.error('语音识别启动失败:', e);
                     voiceStatus.style.display = 'block';
@@ -458,10 +511,73 @@ function handleVoiceCommand(command) {
         }
     }
     
-    // 如果没有匹配的命令，提供语音反馈
+    // 如果没有匹配的命令，调用NLP API获取智能回答
     if (!matched) {
-        speakText('抱歉，我没有理解您的命令: ' + command);
+        callNlpApi(command);
     }
+
+// 调用后端NLP代理服务
+function callNlpApi(text) {
+    // 显示连接状态
+    speakText('正在连接服务器...');
+    
+    // 创建事件源以接收流式响应
+    const eventSource = new EventSource(`/api/nlp/query?text=${encodeURIComponent(text)}`);
+    let fullResponse = '';
+    let isFirstChunk = true;
+    let connectionTimeout;
+    
+    // 设置连接超时（10秒）
+    connectionTimeout = setTimeout(() => {
+        eventSource.close();
+        speakText('连接超时，请检查网络或稍后再试。');
+    }, 10000);
+    
+    // 连接成功建立
+    eventSource.onopen = function() {
+        clearTimeout(connectionTimeout);
+        speakText('正在处理您的请求...');
+    };
+    
+    // 处理流式数据
+    eventSource.onmessage = function(event) {
+        if (event.data === '[DONE]') {
+            eventSource.close();
+            // 如果没有收到任何内容
+            if (fullResponse.trim() === '') {
+                speakText('抱歉，未能获取到有效回答。');
+            }
+        } else {
+            fullResponse += event.data;
+            // 实时处理第一块内容，提升响应速度
+            if (isFirstChunk) {
+                isFirstChunk = false;
+                speakText('正在为您解答: ' + event.data);
+            }
+        }
+    };
+    
+    // 处理错误
+    eventSource.onerror = function(error) {
+        clearTimeout(connectionTimeout);
+        console.error('NLP API错误:', error);
+        let errorMessage = '抱歉，处理请求时发生错误';
+        
+        // 根据错误类型提供更具体的提示
+        if (navigator.onLine === false) {
+            errorMessage += '，请检查网络连接。';
+        } else if (error.status === 403) {
+            errorMessage += '，服务暂时不可用。';
+        } else if (error.status === 500) {
+            errorMessage += '，服务器正在维护。';
+        } else if (error.status === 404) {
+            errorMessage += '，未找到服务接口。';
+        }
+        
+        speakText(errorMessage + '，请稍后再试。');
+        eventSource.close();
+    };
+}
 }
 
 // 打开意见反馈（feature6）
