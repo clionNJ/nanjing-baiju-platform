@@ -511,73 +511,10 @@ function handleVoiceCommand(command) {
         }
     }
     
-    // 如果没有匹配的命令，调用NLP API获取智能回答
+    // 如果没有匹配的命令，提供语音反馈
     if (!matched) {
-        callNlpApi(command);
+        speakText('抱歉，我没有理解您的命令: ' + command);
     }
-
-// 调用后端NLP代理服务
-function callNlpApi(text) {
-    // 显示连接状态
-    speakText('正在连接服务器...');
-    
-    // 创建事件源以接收流式响应
-    const eventSource = new EventSource(`/api/nlp/query?text=${encodeURIComponent(text)}`);
-    let fullResponse = '';
-    let isFirstChunk = true;
-    let connectionTimeout;
-    
-    // 设置连接超时（10秒）
-    connectionTimeout = setTimeout(() => {
-        eventSource.close();
-        speakText('连接超时，请检查网络或稍后再试。');
-    }, 10000);
-    
-    // 连接成功建立
-    eventSource.onopen = function() {
-        clearTimeout(connectionTimeout);
-        speakText('正在处理您的请求...');
-    };
-    
-    // 处理流式数据
-    eventSource.onmessage = function(event) {
-        if (event.data === '[DONE]') {
-            eventSource.close();
-            // 如果没有收到任何内容
-            if (fullResponse.trim() === '') {
-                speakText('抱歉，未能获取到有效回答。');
-            }
-        } else {
-            fullResponse += event.data;
-            // 实时处理第一块内容，提升响应速度
-            if (isFirstChunk) {
-                isFirstChunk = false;
-                speakText('正在为您解答: ' + event.data);
-            }
-        }
-    };
-    
-    // 处理错误
-    eventSource.onerror = function(error) {
-        clearTimeout(connectionTimeout);
-        console.error('NLP API错误:', error);
-        let errorMessage = '抱歉，处理请求时发生错误';
-        
-        // 根据错误类型提供更具体的提示
-        if (navigator.onLine === false) {
-            errorMessage += '，请检查网络连接。';
-        } else if (error.status === 403) {
-            errorMessage += '，服务暂时不可用。';
-        } else if (error.status === 500) {
-            errorMessage += '，服务器正在维护。';
-        } else if (error.status === 404) {
-            errorMessage += '，未找到服务接口。';
-        }
-        
-        speakText(errorMessage + '，请稍后再试。');
-        eventSource.close();
-    };
-}
 }
 
 // 打开意见反馈（feature6）
