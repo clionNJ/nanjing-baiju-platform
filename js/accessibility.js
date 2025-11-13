@@ -6,6 +6,28 @@ let recognition;
 let highContrastMode = false;
 let colorBlindMode = ''; // 存储当前色盲模式类型
 
+// 语音播报防抖和去重机制
+let lastSpokenText = '';
+let lastSpokenTime = 0;
+let speakDebounceTimer = null;
+const SPEAK_DEBOUNCE_MS = 2000; // 2秒内不重复播报相同内容
+const MIN_SPEAK_INTERVAL = 500; // 最小播报间隔500ms
+
+// 检测是否为移动设备
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768 && 'ontouchstart' in window);
+}
+
+// 检查是否支持HTTPS（包括localhost和127.0.0.1）
+function isSecureContext() {
+    return window.isSecureContext || 
+           location.protocol === 'https:' || 
+           location.hostname === 'localhost' || 
+           location.hostname === '127.0.0.1' ||
+           location.hostname === '0.0.0.0';
+}
+
 // 初始化无障碍功能
 document.addEventListener('DOMContentLoaded', function() {
     initAccessibilityFeatures();
@@ -24,140 +46,221 @@ function initVoiceControl() {
     const voiceBtn = document.getElementById('voice-control-btn');
     const voiceStatus = document.getElementById('voice-status');
     
-    // 检查是否在HTTPS环境下
-    if (window.location.protocol !== 'https:') {
-        console.warn('语音识别需要HTTPS环境');
-        if (voiceBtn) {
-            voiceBtn.addEventListener('click', function() {
-                alert('语音识别功能需要在HTTPS环境下运行，请切换到HTTPS页面。');
-            });
-        }
+    if (!voiceBtn || !voiceStatus) return;
+    
+    // 检查是否在安全环境下（HTTPS或localhost）
+    if (!isSecureContext()) {
+        console.warn('语音识别需要HTTPS环境或localhost');
+        voiceBtn.addEventListener('click', function() {
+            const isMobile = isMobileDevice();
+            const msg = isMobile 
+                ? '语音识别需要在HTTPS环境下运行。\n请使用HTTPS访问此页面，或使用Chrome浏览器访问。'
+                : '语音识别功能需要在HTTPS环境下运行，请切换到HTTPS页面。';
+            alert(msg);
+        });
         return;
     }
     
-    // 请求麦克风权限
+    // 请求麦克风权限（移动端兼容）
     function requestMicrophonePermission() {
         return new Promise((resolve, reject) => {
+            // 优先使用现代API
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(() => resolve(true))
+                    .then((stream) => {
+                        // 立即关闭流，只用于权限检查
+                        stream.getTracks().forEach(track => track.stop());
+                        resolve(true);
+                    })
                     .catch((err) => {
                         console.error('麦克风权限请求失败:', err);
                         reject(err);
                     });
+            } else if (navigator.getUserMedia) {
+                // 兼容旧版API
+                navigator.getUserMedia({ audio: true },
+                    (stream) => {
+                        stream.getTracks().forEach(track => track.stop());
+                        resolve(true);
+                    },
+                    (err) => {
+                        console.error('麦克风权限请求失败:', err);
+                        reject(err);
+                    }
+                );
             } else {
-                // 浏览器不支持getUserMedia
                 reject(new Error('浏览器不支持麦克风权限请求'));
             }
         });
     }
     
     // 检查浏览器是否支持语音识别
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        // 创建语音识别对象
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        
-        // 设置语音识别参数
-        recognition.lang = 'zh-CN'; // 设置为中文识别
-        recognition.continuous = true; // 持续识别
-        recognition.interimResults = true; // 获取中间结果
-        
-        // 语音识别事件监听
-        recognition.onstart = function() {
-            isListening = true;
-            voiceStatus.style.display = 'block';
-            voiceBtn.classList.add('listening');
-            document.getElementById('voice-status-text').textContent = '正在聆听...';
-        };
-        
-        recognition.onresult = function(event) {
-            let interimTranscript = '';
-            let finalTranscript = '';
-            
-            // 处理识别结果
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                
-                if (event.results[i].isFinal) {
-                    finalTranscript += transcript;
-                } else {
-                    interimTranscript += transcript;
-                }
-            }
-            
-            // 显示识别状态
-            if (finalTranscript) {
-                document.getElementById('voice-status-text').textContent = '识别结果: ' + finalTranscript;
-                handleVoiceCommand(finalTranscript);
-            } else if (interimTranscript) {
-                document.getElementById('voice-status-text').textContent = '正在聆听: ' + interimTranscript;
-            }
-        };
-        
-        recognition.onerror = function(event) {
-            console.error('语音识别错误:', event.error);
-            voiceStatus.style.display = 'block';
-            let errorMessage = '识别错误: ' + event.error;
-            if (event.error === 'not-allowed') {
-                errorMessage = '麦克风权限被拒绝，请在浏览器设置中启用麦克风权限。';
-            } else if (event.error === 'no-speech') {
-                errorMessage = '未检测到语音，请尝试大声说话。';
-            } else if (event.error === 'audio-capture') {
-                errorMessage = '无法访问麦克风，请确保麦克风正常工作。';
-            }
-            document.getElementById('voice-status-text').textContent = errorMessage;
-            setTimeout(() => {
-                voiceStatus.style.display = 'none';
-            }, 5000);
-        };
-        
-        recognition.onend = function() {
-            isListening = false;
-            voiceStatus.style.display = 'none';
-            voiceBtn.classList.remove('listening');
-        };
-        
-        // 语音按钮点击事件
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
         voiceBtn.addEventListener('click', function() {
-            if (isListening) {
-                recognition.stop();
-            } else {
-                try {
-                    requestMicrophonePermission()
-                            .then(() => recognition.start())
-                            .catch((err) => {
-                                if (err.name === 'NotAllowedError') {
-                                    voiceStatus.style.display = 'block';
-                                    document.getElementById('voice-status-text').textContent = '麦克风权限被拒绝，请在浏览器设置中启用麦克风权限。';
-                                    setTimeout(() => {
-                                        voiceStatus.style.display = 'none';
-                                    }, 5000);
-                                } else {
-                                    console.error('语音识别启动失败:', err);
-                                    voiceStatus.style.display = 'block';
-                                    document.getElementById('voice-status-text').textContent = '语音识别启动失败，请检查麦克风是否可用。';
-                                    setTimeout(() => {
-                                        voiceStatus.style.display = 'none';
-                                    }, 3000);
-                                }
-                            });
-                } catch (e) {
-                    console.error('语音识别启动失败:', e);
-                    voiceStatus.style.display = 'block';
-                    document.getElementById('voice-status-text').textContent = '语音识别启动失败';
-                    setTimeout(() => {
-                        voiceStatus.style.display = 'none';
-                    }, 3000);
-                }
-            }
+            const isMobile = isMobileDevice();
+            const msg = isMobile
+                ? '您的设备或浏览器不支持语音识别。\n请使用Chrome浏览器（Android/iOS）以获得最佳体验。'
+                : '您的浏览器不支持语音识别功能，请使用Chrome浏览器以获得最佳体验。';
+            alert(msg);
         });
-    } else {
-        // 不支持语音识别的提示
-        voiceBtn.addEventListener('click', function() {
-            alert('您的浏览器不支持语音识别功能，请使用Chrome浏览器以获得最佳体验。');
-        });
+        return;
     }
+    
+    // 创建语音识别对象
+    recognition = new SpeechRecognition();
+    
+    // 设置语音识别参数（移动端优化）
+    recognition.lang = 'zh-CN';
+    recognition.continuous = true; // 持续识别
+    recognition.interimResults = true; // 获取中间结果
+    
+    // 移动端特殊处理：降低连续识别频率，避免过度触发
+    if (isMobileDevice()) {
+        recognition.continuous = true;
+        recognition.interimResults = false; // 移动端只处理最终结果，减少误触发
+    }
+    
+    // 记录最后处理的命令，避免重复处理
+    let lastProcessedCommand = '';
+    let lastProcessedTime = 0;
+    const COMMAND_DEBOUNCE_MS = 1500; // 1.5秒内不重复处理相同命令
+    
+    // 语音识别事件监听
+    recognition.onstart = function() {
+        isListening = true;
+        voiceStatus.style.display = 'block';
+        voiceBtn.classList.add('listening');
+        const statusText = document.getElementById('voice-status-text');
+        if (statusText) {
+            statusText.textContent = '正在聆听...';
+        }
+    };
+    
+    recognition.onresult = function(event) {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        
+        // 处理识别结果
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript;
+            } else {
+                interimTranscript += transcript;
+            }
+        }
+        
+        const statusText = document.getElementById('voice-status-text');
+        
+        // 显示识别状态
+        if (finalTranscript) {
+            const command = finalTranscript.trim().toLowerCase();
+            const now = Date.now();
+            
+            // 防抖：避免短时间内重复处理相同命令
+            if (command === lastProcessedCommand && (now - lastProcessedTime) < COMMAND_DEBOUNCE_MS) {
+                if (statusText) {
+                    statusText.textContent = '已处理，请稍候...';
+                }
+                return;
+            }
+            
+            lastProcessedCommand = command;
+            lastProcessedTime = now;
+            
+            if (statusText) {
+                statusText.textContent = '识别结果: ' + finalTranscript;
+            }
+            handleVoiceCommand(finalTranscript);
+        } else if (interimTranscript) {
+            if (statusText) {
+                statusText.textContent = '正在聆听: ' + interimTranscript;
+            }
+        }
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('语音识别错误:', event.error);
+        const statusText = document.getElementById('voice-status-text');
+        if (!statusText) return;
+        
+        voiceStatus.style.display = 'block';
+        let errorMessage = '识别错误: ' + event.error;
+        
+        if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+            errorMessage = '麦克风权限被拒绝，请在浏览器设置中启用麦克风权限。';
+        } else if (event.error === 'no-speech') {
+            // no-speech 是正常情况，不显示错误
+            voiceStatus.style.display = 'none';
+            return;
+        } else if (event.error === 'audio-capture') {
+            errorMessage = '无法访问麦克风，请确保麦克风正常工作。';
+        } else if (event.error === 'network') {
+            errorMessage = '网络错误，请检查网络连接。';
+        } else if (event.error === 'aborted') {
+            // 用户主动停止，不显示错误
+            return;
+        }
+        
+        statusText.textContent = errorMessage;
+        setTimeout(() => {
+            voiceStatus.style.display = 'none';
+        }, 5000);
+    };
+    
+    recognition.onend = function() {
+        isListening = false;
+        voiceStatus.style.display = 'none';
+        voiceBtn.classList.remove('listening');
+        
+        // 如果是因为错误结束，不自动重启
+        // 只有在用户主动停止或正常结束时才考虑重启（如果需要持续监听）
+    };
+    
+    // 语音按钮点击事件
+    voiceBtn.addEventListener('click', function() {
+        if (isListening) {
+            recognition.stop();
+        } else {
+            // 先请求权限，再启动识别
+            requestMicrophonePermission()
+                .then(() => {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error('语音识别启动失败:', e);
+                        const statusText = document.getElementById('voice-status-text');
+                        if (statusText) {
+                            voiceStatus.style.display = 'block';
+                            statusText.textContent = '语音识别启动失败，请稍后重试。';
+                            setTimeout(() => {
+                                voiceStatus.style.display = 'none';
+                            }, 3000);
+                        }
+                    }
+                })
+                .catch((err) => {
+                    console.error('麦克风权限获取失败:', err);
+                    const statusText = document.getElementById('voice-status-text');
+                    if (statusText) {
+                        voiceStatus.style.display = 'block';
+                        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                            const isMobile = isMobileDevice();
+                            statusText.textContent = isMobile
+                                ? '请在浏览器设置中允许麦克风权限，然后刷新页面重试。'
+                                : '麦克风权限被拒绝，请在浏览器设置中启用麦克风权限。';
+                        } else {
+                            statusText.textContent = '无法访问麦克风，请检查设备设置。';
+                        }
+                        setTimeout(() => {
+                            voiceStatus.style.display = 'none';
+                        }, 5000);
+                    }
+                });
+        }
+    });
 }
 
 // 进入站点语音模式询问
@@ -179,7 +282,21 @@ function initVoiceIntroPrompt() {
     // 语音播报提示（视障可感知）
     speakText('是否需要开启语音模式以便通过语音快速操作？您可以说，需要，或，不需要。');
 
+    // 定时器引用，用于清理
+    let reminderTimeout = null;
+    let autoCloseTimeout = null;
+
     const closeModal = () => {
+        // 清理定时器
+        if (reminderTimeout) {
+            clearTimeout(reminderTimeout);
+            reminderTimeout = null;
+        }
+        if (autoCloseTimeout) {
+            clearTimeout(autoCloseTimeout);
+            autoCloseTimeout = null;
+        }
+        
         overlay.classList.remove('active');
         modal.style.display = 'none';
         if (introRecognition) {
@@ -210,16 +327,32 @@ function initVoiceIntroPrompt() {
     btnNo.addEventListener('click', decline);
 
     // 若浏览器支持语音识别，开始短暂监听关键词
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition && isSecureContext()) {
         introRecognition = new SpeechRecognition();
         introRecognition.lang = 'zh-CN';
         introRecognition.continuous = false;
-        introRecognition.interimResults = true;
+        // 移动端只处理最终结果
+        introRecognition.interimResults = !isMobileDevice();
 
         let decided = false;
+        let lastProcessedIntroText = '';
+        let lastProcessedIntroTime = 0;
+        const INTRO_COMMAND_DEBOUNCE_MS = 1000; // 1秒内不重复处理
+        
         const decideFromText = (text) => {
+            if (decided) return; // 已决定，不再处理
+            
             const t = (text || '').toLowerCase().trim();
+            const now = Date.now();
+            
+            // 防抖：避免重复处理
+            if (t === lastProcessedIntroText && (now - lastProcessedIntroTime) < INTRO_COMMAND_DEBOUNCE_MS) {
+                return;
+            }
+            lastProcessedIntroText = t;
+            lastProcessedIntroTime = now;
+            
             // 更丰富的肯定/否定表达
             const yesList = ['需要','开启','打开','是','好','好的','行','可以','要','yes','ok','okay','sure'];
             const noList  = ['不需要','不用','否','不要','先不要','不用了','取消','no','not','later'];
@@ -233,14 +366,20 @@ function initVoiceIntroPrompt() {
                 decided = true;
                 acceptAndStart();
                 // 启动后导航到功能页
-                try { navigateToPage('feature-page'); } catch(e) {}
-                speakText('已为您打开白局功能页面。');
+                setTimeout(() => {
+                    try { navigateToPage('feature-page'); } catch(e) {}
+                    speakText('已为您打开白局功能页面。');
+                }, 500);
                 return;
             }
             if (goFeedback) {
                 decided = true;
                 acceptAndStart();
-                try { openFeedback(); } catch(e) { try { navigateToPage('feature-page'); } catch(_) {} }
+                setTimeout(() => {
+                    try { openFeedback(); } catch(e) { 
+                        try { navigateToPage('feature-page'); } catch(_) {} 
+                    }
+                }, 500);
                 return;
             }
 
@@ -264,28 +403,48 @@ function initVoiceIntroPrompt() {
                 if (event.results[i].isFinal) finalText += tx;
                 else interim += tx;
             }
-            if (finalText) decideFromText(finalText);
-            else if (interim) decideFromText(interim);
+            // 优先处理最终结果
+            if (finalText) {
+                decideFromText(finalText);
+            } else if (interim && !isMobileDevice()) {
+                // 桌面端也处理中间结果
+                decideFromText(interim);
+            }
         };
-        introRecognition.onerror = () => { /* 忽略错误，继续走超时兜底 */ };
-        introRecognition.onend = () => { /* 等待超时或用户点击 */ };
+        
+        introRecognition.onerror = (event) => {
+            // 忽略 no-speech 和 aborted 错误（正常情况）
+            if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                console.log('进站语音询问识别错误（已忽略）:', event.error);
+            }
+        };
+        
+        introRecognition.onend = () => {
+            // 如果未决定且仍在显示，可以尝试重启（但这里我们依赖超时机制）
+        };
 
-        try { introRecognition.start(); } catch(e) {}
+        try { 
+            introRecognition.start(); 
+        } catch(e) {
+            console.log('进站语音询问启动失败（已忽略）:', e);
+        }
 
-        // 3 秒后若仍未决定，进行一次重复播报提示
-        setTimeout(() => {
+        // 3 秒后若仍未决定，进行一次重复播报提示（只播一次）
+        reminderTimeout = setTimeout(() => {
             if (!decided && modal.style.display === 'block') {
                 speakText('请说，需要，或说，不需要。也可以直接说：我要看白局，或者我要反馈意见。');
             }
         }, 3000);
 
         // 8 秒无应答自动关闭
-        setTimeout(() => {
-            if (!decided) decline();
+        autoCloseTimeout = setTimeout(() => {
+            if (!decided) {
+                decline();
+            }
         }, 8000);
     } else {
-        // 不支持语音：保留按钮选择，6秒后默认关闭
-        setTimeout(() => {
+        // 不支持语音或非安全环境：保留按钮选择，6秒后默认关闭
+        autoCloseTimeout = setTimeout(() => {
             if (modal.style.display === 'block') decline();
         }, 6000);
     }
@@ -455,65 +614,95 @@ function swapSimpleText(useSimple) {
 }
 
 // 处理语音命令
+let unrecognizedCommandCount = 0; // 记录连续未识别命令次数
+let lastUnrecognizedTime = 0;
+const UNRECOGNIZED_DEBOUNCE_MS = 3000; // 3秒内不重复播报未识别提示
+
 function handleVoiceCommand(command) {
     command = command.toLowerCase().trim();
     
-    // 定义语音命令映射
-    const commands = {
+    // 定义语音命令映射（按优先级排序，更具体的命令在前）
+    const commands = [
         // 页面导航命令
-        '首页': () => navigateToPage('language-page'),
-        '功能': () => navigateToPage('feature-page'),
-        '我要看白局': () => navigateToPage('feature-page'),
-        '看白局': () => navigateToPage('feature-page'),
-        '返回': () => goBack(),
-        '主页': () => navigateToPage('language-page'),
+        { key: '我要看白局', action: () => navigateToPage('feature-page') },
+        { key: '看白局', action: () => navigateToPage('feature-page') },
+        { key: '我要反馈意见', action: () => openFeedback() },
+        { key: '反馈意见', action: () => openFeedback() },
+        { key: '意见与反馈', action: () => openFeedback() },
+        { key: '首页', action: () => navigateToPage('language-page') },
+        { key: '功能', action: () => navigateToPage('feature-page') },
+        { key: '返回', action: () => goBack() },
+        { key: '主页', action: () => navigateToPage('language-page') },
         
         // 语言选择命令
-        '中文': () => selectLanguageFromAccessibility('zh'),
-        '英文': () => selectLanguageFromAccessibility('en'),
-        '日文': () => selectLanguageFromAccessibility('ja'),
-        '韩文': () => selectLanguageFromAccessibility('ko'),
-        '法文': () => selectLanguageFromAccessibility('fr'),
-        '德文': () => selectLanguageFromAccessibility('de'),
-        
-        // 功能选择命令
-        '历史': () => selectFeature('history'),
-        '特点': () => selectFeature('characteristics'),
-        '演唱': () => selectFeature('performance'),
-        '服饰': () => selectFeature('costume'),
-        '传承': () => selectFeature('inheritance'),
-        '互动': () => selectFeature('interaction'),
+        { key: '中文', action: () => selectLanguageFromAccessibility('zh') },
+        { key: '英文', action: () => selectLanguageFromAccessibility('en') },
+        { key: '日文', action: () => selectLanguageFromAccessibility('ja') },
+        { key: '韩文', action: () => selectLanguageFromAccessibility('ko') },
+        { key: '法文', action: () => selectLanguageFromAccessibility('fr') },
+        { key: '德文', action: () => selectLanguageFromAccessibility('de') },
         
         // 南京白局特色命令
-        '白局': () => selectFeature('performance'),
-        '演唱白局': () => selectFeature('performance'),
-        '白局历史': () => selectFeature('history'),
-        '白局特点': () => selectFeature('characteristics'),
-
-        // 反馈页快捷
-        '反馈意见': () => openFeedback(),
-        '我要反馈意见': () => openFeedback(),
-        '意见与反馈': () => openFeedback(),
+        { key: '演唱白局', action: () => selectFeature('performance') },
+        { key: '白局历史', action: () => selectFeature('history') },
+        { key: '白局特点', action: () => selectFeature('characteristics') },
+        { key: '白局', action: () => selectFeature('performance') },
+        
+        // 功能选择命令
+        { key: '历史', action: () => selectFeature('history') },
+        { key: '特点', action: () => selectFeature('characteristics') },
+        { key: '演唱', action: () => selectFeature('performance') },
+        { key: '服饰', action: () => selectFeature('costume') },
+        { key: '传承', action: () => selectFeature('inheritance') },
+        { key: '互动', action: () => selectFeature('interaction') },
         
         // 控制命令
-        '停止': () => stopAll(),
-        '关闭': () => stopAll(),
-        '退出': () => stopAll()
-    };
+        { key: '停止', action: () => stopAll() },
+        { key: '关闭', action: () => stopAll() },
+        { key: '退出', action: () => stopAll() }
+    ];
     
     // 查找匹配的命令
     let matched = false;
-    for (const [key, action] of Object.entries(commands)) {
-        if (command.includes(key)) {
-            action();
+    for (const cmd of commands) {
+        if (command.includes(cmd.key)) {
+            cmd.action();
             matched = true;
+            unrecognizedCommandCount = 0; // 重置未识别计数
             break;
         }
     }
     
-    // 如果没有匹配的命令，提供语音反馈
+    // 如果没有匹配的命令，智能处理
     if (!matched) {
-        speakText('抱歉，我没有理解您的命令: ' + command);
+        const now = Date.now();
+        
+        // 防抖：避免短时间内重复播报
+        if (now - lastUnrecognizedTime < UNRECOGNIZED_DEBOUNCE_MS) {
+            unrecognizedCommandCount++;
+            return; // 静默忽略，不播报
+        }
+        
+        lastUnrecognizedTime = now;
+        unrecognizedCommandCount++;
+        
+        // 根据连续未识别次数，给出不同的提示
+        let feedbackText = '';
+        if (unrecognizedCommandCount === 1) {
+            // 第一次未识别，给出友好提示
+            feedbackText = '抱歉，我没有理解。您可以试试说：我要看白局、反馈意见、返回等。';
+        } else if (unrecognizedCommandCount <= 3) {
+            // 2-3次未识别，简短提示
+            feedbackText = '未识别。试试说：看白局、反馈、返回。';
+        } else {
+            // 超过3次，静默处理，避免过度打扰
+            // 只在控制台记录，不播报
+            console.log('连续未识别命令，已静默处理:', command);
+            return;
+        }
+        
+        // 使用防抖播报
+        speakTextDebounced(feedbackText);
     }
 }
 
@@ -643,25 +832,72 @@ function stopAll() {
     speakText('已停止语音识别');
 }
 
-// 文字转语音
-function speakText(text) {
+// 文字转语音（带防抖和去重）
+function speakText(text, force = false) {
+    if (!text || typeof text !== 'string') return;
+    
     // 检查浏览器是否支持语音合成
-    if ('speechSynthesis' in window) {
-        // 取消之前的语音播放
-        window.speechSynthesis.cancel();
-        
-        // 创建语音合成对象
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN'; // 设置为中文
-        utterance.rate = 1.0; // 语速
-        utterance.pitch = 1.0; // 音调
-        utterance.volume = 1.0; // 音量
-        
-        // 播放语音
-        window.speechSynthesis.speak(utterance);
-    } else {
+    if (!('speechSynthesis' in window)) {
         console.warn('您的浏览器不支持语音合成功能');
+        return;
     }
+    
+    const now = Date.now();
+    
+    // 去重：相同内容在短时间内不重复播报
+    if (!force) {
+        if (text === lastSpokenText && (now - lastSpokenTime) < SPEAK_DEBOUNCE_MS) {
+            return; // 静默忽略重复内容
+        }
+        
+        // 最小间隔检查
+        if ((now - lastSpokenTime) < MIN_SPEAK_INTERVAL) {
+            // 延迟播报
+            if (speakDebounceTimer) {
+                clearTimeout(speakDebounceTimer);
+            }
+            speakDebounceTimer = setTimeout(() => {
+                speakText(text, true);
+            }, MIN_SPEAK_INTERVAL - (now - lastSpokenTime));
+            return;
+        }
+    }
+    
+    // 更新记录
+    lastSpokenText = text;
+    lastSpokenTime = now;
+    
+    // 取消之前的语音播放
+    window.speechSynthesis.cancel();
+    
+    // 创建语音合成对象
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN'; // 设置为中文
+    utterance.rate = 1.0; // 语速
+    utterance.pitch = 1.0; // 音调
+    utterance.volume = 1.0; // 音量
+    
+    // 播放完成后的清理
+    utterance.onend = function() {
+        // 可以在这里添加播放完成的回调
+    };
+    
+    utterance.onerror = function(event) {
+        console.error('语音播报错误:', event.error);
+    };
+    
+    // 播放语音
+    window.speechSynthesis.speak(utterance);
+}
+
+// 防抖版本的语音播报（用于非关键提示）
+function speakTextDebounced(text) {
+    if (speakDebounceTimer) {
+        clearTimeout(speakDebounceTimer);
+    }
+    speakDebounceTimer = setTimeout(() => {
+        speakText(text);
+    }, 300); // 300ms防抖
 }
 
 // 初始化对比度控制功能
