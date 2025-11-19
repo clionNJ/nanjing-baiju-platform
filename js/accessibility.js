@@ -13,6 +13,10 @@ let speakDebounceTimer = null;
 const SPEAK_DEBOUNCE_MS = 2000; // 2秒内不重复播报相同内容
 const MIN_SPEAK_INTERVAL = 500; // 最小播报间隔500ms
 
+// 语音播放状态跟踪（防止识别到自己播放的语音）
+let isSpeaking = false;
+let recognitionWasActive = false; // 记录在播放前识别是否处于活动状态
+
 // 检测是否为移动设备
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
@@ -138,6 +142,11 @@ function initVoiceControl() {
     };
     
     recognition.onresult = function(event) {
+        // 如果正在播放语音，忽略所有识别结果（防止识别到自己播放的语音）
+        if (isSpeaking) {
+            return;
+        }
+        
         let interimTranscript = '';
         let finalTranscript = '';
         
@@ -215,8 +224,13 @@ function initVoiceControl() {
         voiceStatus.style.display = 'none';
         voiceBtn.classList.remove('listening');
         
+        // 如果正在播放语音，不要自动重启识别（会在播放完成后恢复）
         // 如果是因为错误结束，不自动重启
         // 只有在用户主动停止或正常结束时才考虑重启（如果需要持续监听）
+        if (isSpeaking) {
+            // 正在播放语音，不处理，等待播放完成后恢复
+            return;
+        }
     };
     
     // 语音按钮点击事件
@@ -396,6 +410,11 @@ function initVoiceIntroPrompt() {
         };
 
         introRecognition.onresult = (event) => {
+            // 如果正在播放语音，忽略所有识别结果（防止识别到自己播放的语音）
+            if (isSpeaking) {
+                return;
+            }
+            
             let interim = '';
             let finalText = '';
             for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -870,6 +889,21 @@ function speakText(text, force = false) {
     // 取消之前的语音播放
     window.speechSynthesis.cancel();
     
+    // 在播放语音前，暂停语音识别（防止识别到自己播放的语音）
+    if (recognition && isListening) {
+        try {
+            recognitionWasActive = true;
+            recognition.stop();
+        } catch (e) {
+            console.log('暂停语音识别时出错（已忽略）:', e);
+        }
+    } else {
+        recognitionWasActive = false;
+    }
+    
+    // 标记开始播放
+    isSpeaking = true;
+    
     // 创建语音合成对象
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN'; // 设置为中文
@@ -879,11 +913,40 @@ function speakText(text, force = false) {
     
     // 播放完成后的清理
     utterance.onend = function() {
-        // 可以在这里添加播放完成的回调
+        // 标记播放结束
+        isSpeaking = false;
+        
+        // 如果之前识别是活动的，恢复语音识别
+        if (recognitionWasActive && recognition) {
+            // 延迟一小段时间再恢复，确保语音完全停止
+            setTimeout(() => {
+                try {
+                    if (!isListening) {
+                        recognition.start();
+                    }
+                } catch (e) {
+                    // 如果启动失败，可能是已经在运行，忽略错误
+                    console.log('恢复语音识别时出错（已忽略）:', e);
+                }
+            }, 300); // 300ms延迟，确保语音完全停止
+        }
     };
     
     utterance.onerror = function(event) {
         console.error('语音播报错误:', event.error);
+        // 即使出错也要恢复状态
+        isSpeaking = false;
+        if (recognitionWasActive && recognition) {
+            setTimeout(() => {
+                try {
+                    if (!isListening) {
+                        recognition.start();
+                    }
+                } catch (e) {
+                    console.log('恢复语音识别时出错（已忽略）:', e);
+                }
+            }, 300);
+        }
     };
     
     // 播放语音
