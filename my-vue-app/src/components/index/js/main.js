@@ -1,13 +1,10 @@
-import { trainingLibrary } from './data/trainingLibrary.js';
-import { languageTexts } from './data/languageTexts.js';
-
-// 模块加载调试
-console.log('main.js 模块开始加载');
+import {trainingLibrary} from './data/trainingLibrary.js';
+import {languageTexts} from './data/languageTexts.js';
 
 // 函数暴露辅助函数 - 在函数定义后立即调用此函数来暴露它们
-function exposeFunctionsToGlobal() {
+export function exposeFunctionsToGlobal() {
     if (typeof window === 'undefined') return;
-    
+
     try {
         // 直接赋值，不进行检查（函数声明会被提升）
         // 存储真正的函数实现（供占位函数调用）
@@ -60,31 +57,7 @@ function exposeFunctionsToGlobal() {
     }
 }
 
-const trainingState = {
-    currentGenre: 'baiju',
-    currentTrack: null,
-    audioContext: null,
-    analyser: null,
-    mediaStream: null,
-    mediaRecorder: null,
-    recordingChunks: [],
-    animationId: null,
-    pitchHistory: [],
-    beatTimes: [],
-    lastBeatAt: 0,
-    metrics: {
-        pitchError: [],
-        beatDiff: [],
-        clarity: []
-    },
-    isTraining: false,
-    startTimestamp: 0,
-    elapsedSeconds: 0,
-    expectedBeatInterval: 0,
-    lastLyricIndex: -1
-};
-
-function initTrainingModule() {
+export function initTrainingModule() {
     const genreSelector = document.getElementById('genre-selector');
     const trackSelect = document.getElementById('training-track-select');
     const startBtn = document.getElementById('start-singing');
@@ -122,7 +95,7 @@ function initTrainingModule() {
     setTrainingGenre('baiju', false);
 }
 
-function setTrainingGenre(genre, keepTrack = false) {
+export function setTrainingGenre(genre, keepTrack = false) {
     if (!trainingLibrary[genre]) {
         console.warn('未知曲种:', genre);
         return;
@@ -155,13 +128,13 @@ function setTrainingGenre(genre, keepTrack = false) {
     }
 }
 
-function findTrackById(trackId) {
+export function findTrackById(trackId) {
     const genre = trainingLibrary[trainingState.currentGenre];
     if (!genre) return null;
     return genre.tracks.find(track => track.id === trackId) || null;
 }
 
-function applyTrainingTrackSelection(trackId) {
+export function applyTrainingTrackSelection(trackId) {
     const track = findTrackById(trackId);
     const trackSelect = document.getElementById('training-track-select');
 
@@ -181,14 +154,14 @@ function applyTrainingTrackSelection(trackId) {
     trainingState.currentTrack = track;
     trainingState.expectedBeatInterval = track.tempo ? 60 / track.tempo : 0;
     trainingState.lastLyricIndex = -1;
-    trainingState.metrics = { pitchError: [], beatDiff: [], clarity: [] };
+    trainingState.metrics = {pitchError: [], beatDiff: [], clarity: []};
 
     renderLyrics(track);
     resetScoreboard();
     configureReferenceAudio(track);
 }
 
-function renderLyrics(track) {
+export function renderLyrics(track) {
     const container = document.getElementById('lyrics-display');
     if (!container) return;
 
@@ -197,7 +170,7 @@ function renderLyrics(track) {
     }).join('');
 }
 
-function resetScoreboard() {
+export function resetScoreboard() {
     const pitchScore = document.getElementById('pitch-score');
     const rhythmScore = document.getElementById('rhythm-score');
     const pronunciationScore = document.getElementById('pronunciation-score');
@@ -229,7 +202,7 @@ function resetScoreboard() {
     }
 }
 
-function configureReferenceAudio(track) {
+export function configureReferenceAudio(track) {
     const referenceAudio = document.getElementById('reference-audio');
     if (!referenceAudio) return;
 
@@ -243,7 +216,7 @@ function configureReferenceAudio(track) {
     referenceAudio.currentTime = 0;
 }
 
-async function startTrainingSession() {
+export async function startTrainingSession() {
     if (trainingState.isTraining) return;
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -258,7 +231,12 @@ async function startTrainingSession() {
     }
 
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true
+            }
+        });
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) {
             alert('当前浏览器不支持音频分析。');
@@ -287,7 +265,7 @@ async function startTrainingSession() {
         trainingState.pitchHistory = [];
         trainingState.beatTimes = [];
         trainingState.lastBeatAt = 0;
-        trainingState.metrics = { pitchError: [], beatDiff: [], clarity: [] };
+        trainingState.metrics = {pitchError: [], beatDiff: [], clarity: []};
         trainingState.startTimestamp = performance.now();
         trainingState.elapsedSeconds = 0;
         trainingState.isTraining = true;
@@ -305,7 +283,8 @@ async function startTrainingSession() {
         const referenceAudio = document.getElementById('reference-audio');
         if (referenceAudio && referenceAudio.src) {
             referenceAudio.currentTime = 0;
-            referenceAudio.play().catch(() => {});
+            referenceAudio.play().catch(() => {
+            });
         }
 
         document.getElementById('start-singing').disabled = true;
@@ -319,7 +298,7 @@ async function startTrainingSession() {
     }
 }
 
-function stopTrainingSession(manualStop) {
+export function stopTrainingSession(manualStop) {
     if (!trainingState.isTraining) {
         return;
     }
@@ -340,7 +319,8 @@ function stopTrainingSession(manualStop) {
     }
 
     if (trainingState.audioContext) {
-        trainingState.audioContext.close().catch(() => {});
+        trainingState.audioContext.close().catch(() => {
+        });
     }
 
     const referenceAudio = document.getElementById('reference-audio');
@@ -359,14 +339,14 @@ function stopTrainingSession(manualStop) {
     }
 }
 
-function handleRecordingStop() {
+export function handleRecordingStop() {
     if (!trainingState.recordingChunks.length) {
         console.warn('未捕获到有效录音数据');
         return;
     }
 
     const mimeType = trainingState.mediaRecorder && trainingState.mediaRecorder.mimeType ? trainingState.mediaRecorder.mimeType : 'audio/webm';
-    const blob = new Blob(trainingState.recordingChunks, { type: mimeType });
+    const blob = new Blob(trainingState.recordingChunks, {type: mimeType});
     const audioURL = URL.createObjectURL(blob);
     const userRecording = document.getElementById('user-recording');
 
@@ -376,7 +356,7 @@ function handleRecordingStop() {
     document.getElementById('playback-comparison').disabled = false;
 }
 
-function analyseFrame() {
+export function analyseFrame() {
     if (!trainingState.isTraining || !trainingState.analyser || !trainingState.audioContext) {
         return;
     }
@@ -402,7 +382,7 @@ function analyseFrame() {
     trainingState.animationId = requestAnimationFrame(analyseFrame);
 }
 
-function detectPitch(buffer, sampleRate) {
+export function detectPitch(buffer, sampleRate) {
     const SIZE = buffer.length;
     let sum = 0;
     for (let i = 0; i < SIZE; i++) {
@@ -443,7 +423,7 @@ function detectPitch(buffer, sampleRate) {
     return null;
 }
 
-function getExpectedPitch(seconds) {
+export function getExpectedPitch(seconds) {
     const track = trainingState.currentTrack;
     if (!track || !track.pitchContour || !track.pitchContour.length) {
         return null;
@@ -461,7 +441,7 @@ function getExpectedPitch(seconds) {
     return contour[contour.length - 1].freq;
 }
 
-function updatePitchMetrics(pitch) {
+export function updatePitchMetrics(pitch) {
     const now = performance.now();
     const elapsed = (now - trainingState.startTimestamp) / 1000;
     const expected = getExpectedPitch(elapsed);
@@ -471,7 +451,7 @@ function updatePitchMetrics(pitch) {
         livePitch.textContent = pitch ? `当前音高：${pitch.toFixed(1)} Hz` : '当前音高：-- Hz';
     }
 
-    trainingState.pitchHistory.push({ time: elapsed, actual: pitch, expected });
+    trainingState.pitchHistory.push({time: elapsed, actual: pitch, expected});
     if (trainingState.pitchHistory.length > 600) {
         trainingState.pitchHistory.shift();
     }
@@ -485,7 +465,7 @@ function updatePitchMetrics(pitch) {
     }
 }
 
-function updateTempoMetrics(buffer, sampleRate) {
+export function updateTempoMetrics(buffer, sampleRate) {
     let peak = 0;
     for (let i = 0; i < buffer.length; i++) {
         peak = Math.max(peak, Math.abs(buffer[i]));
@@ -523,7 +503,7 @@ function updateTempoMetrics(buffer, sampleRate) {
     }
 }
 
-function updatePronunciationMetrics(frequencyData) {
+export function updatePronunciationMetrics(frequencyData) {
     let low = 0;
     let mid = 0;
     let high = 0;
@@ -552,7 +532,7 @@ function updatePronunciationMetrics(frequencyData) {
     }
 }
 
-function updateLyricHighlight() {
+export function updateLyricHighlight() {
     const track = trainingState.currentTrack;
     if (!track) return;
 
@@ -572,7 +552,7 @@ function updateLyricHighlight() {
     }
 }
 
-function highlightLyrics(offsetSeconds) {
+export function highlightLyrics(offsetSeconds) {
     const track = trainingState.currentTrack;
     if (!track) return;
 
@@ -587,7 +567,7 @@ function highlightLyrics(offsetSeconds) {
     });
 }
 
-function updateTimerDisplay(seconds) {
+export function updateTimerDisplay(seconds) {
     trainingState.elapsedSeconds = seconds;
     const timer = document.getElementById('training-timer');
     if (!timer) return;
@@ -597,7 +577,7 @@ function updateTimerDisplay(seconds) {
     timer.textContent = `训练时长：${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
-function updateScoreboardRealtime() {
+export function updateScoreboardRealtime() {
     const pitchErrors = trainingState.metrics.pitchError;
     const beatDiffs = trainingState.metrics.beatDiff;
     const clarities = trainingState.metrics.clarity;
@@ -625,7 +605,7 @@ function updateScoreboardRealtime() {
     }
 }
 
-function updateScoreboardFinal() {
+export function updateScoreboardFinal() {
     const pitchScoreEl = document.getElementById('pitch-score');
     const rhythmScoreEl = document.getElementById('rhythm-score');
     const pronunciationScoreEl = document.getElementById('pronunciation-score');
@@ -641,7 +621,7 @@ function updateScoreboardFinal() {
     }
 }
 
-function drawPitchVisualizer() {
+export function drawPitchVisualizer() {
     const canvas = document.getElementById('pitch-visualizer');
     if (!canvas) return;
 
@@ -698,7 +678,7 @@ function drawPitchVisualizer() {
     ctx.stroke();
 }
 
-function playComparison() {
+export function playComparison() {
     const referenceAudio = document.getElementById('reference-audio');
     const userRecording = document.getElementById('user-recording');
 
@@ -712,17 +692,23 @@ function playComparison() {
 
     if (referenceAudio && referenceAudio.src) {
         referenceAudio.currentTime = 0;
-        referenceAudio.play().catch(() => {}).finally(() => {});
-        referenceAudio.addEventListener('ended', function handleReferenceEnd() {
-            referenceAudio.removeEventListener('ended', handleReferenceEnd);
-            userRecording.currentTime = 0;
-            userRecording.play().catch(() => {}).finally(() => {
-                playbackBtn.disabled = false;
-            });
+        referenceAudio.play().catch(() => {
+        }).finally(() => {
         });
+        referenceAudio.addEventListener('ended', function handleReferenceEnd() {
+                referenceAudio.removeEventListener('ended', handleReferenceEnd);
+                userRecording.currentTime = 0;
+                userRecording.play().catch(() => {
+                }).finally(() => {
+                    playbackBtn.disabled = false;
+                });
+            }
+        )
+        ;
     } else {
         userRecording.currentTime = 0;
-        userRecording.play().catch(() => {}).finally(() => {
+        userRecording.play().catch(() => {
+        }).finally(() => {
             playbackBtn.disabled = false;
         });
     }
@@ -733,53 +719,7 @@ function playComparison() {
     });
 }
 
-// 注意：languageTexts 已从 './data/languageTexts.js' 导入，不需要在这里重新定义
-
-// 当前选择的语言
-let currentLanguage = 'zh-CN';
-// 已删除重复定义（原第 740-1374 行），保留注释作为提醒
-
-// 当前选择的曲种（默认白局）
-let currentGenre = 'baiju';
-// 记录基线文本，用于不同曲种的动态替换（避免多次替换叠加）
-const originalTexts = {};
-const replaceTextIds = [
-    'feature-title',
-    'feature-description',
-    'feature1-title',
-    'feature1-desc',
-    'feature2-title',
-    'feature2-desc',
-    'feature3-title',
-    'feature3-desc',
-    'feature4-title',
-    'feature4-desc',
-    'feature5-title',
-    'feature5-desc',
-    'feature6-title',
-    'feature6-desc',
-    'f1-title',
-    'f1-desc',
-    'f2-title',
-    'f2-desc',
-    'f3-title',
-    'f3-desc',
-    'f4-title',
-    'f4-desc',
-    'f5-title',
-    'f5-desc',
-    'f6-title',
-    'f6-desc'
-];
-const defaultGenreNames = {
-    baiju: '白局',
-    kunqu: '昆曲',
-    pintang: '苏州评弹',
-    yangju: '扬剧'
-};
-let currentBaseGenreName = defaultGenreNames.baiju;
-
-function getGenreDisplayName(genre, lang = currentLanguage) {
+export function getGenreDisplayName(genre, lang = currentLanguage) {
     const langConfig = languageTexts[lang];
     const nameFromConfig = langConfig?.genreSelection?.options?.[genre];
     if (nameFromConfig) {
@@ -788,7 +728,7 @@ function getGenreDisplayName(genre, lang = currentLanguage) {
     return defaultGenreNames[genre] || genre;
 }
 
-function getGenreTitle(lang, genre) {
+export function getGenreTitle(lang, genre) {
     const langConfig = languageTexts[lang];
     const template = langConfig?.genreTitleTemplate;
     const displayName = getGenreDisplayName(genre, lang);
@@ -798,11 +738,11 @@ function getGenreTitle(lang, genre) {
     return `${displayName}非遗文化数字平台`;
 }
 
-function escapeRegExp(str) {
+export function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function updateGenrePageContent(lang) {
+export function updateGenrePageContent(lang) {
     const langConfig = languageTexts[lang];
     const genreContent = langConfig?.genreSelection;
     const titleEl = document.getElementById('genre-page-title');
@@ -1141,7 +1081,78 @@ const conversationState = {
     initialized: false
 };
 
-function setupConversation() {
+
+const trainingState = {
+    currentGenre: 'baiju',
+    currentTrack: null,
+    audioContext: null,
+    analyser: null,
+    mediaStream: null,
+    mediaRecorder: null,
+    recordingChunks: [],
+    animationId: null,
+    pitchHistory: [],
+    beatTimes: [],
+    lastBeatAt: 0,
+    metrics: {
+        pitchError: [],
+        beatDiff: [],
+        clarity: []
+    },
+    isTraining: false,
+    startTimestamp: 0,
+    elapsedSeconds: 0,
+    expectedBeatInterval: 0,
+    lastLyricIndex: -1
+};
+
+// 注意：languageTexts 已从 './data/languageTexts.js' 导入，不需要在这里重新定义
+
+// 当前选择的语言
+let currentLanguage = 'zh-CN';
+// 已删除重复定义（原第 740-1374 行），保留注释作为提醒
+
+// 当前选择的曲种（默认白局）
+let currentGenre = 'baiju';
+// 记录基线文本，用于不同曲种的动态替换（避免多次替换叠加）
+const originalTexts = {};
+const replaceTextIds = [
+    'feature-title',
+    'feature-description',
+    'feature1-title',
+    'feature1-desc',
+    'feature2-title',
+    'feature2-desc',
+    'feature3-title',
+    'feature3-desc',
+    'feature4-title',
+    'feature4-desc',
+    'feature5-title',
+    'feature5-desc',
+    'feature6-title',
+    'feature6-desc',
+    'f1-title',
+    'f1-desc',
+    'f2-title',
+    'f2-desc',
+    'f3-title',
+    'f3-desc',
+    'f4-title',
+    'f4-desc',
+    'f5-title',
+    'f5-desc',
+    'f6-title',
+    'f6-desc'
+];
+const defaultGenreNames = {
+    baiju: '白局',
+    kunqu: '昆曲',
+    pintang: '苏州评弹',
+    yangju: '扬剧'
+};
+let currentBaseGenreName = defaultGenreNames.baiju;
+
+export function setupConversation() {
     if (conversationState.initialized) {
         updateConversationLanguage(currentLanguage);
         if (conversationState.autoDetect) {
@@ -1239,7 +1250,7 @@ function setupConversation() {
     }
 }
 
-function updateConversationLanguage(lang) {
+export function updateConversationLanguage(lang) {
     const labels = conversationConfigs[lang] || conversationConfigs['zh-CN'];
     conversationState.labels = labels;
 
@@ -1275,7 +1286,7 @@ function updateConversationLanguage(lang) {
     }
 }
 
-function resetConversation(lang) {
+export function resetConversation(lang) {
     const chatLog = conversationState.elements.chatLog;
     if (chatLog) {
         chatLog.innerHTML = '';
@@ -1291,7 +1302,7 @@ function resetConversation(lang) {
     clearStatusIfMatch('thinking');
 }
 
-function appendChatMessage(role, text, lang) {
+export function appendChatMessage(role, text, lang) {
     const chatLog = conversationState.elements.chatLog;
     if (!chatLog) {
         return;
@@ -1317,20 +1328,20 @@ function appendChatMessage(role, text, lang) {
     chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-function setConversationStatus(text, type = 'info') {
+export function setConversationStatus(text, type = 'info') {
     conversationState.currentStatusType = type;
     if (conversationState.elements.status) {
         conversationState.elements.status.textContent = text || '';
     }
 }
 
-function clearStatusIfMatch(type) {
+export function clearStatusIfMatch(type) {
     if (conversationState.currentStatusType === type) {
         setConversationStatus('', 'idle');
     }
 }
 
-function updateDetectedLanguageDisplay(langCode) {
+export function updateDetectedLanguageDisplay(langCode) {
     const displayEl = conversationState.elements.detectedLanguageText;
     if (!displayEl) {
         return;
@@ -1343,7 +1354,7 @@ function updateDetectedLanguageDisplay(langCode) {
     displayEl.textContent = labels.languageNames[langCode] || labels.languageNames[currentLanguage] || langCode;
 }
 
-function detectConversationLanguage(text) {
+export function detectConversationLanguage(text) {
     if (!text) {
         return currentLanguage;
     }
@@ -1365,7 +1376,7 @@ function detectConversationLanguage(text) {
     return 'en';
 }
 
-function getSongDisplayNameByLanguage(langCode, songId) {
+export function getSongDisplayNameByLanguage(langCode, songId) {
     const langData = languageTexts[langCode] || languageTexts[currentLanguage] || languageTexts['zh-CN'];
     const f1 = langData?.f1;
     if (!f1) {
@@ -1379,7 +1390,7 @@ function getSongDisplayNameByLanguage(langCode, songId) {
     return map[songId] || songId;
 }
 
-function formatText(template, replacements) {
+export function formatText(template, replacements) {
     if (typeof template !== 'string') {
         return '';
     }
@@ -1390,7 +1401,7 @@ function formatText(template, replacements) {
     });
 }
 
-function generateAssistantResponse(text, langCode) {
+export function generateAssistantResponse(text, langCode) {
     const config = conversationConfigs[langCode] || conversationConfigs[currentLanguage] || conversationConfigs['zh-CN'];
     const responses = config.responses;
     const lower = text.toLowerCase();
@@ -1436,16 +1447,16 @@ function generateAssistantResponse(text, langCode) {
 
     const template = responses[messageKey] || responses.default;
     const finalMessage = formatText(template, replacements);
-    return { message: finalMessage, langCode };
+    return {message: finalMessage, langCode};
 }
 
-function triggerPerformance(songId) {
+export function triggerPerformance(songId) {
     isPerforming = true;
     currentPerformance = songId;
     playPerformance(songId);
 }
 
-function handleUserQuery(text) {
+export function handleUserQuery(text) {
     if (!text) {
         return;
     }
@@ -1476,7 +1487,7 @@ function handleUserQuery(text) {
     }
 }
 
-function updateRecognitionLanguage() {
+export function updateRecognitionLanguage() {
     if (!conversationState.recognition) {
         return;
     }
@@ -1484,26 +1495,26 @@ function updateRecognitionLanguage() {
     conversationState.recognition.lang = lang;
 }
 
-async function toggleVoiceRecognition() {
+export async function toggleVoiceRecognition() {
     if (!conversationState.recognitionSupported || !conversationState.recognition) {
         setConversationStatus(conversationState.labels.recognitionUnsupported, 'info');
         return;
     }
-    
+
     // 检查HTTPS（移动设备上语音识别需要HTTPS）
     if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
         setConversationStatus(conversationState.labels.httpsRequired, 'info');
         return;
     }
-    
+
     if (conversationState.isListening) {
         conversationState.recognition.stop();
         return;
     }
-    
+
     // 检查麦克风权限
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true});
         // 权限已授予，关闭流
         stream.getTracks().forEach(track => track.stop());
     } catch (error) {
@@ -1519,7 +1530,7 @@ async function toggleVoiceRecognition() {
             return;
         }
     }
-    
+
     try {
         conversationState.recognition.lang = recognitionLangMap[currentLanguage] || conversationState.recognition.lang;
         conversationState.recognition.start();
@@ -1529,7 +1540,7 @@ async function toggleVoiceRecognition() {
     }
 }
 
-function initSpeechRecognition() {
+export function initSpeechRecognition() {
     if (!conversationState.recognitionSupported || conversationState.recognition) {
         return;
     }
@@ -1569,7 +1580,7 @@ function initSpeechRecognition() {
     recognition.onerror = (event) => {
         console.error('Speech recognition error:', event);
         let errorMessage = conversationState.labels.error;
-        
+
         if (event.error) {
             switch (event.error) {
                 case 'no-speech':
@@ -1597,7 +1608,7 @@ function initSpeechRecognition() {
                     errorMessage = conversationState.labels.error;
             }
         }
-        
+
         // 对于 no-speech 错误，只在控制台记录，不显示给用户（因为这是正常的超时）
         if (event.error === 'no-speech') {
             console.log('Speech recognition timeout (no speech detected)');
@@ -1621,13 +1632,13 @@ function initSpeechRecognition() {
     conversationState.recognition = recognition;
 }
 
-function updateVoiceButtonLabel(text) {
+export function updateVoiceButtonLabel(text) {
     if (conversationState.elements.voiceBtn) {
         conversationState.elements.voiceBtn.textContent = text;
     }
 }
 
-function speakText(text, langCode) {
+export function speakText(text, langCode) {
     if (!conversationState.speechSupported) {
         return;
     }
@@ -1660,7 +1671,7 @@ function speakText(text, langCode) {
     synthesis.speak(utterance);
 }
 
-function stopSpeech() {
+export function stopSpeech() {
     if (!conversationState.speechSupported) {
         return;
     }
@@ -1678,12 +1689,12 @@ let currentPerformance = null;
 
 const video = document.getElementById('virtual-video');
 
-function playPerformance(songId) {
-	if (!video.paused) {
+export function playPerformance(songId) {
+    if (!video.paused) {
         video.pause();
     }
     video.currentTime = 0;
-    
+
     // 加载并播放视频
     video.load();
     video.play();
@@ -1694,41 +1705,41 @@ function playPerformance(songId) {
 }
 
 
-function stopPerformance() {
-	video.pause();
+export function stopPerformance() {
+    video.pause();
     const performanceText = document.getElementById('performance-text');
     performanceText.textContent = languageTexts[currentLanguage].f1.statusStopped;
 }
 
-function simulatePerformance(songName, duration) {
+export function simulatePerformance(songName, duration) {
     console.log(`开始表演: ${songName}`);
-    
+
     // 更新表演状态
     const performanceText = document.getElementById('performance-text');
     performanceText.textContent = `${languageTexts[currentLanguage].f1.statusPlaying}${songName}...`;
-    
+
     // 模拟歌词显示
     const lyrics = getLyrics(songName);
     let currentLine = 0;
-    
+
     const lyricInterval = setInterval(() => {
         if (!isPerforming) {
             clearInterval(lyricInterval);
             return;
         }
-        
+
         if (currentLine < lyrics.length) {
             performanceText.textContent = lyrics[currentLine];
             currentLine++;
         }
     }, 2000); // 每2秒换一行歌词
-    
+
     // 表演结束后自动停止
     setTimeout(() => {
         if (isPerforming) {
             stopPerformance();
             performanceText.textContent = languageTexts[currentLanguage].f1.performanceEnded;
-            
+
             // 3秒后清空文本
             setTimeout(() => {
                 performanceText.textContent = '';
@@ -1737,19 +1748,19 @@ function simulatePerformance(songName, duration) {
     }, duration);
 }
 
-function getLyrics(songName) {
+export function getLyrics(songName) {
     // 这里保持旧函数未使用，歌词由 f2.sampleLyrics 提供
     return [songName];
 }
 
 // 选择语言函数
-function selectLanguage(lang) {
+export function selectLanguage(lang) {
     console.log('选择语言:', lang);
     currentLanguage = lang;
     const langConfig = languageTexts[lang] || languageTexts['zh-CN'];
     currentBaseGenreName = langConfig?.genreBaseName || getGenreDisplayName('baiju', lang);
     currentGenre = 'baiju';
-    
+
     if (!conversationState.initialized) {
         setupConversation();
     } else {
@@ -1758,7 +1769,7 @@ function selectLanguage(lang) {
         resetConversation(lang);
         updateRecognitionLanguage();
     }
-    
+
     // 更新功能页面的文本
     const featurePage = document.getElementById('feature-page');
     const genrePage = document.getElementById('genre-page');
@@ -1772,7 +1783,7 @@ function selectLanguage(lang) {
         genrePage.classList.remove('arabic-text');
         detailModals.forEach(modal => modal.classList.remove('arabic-text'));
     }
-    
+
     document.getElementById('feature-title').textContent = langConfig.featureTitle;
     document.getElementById('feature-description').textContent = langConfig.featureDescription;
     document.getElementById('feature1-title').textContent = langConfig.feature1Title;
@@ -1785,32 +1796,32 @@ function selectLanguage(lang) {
     document.getElementById('feature4-desc').textContent = langConfig.feature4Desc;
     document.getElementById('feature5-title').textContent = langConfig.feature5Title;
     document.getElementById('feature5-desc').textContent = langConfig.feature5Desc;
-    const feedbackCard = document.querySelectorAll('.feature-card')[5];  
-    feedbackCard.querySelector('h3').textContent = langConfig.feature6Title;  
+    const feedbackCard = document.querySelectorAll('.feature-card')[5];
+    feedbackCard.querySelector('h3').textContent = langConfig.feature6Title;
     feedbackCard.querySelector('p').textContent = langConfig.feature6Desc;
     document.getElementById('back-btn').textContent = langConfig.backToGenres || langConfig.backBtn || '返回曲种选择';
     document.getElementById('help-btn').textContent = langConfig.helpBtn;
     updateGenrePageContent(lang);
-    
+
     // 功能一弹窗文本
     const f1 = langConfig.f1;
     if (f1) {
         document.getElementById('f1-title').textContent = f1.title;
         document.getElementById('f1-desc').textContent = f1.desc;
-				const elF1Choose = document.getElementById('f1-choose');
-				if (elF1Choose) elF1Choose.textContent = f1.choose;
-				const elF1Song1 = document.getElementById('f1-song1');
-				if (elF1Song1) elF1Song1.textContent = f1.song1;
-				const elF1Song2 = document.getElementById('f1-song2');
-				if (elF1Song2) elF1Song2.textContent = f1.song2;
-				const elF1Song3 = document.getElementById('f1-song3');
-				if (elF1Song3) elF1Song3.textContent = f1.song3;
-				const elF1TagClassic = document.getElementById('f1-tag-classic');
-				if (elF1TagClassic) elF1TagClassic.textContent = f1.tagClassic;
-				const elF1TagClassic2 = document.getElementById('f1-tag-classic-2');
-				if (elF1TagClassic2) elF1TagClassic2.textContent = f1.tagClassic;
-				const elF1TagModern = document.getElementById('f1-tag-modern');
-				if (elF1TagModern) elF1TagModern.textContent = f1.tagModern;
+        const elF1Choose = document.getElementById('f1-choose');
+        if (elF1Choose) elF1Choose.textContent = f1.choose;
+        const elF1Song1 = document.getElementById('f1-song1');
+        if (elF1Song1) elF1Song1.textContent = f1.song1;
+        const elF1Song2 = document.getElementById('f1-song2');
+        if (elF1Song2) elF1Song2.textContent = f1.song2;
+        const elF1Song3 = document.getElementById('f1-song3');
+        if (elF1Song3) elF1Song3.textContent = f1.song3;
+        const elF1TagClassic = document.getElementById('f1-tag-classic');
+        if (elF1TagClassic) elF1TagClassic.textContent = f1.tagClassic;
+        const elF1TagClassic2 = document.getElementById('f1-tag-classic-2');
+        if (elF1TagClassic2) elF1TagClassic2.textContent = f1.tagClassic;
+        const elF1TagModern = document.getElementById('f1-tag-modern');
+        if (elF1TagModern) elF1TagModern.textContent = f1.tagModern;
         document.getElementById('f1-btn-play1').innerHTML = `<i class="fas fa-play"></i> ${f1.btnPlayPrefix}${f1.song1}${f1.btnPlaySuffix}`;
         document.getElementById('f1-btn-play2').innerHTML = `<i class="fas fa-play"></i> ${f1.btnPlayPrefix}${f1.song2}${f1.btnPlaySuffix}`;
         document.getElementById('f1-btn-stop').innerHTML = `<i class="fas fa-stop"></i> ${f1.btnStop}`;
@@ -1941,22 +1952,8 @@ function selectLanguage(lang) {
     document.getElementById('genre-page').classList.add('active');
 }
 
-// 立即将 selectLanguage 暴露到全局作用域，替换占位函数
-console.log('selectLanguage 函数定义完成，开始暴露');
-if (typeof window !== 'undefined') {
-    try {
-        window._selectLanguage = selectLanguage;
-        window.selectLanguage = selectLanguage;
-        console.log('selectLanguage 函数已暴露到全局作用域，window._selectLanguage:', typeof window._selectLanguage);
-    } catch (e) {
-        console.error('暴露 selectLanguage 时出错:', e);
-    }
-} else {
-    console.error('window 对象不存在，无法暴露 selectLanguage');
-}
-
 // 选择曲种后进入功能展示页面（暂时与白局相同）
-function selectGenre(genre) {
+export function selectGenre(genre) {
     console.log('选择曲种:', genre);
     currentGenre = genre;
     // 更新功能页返回按钮文字
@@ -1988,7 +1985,7 @@ function selectGenre(genre) {
 }
 
 // 根据当前曲种，动态调整页面标题及涉及“白局”的文案
-function applyGenreTexts() {
+export function applyGenreTexts() {
     const langConfig = languageTexts[currentLanguage] || languageTexts['zh-CN'];
     const baseName = langConfig?.genreBaseName || currentBaseGenreName || getGenreDisplayName('baiju', currentLanguage);
     const displayName = getGenreDisplayName(currentGenre, currentLanguage);
@@ -2035,30 +2032,30 @@ function applyGenreTexts() {
 }
 
 // 显示功能详情
-function showFeatureDetail(featureId) {
+export function showFeatureDetail(featureId) {
     // 显示遮罩层
     document.getElementById('overlay').classList.add('active');
-    
+
     // 隐藏所有功能详情
     document.querySelectorAll('.feature-detail').forEach(detail => {
         detail.classList.remove('active');
     });
-    
+
     // 显示选中的功能详情
     document.getElementById(`${featureId}-detail`).classList.add('active');
 }
 
 // 关闭功能详情
-function closeFeatureDetail(featureId) {
+export function closeFeatureDetail(featureId) {
     // 隐藏遮罩层
     document.getElementById('overlay').classList.remove('active');
-    const activeId = document.getElementById(`${featureId}-detail-${currentGenre}`) ? 
+    const activeId = document.getElementById(`${featureId}-detail-${currentGenre}`) ?
         `${featureId}-detail-${currentGenre}` : `${featureId}-detail`;
     document.getElementById(activeId).classList.remove('active');
 }
 
 // 从功能页面返回（回到曲种选择页面）
-function goBackToLanguage() {
+export function goBackToLanguage() {
     console.log('返回曲种选择');
     document.getElementById('feature-page').classList.remove('active');
     const pageKun = document.getElementById('feature-page-kunqu');
@@ -2070,18 +2067,18 @@ function goBackToLanguage() {
     document.getElementById('genre-page').classList.add('active');
     currentGenre = 'baiju';
     applyGenreTexts();
-    
+
     // 关闭所有功能详情
     document.querySelectorAll('.feature-detail').forEach(detail => {
         detail.classList.remove('active');
     });
-    
+
     // 隐藏遮罩层
     document.getElementById('overlay').classList.remove('active');
 }
 
 // 从曲种选择页面返回到语言选择
-function goBackToLanguageFromGenre() {
+export function goBackToLanguageFromGenre() {
     console.log('返回语言选择');
     document.getElementById('genre-page').classList.remove('active');
     document.getElementById('language-page').classList.add('active');
@@ -2090,7 +2087,7 @@ function goBackToLanguageFromGenre() {
 }
 
 // 选择唱段
-function selectSong(songId) {
+export function selectSong(songId) {
     console.log('选择唱段:', songId);
     // 可以选择唱段但不立即播放
     const performanceText = document.getElementById('performance-text');
@@ -2098,7 +2095,7 @@ function selectSong(songId) {
     performanceText.textContent = `${f1.statusSelected}${getSongName(songId)}${f1.statusHint}`;
 }
 
-function getSongName(songId) {
+export function getSongName(songId) {
     const f1 = languageTexts[currentLanguage].f1;
     const map = {
         'song1': f1 ? f1.song1 : 'song1',
@@ -2111,7 +2108,7 @@ function getSongName(songId) {
 }
 
 // 选择训练唱段
-function selectTrainingSong(songId) {
+export function selectTrainingSong(songId) {
     console.log('选择训练唱段:', songId);
     if (typeof applyTrainingTrackSelection === 'function') {
         applyTrainingTrackSelection(songId);
@@ -2120,7 +2117,7 @@ function selectTrainingSong(songId) {
     }
 }
 
-function setTrainingLyrics(songId) {
+export function setTrainingLyrics(songId) {
     if (typeof findTrackById === 'function' && typeof renderLyrics === 'function') {
         const track = findTrackById(songId);
         if (track) {
@@ -2143,18 +2140,18 @@ function setTrainingLyrics(songId) {
 }
 
 // 选择课程
-function selectCourse(courseId) {
+export function selectCourse(courseId) {
     console.log('选择课程:', courseId);
     // 这里可以加载课程内容
 }
 
-function initStarRating() {
+export function initStarRating() {
     const stars = document.querySelectorAll('.star');
     const ratingText = document.getElementById('rating-text');
     let selectedRating = 0;
 
     stars.forEach(star => {
-        star.addEventListener('mouseover', function() {
+        star.addEventListener('mouseover', function () {
             const rating = parseInt(this.getAttribute('data-rating'));
             stars.forEach((s, index) => {
                 if (index < rating) {
@@ -2166,7 +2163,7 @@ function initStarRating() {
         });
     });
 
-    document.querySelector('.rating-stars').addEventListener('mouseout', function() {
+    document.querySelector('.rating-stars').addEventListener('mouseout', function () {
         stars.forEach((s, index) => {
             if (index < selectedRating) {
                 s.classList.add('active');
@@ -2179,7 +2176,7 @@ function initStarRating() {
     });
 
     stars.forEach(star => {
-        star.addEventListener('click', function() {
+        star.addEventListener('click', function () {
             selectedRating = parseInt(this.getAttribute('data-rating'));
             stars.forEach((s, index) => {
                 if (index < selectedRating) {
@@ -2194,7 +2191,7 @@ function initStarRating() {
 }
 
 // 帮助按钮点击事件
-function showHelp() {
+export function showHelp() {
     let message = '';
     if (currentLanguage === 'zh-CN') {
         message = '如需帮助，请联系我们的客服团队。\n电话: 400-123-4567\n邮箱: support@baiju-nj.com';
@@ -2211,39 +2208,28 @@ function showHelp() {
     }
     alert(message);
 }
-// 兼容已有按钮（白局页）
-const helpBtnLegacy = document.getElementById('help-btn');
-if (helpBtnLegacy) {
-    helpBtnLegacy.addEventListener('click', showHelp);
-}
-
-// 导航帮助链接
-document.getElementById('help-nav').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('help-btn').click();
-});
 
 // 提交反馈函数
-function submitFeedback() {
+export function submitFeedback() {
     const type = document.getElementById('feedback-type').value;
     const title = document.getElementById('feedback-title').value;
     const content = document.getElementById('feedback-content').value;
     const contact = document.getElementById('contact-info').value;
     const rating = document.querySelectorAll('.star.active').length;
-    
+
     if (!title || !content) {
         alert(currentLanguage === 'zh-CN' ? '请填写标题和详细内容' : 'Please fill in title and content');
         return;
     }
-    
+
     // 这里可以添加实际的提交逻辑（发送到服务器）
-    console.log('提交反馈:', { type, title, content, contact, rating });
-    
+    console.log('提交反馈:', {type, title, content, contact, rating});
+
     // 显示成功消息
-    alert(currentLanguage === 'zh-CN' ? 
-        '反馈提交成功！感谢您的宝贵意见。' : 
+    alert(currentLanguage === 'zh-CN' ?
+        '反馈提交成功！感谢您的宝贵意见。' :
         'Feedback submitted successfully! Thank you for your valuable feedback.');
-    
+
     // 清空表单
     document.getElementById('feedback-title').value = '';
     document.getElementById('feedback-content').value = '';
@@ -2252,73 +2238,6 @@ function submitFeedback() {
     document.getElementById('rating-text').textContent = currentLanguage === 'zh-CN' ? '请选择评分' : 'Please select rating';
 }
 
-// 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('页面加载完成');
-    document.getElementById('language-page').classList.add('active');
-    document.getElementById('genre-page').classList.remove('active');
-    document.getElementById('genre-page').style.display = 'none';
-    document.getElementById('feature-page').classList.remove('active');
 
-    replaceTextIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            originalTexts[id] = el.textContent;
-        }
-    });
 
-    document.querySelectorAll('.lang-option').forEach(option => {
-        option.addEventListener('click', () => {
-            document.querySelectorAll('.lang-option').forEach(opt => {
-                opt.classList.remove('active');
-            });
-            option.classList.add('active');
-        });
-    });
-
-    initStarRating();
-    initTrainingModule();
-});
-
-// 在文件末尾确保所有函数都被暴露
-// 由于函数声明会被提升，这里可以直接同步执行
-console.log('main.js 模块执行到文件末尾，开始暴露函数');
-if (typeof window !== 'undefined') {
-    try {
-        console.log('检查函数是否存在:', {
-            selectLanguage: typeof selectLanguage,
-            selectGenre: typeof selectGenre,
-            goBackToLanguage: typeof goBackToLanguage
-        });
-        
-        // 直接赋值，函数声明已被提升
-        window._selectLanguage = selectLanguage;
-        window.selectLanguage = selectLanguage;
-        window._selectGenre = selectGenre;
-        window.selectGenre = selectGenre;
-        window._goBackToLanguage = goBackToLanguage;
-        window.goBackToLanguage = goBackToLanguage;
-        window._goBackToLanguageFromGenre = goBackToLanguageFromGenre;
-        window.goBackToLanguageFromGenre = goBackToLanguageFromGenre;
-        window._showFeatureDetail = showFeatureDetail;
-        window.showFeatureDetail = showFeatureDetail;
-        window._closeFeatureDetail = closeFeatureDetail;
-        window.closeFeatureDetail = closeFeatureDetail;
-        window._playPerformance = playPerformance;
-        window.playPerformance = playPerformance;
-        window._stopPerformance = stopPerformance;
-        window.stopPerformance = stopPerformance;
-        window._showHelp = showHelp;
-        window.showHelp = showHelp;
-        window._selectCourse = selectCourse;
-        window.selectCourse = selectCourse;
-        window._submitFeedback = submitFeedback;
-        window.submitFeedback = submitFeedback;
-        console.log('所有函数已暴露到全局作用域，window._selectLanguage:', typeof window._selectLanguage);
-    } catch (e) {
-        console.error('函数暴露失败:', e);
-        console.error('错误堆栈:', e.stack);
-    }
-} else {
-    console.error('window 对象不存在，无法暴露函数');
-}
+export {replaceTextIds, originalTexts, currentBaseGenreName, currentGenre};
