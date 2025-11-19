@@ -18,16 +18,16 @@ let isSpeaking = false;
 let recognitionWasActive = false; // 记录在播放前识别是否处于活动状态
 
 // 检测是否为移动设备
-function isMobileDevice() {
+export function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
            (window.innerWidth <= 768 && 'ontouchstart' in window);
 }
 
 // 检查是否支持HTTPS（包括localhost和127.0.0.1）
-function isSecureContext() {
-    return window.isSecureContext || 
-           location.protocol === 'https:' || 
-           location.hostname === 'localhost' || 
+export function isSecureContext() {
+    return window.isSecureContext ||
+           location.protocol === 'https:' ||
+           location.hostname === 'localhost' ||
            location.hostname === '127.0.0.1' ||
            location.hostname === '0.0.0.0';
 }
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // 初始化所有无障碍功能
-function initAccessibilityFeatures() {
+export function initAccessibilityFeatures() {
     initVoiceControl();
     initContrastControl();
     initCareMode();
@@ -46,27 +46,27 @@ function initAccessibilityFeatures() {
 }
 
 // 初始化语音控制功能
-function initVoiceControl() {
+export function initVoiceControl() {
     const voiceBtn = document.getElementById('voice-control-btn');
     const voiceStatus = document.getElementById('voice-status');
-    
+
     if (!voiceBtn || !voiceStatus) return;
-    
+
     // 检查是否在安全环境下（HTTPS或localhost）
     if (!isSecureContext()) {
         console.warn('语音识别需要HTTPS环境或localhost');
         voiceBtn.addEventListener('click', function() {
             const isMobile = isMobileDevice();
-            const msg = isMobile 
+            const msg = isMobile
                 ? '语音识别需要在HTTPS环境下运行。\n请使用HTTPS访问此页面，或使用Chrome浏览器访问。'
                 : '语音识别功能需要在HTTPS环境下运行，请切换到HTTPS页面。';
             alert(msg);
         });
         return;
     }
-    
+
     // 请求麦克风权限（移动端兼容）
-    function requestMicrophonePermission() {
+    export function requestMicrophonePermission() {
         return new Promise((resolve, reject) => {
             // 优先使用现代API
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -97,7 +97,7 @@ function initVoiceControl() {
             }
         });
     }
-    
+
     // 检查浏览器是否支持语音识别
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -110,26 +110,26 @@ function initVoiceControl() {
         });
         return;
     }
-    
+
     // 创建语音识别对象
     recognition = new SpeechRecognition();
-    
+
     // 设置语音识别参数（移动端优化）
     recognition.lang = 'zh-CN';
     recognition.continuous = true; // 持续识别
     recognition.interimResults = true; // 获取中间结果
-    
+
     // 移动端特殊处理：降低连续识别频率，避免过度触发
     if (isMobileDevice()) {
         recognition.continuous = true;
         recognition.interimResults = false; // 移动端只处理最终结果，减少误触发
     }
-    
+
     // 记录最后处理的命令，避免重复处理
     let lastProcessedCommand = '';
     let lastProcessedTime = 0;
     const COMMAND_DEBOUNCE_MS = 1500; // 1.5秒内不重复处理相同命令
-    
+
     // 语音识别事件监听
     recognition.onstart = function() {
         isListening = true;
@@ -140,34 +140,34 @@ function initVoiceControl() {
             statusText.textContent = '正在聆听...';
         }
     };
-    
+
     recognition.onresult = function(event) {
         // 如果正在播放语音，忽略所有识别结果（防止识别到自己播放的语音）
         if (isSpeaking) {
             return;
         }
-        
+
         let interimTranscript = '';
         let finalTranscript = '';
-        
+
         // 处理识别结果
         for (let i = event.resultIndex; i < event.results.length; i++) {
             const transcript = event.results[i][0].transcript;
-            
+
             if (event.results[i].isFinal) {
                 finalTranscript += transcript;
             } else {
                 interimTranscript += transcript;
             }
         }
-        
+
         const statusText = document.getElementById('voice-status-text');
-        
+
         // 显示识别状态
         if (finalTranscript) {
             const command = finalTranscript.trim().toLowerCase();
             const now = Date.now();
-            
+
             // 防抖：避免短时间内重复处理相同命令
             if (command === lastProcessedCommand && (now - lastProcessedTime) < COMMAND_DEBOUNCE_MS) {
                 if (statusText) {
@@ -175,10 +175,10 @@ function initVoiceControl() {
                 }
                 return;
             }
-            
+
             lastProcessedCommand = command;
             lastProcessedTime = now;
-            
+
             if (statusText) {
                 statusText.textContent = '识别结果: ' + finalTranscript;
             }
@@ -189,15 +189,15 @@ function initVoiceControl() {
             }
         }
     };
-    
+
     recognition.onerror = function(event) {
         console.error('语音识别错误:', event.error);
         const statusText = document.getElementById('voice-status-text');
         if (!statusText) return;
-        
+
         voiceStatus.style.display = 'block';
         let errorMessage = '识别错误: ' + event.error;
-        
+
         if (event.error === 'not-allowed' || event.error === 'permission-denied') {
             errorMessage = '麦克风权限被拒绝，请在浏览器设置中启用麦克风权限。';
         } else if (event.error === 'no-speech') {
@@ -212,18 +212,18 @@ function initVoiceControl() {
             // 用户主动停止，不显示错误
             return;
         }
-        
+
         statusText.textContent = errorMessage;
         setTimeout(() => {
             voiceStatus.style.display = 'none';
         }, 5000);
     };
-    
+
     recognition.onend = function() {
         isListening = false;
         voiceStatus.style.display = 'none';
         voiceBtn.classList.remove('listening');
-        
+
         // 如果正在播放语音，不要自动重启识别（会在播放完成后恢复）
         // 如果是因为错误结束，不自动重启
         // 只有在用户主动停止或正常结束时才考虑重启（如果需要持续监听）
@@ -232,7 +232,7 @@ function initVoiceControl() {
             return;
         }
     };
-    
+
     // 语音按钮点击事件
     voiceBtn.addEventListener('click', function() {
         if (isListening) {
@@ -279,7 +279,7 @@ function initVoiceControl() {
 
 // 进入站点语音模式询问
 let introRecognition = null;
-function initVoiceIntroPrompt() {
+export function initVoiceIntroPrompt() {
     // 每个会话只询问一次
     if (sessionStorage.getItem('voiceIntroHandled') === 'true') return;
 
@@ -310,7 +310,7 @@ function initVoiceIntroPrompt() {
             clearTimeout(autoCloseTimeout);
             autoCloseTimeout = null;
         }
-        
+
         overlay.classList.remove('active');
         modal.style.display = 'none';
         if (introRecognition) {
@@ -353,20 +353,20 @@ function initVoiceIntroPrompt() {
         let lastProcessedIntroText = '';
         let lastProcessedIntroTime = 0;
         const INTRO_COMMAND_DEBOUNCE_MS = 1000; // 1秒内不重复处理
-        
+
         const decideFromText = (text) => {
             if (decided) return; // 已决定，不再处理
-            
+
             const t = (text || '').toLowerCase().trim();
             const now = Date.now();
-            
+
             // 防抖：避免重复处理
             if (t === lastProcessedIntroText && (now - lastProcessedIntroTime) < INTRO_COMMAND_DEBOUNCE_MS) {
                 return;
             }
             lastProcessedIntroText = t;
             lastProcessedIntroTime = now;
-            
+
             // 更丰富的肯定/否定表达
             const yesList = ['需要','开启','打开','是','好','好的','行','可以','要','yes','ok','okay','sure'];
             const noList  = ['不需要','不用','否','不要','先不要','不用了','取消','no','not','later'];
@@ -390,8 +390,8 @@ function initVoiceIntroPrompt() {
                 decided = true;
                 acceptAndStart();
                 setTimeout(() => {
-                    try { openFeedback(); } catch(e) { 
-                        try { navigateToPage('feature-page'); } catch(_) {} 
+                    try { openFeedback(); } catch(e) {
+                        try { navigateToPage('feature-page'); } catch(_) {}
                     }
                 }, 500);
                 return;
@@ -414,7 +414,7 @@ function initVoiceIntroPrompt() {
             if (isSpeaking) {
                 return;
             }
-            
+
             let interim = '';
             let finalText = '';
             for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -430,20 +430,20 @@ function initVoiceIntroPrompt() {
                 decideFromText(interim);
             }
         };
-        
+
         introRecognition.onerror = (event) => {
             // 忽略 no-speech 和 aborted 错误（正常情况）
             if (event.error !== 'no-speech' && event.error !== 'aborted') {
                 console.log('进站语音询问识别错误（已忽略）:', event.error);
             }
         };
-        
+
         introRecognition.onend = () => {
             // 如果未决定且仍在显示，可以尝试重启（但这里我们依赖超时机制）
         };
 
-        try { 
-            introRecognition.start(); 
+        try {
+            introRecognition.start();
         } catch(e) {
             console.log('进站语音询问启动失败（已忽略）:', e);
         }
@@ -470,7 +470,7 @@ function initVoiceIntroPrompt() {
 }
 
 // 关怀模式（简洁语言）
-function initCareMode() {
+export function initCareMode() {
     const careBtn = document.getElementById('care-mode-btn');
     if (!careBtn) return;
 
@@ -488,7 +488,7 @@ function initCareMode() {
     });
 }
 
-function applyCareMode(enable) {
+export function applyCareMode(enable) {
     const root = document.documentElement; // <html>
     if (enable) {
         root.classList.add('care-mode');
@@ -505,7 +505,7 @@ function applyCareMode(enable) {
 
 let careModeObserver = null;
 let careModeDebounceTimer = null;
-function ensureCareModeObserver() {
+export function ensureCareModeObserver() {
     if (careModeObserver) return;
     try {
         careModeObserver = new MutationObserver(() => {
@@ -526,7 +526,7 @@ function ensureCareModeObserver() {
         // 忽略观察器错误（如 document.body 未就绪）
     }
 }
-function disconnectCareModeObserver() {
+export function disconnectCareModeObserver() {
     if (careModeObserver) {
         try { careModeObserver.disconnect(); } catch(e) {}
         careModeObserver = null;
@@ -537,7 +537,7 @@ function disconnectCareModeObserver() {
     }
 }
 
-function swapSimpleText(useSimple) {
+export function swapSimpleText(useSimple) {
     // 统一处理多类型简洁内容：文本、HTML 和常见属性
     const selector = [
         '[data-simple]',
@@ -637,9 +637,9 @@ let unrecognizedCommandCount = 0; // 记录连续未识别命令次数
 let lastUnrecognizedTime = 0;
 const UNRECOGNIZED_DEBOUNCE_MS = 3000; // 3秒内不重复播报未识别提示
 
-function handleVoiceCommand(command) {
+export function handleVoiceCommand(command) {
     command = command.toLowerCase().trim();
-    
+
     // 定义语音命令映射（按优先级排序，更具体的命令在前）
     const commands = [
         // 页面导航命令
@@ -652,7 +652,7 @@ function handleVoiceCommand(command) {
         { key: '功能', action: () => navigateToPage('feature-page') },
         { key: '返回', action: () => goBack() },
         { key: '主页', action: () => navigateToPage('language-page') },
-        
+
         // 语言选择命令
         { key: '中文', action: () => selectLanguageFromAccessibility('zh') },
         { key: '英文', action: () => selectLanguageFromAccessibility('en') },
@@ -660,13 +660,13 @@ function handleVoiceCommand(command) {
         { key: '韩文', action: () => selectLanguageFromAccessibility('ko') },
         { key: '法文', action: () => selectLanguageFromAccessibility('fr') },
         { key: '德文', action: () => selectLanguageFromAccessibility('de') },
-        
+
         // 南京白局特色命令
         { key: '演唱白局', action: () => selectFeature('performance') },
         { key: '白局历史', action: () => selectFeature('history') },
         { key: '白局特点', action: () => selectFeature('characteristics') },
         { key: '白局', action: () => selectFeature('performance') },
-        
+
         // 功能选择命令
         { key: '历史', action: () => selectFeature('history') },
         { key: '特点', action: () => selectFeature('characteristics') },
@@ -674,13 +674,13 @@ function handleVoiceCommand(command) {
         { key: '服饰', action: () => selectFeature('costume') },
         { key: '传承', action: () => selectFeature('inheritance') },
         { key: '互动', action: () => selectFeature('interaction') },
-        
+
         // 控制命令
         { key: '停止', action: () => stopAll() },
         { key: '关闭', action: () => stopAll() },
         { key: '退出', action: () => stopAll() }
     ];
-    
+
     // 查找匹配的命令
     let matched = false;
     for (const cmd of commands) {
@@ -691,20 +691,20 @@ function handleVoiceCommand(command) {
             break;
         }
     }
-    
+
     // 如果没有匹配的命令，智能处理
     if (!matched) {
         const now = Date.now();
-        
+
         // 防抖：避免短时间内重复播报
         if (now - lastUnrecognizedTime < UNRECOGNIZED_DEBOUNCE_MS) {
             unrecognizedCommandCount++;
             return; // 静默忽略，不播报
         }
-        
+
         lastUnrecognizedTime = now;
         unrecognizedCommandCount++;
-        
+
         // 根据连续未识别次数，给出不同的提示
         let feedbackText = '';
         if (unrecognizedCommandCount === 1) {
@@ -719,14 +719,14 @@ function handleVoiceCommand(command) {
             console.log('连续未识别命令，已静默处理:', command);
             return;
         }
-        
+
         // 使用防抖播报
         speakTextDebounced(feedbackText);
     }
 }
 
 // 打开意见反馈（feature6）
-function openFeedback() {
+export function openFeedback() {
     navigateToPage('feature-page');
     if (typeof window.showFeatureDetail === 'function') {
         window.showFeatureDetail('feature6');
@@ -739,12 +739,12 @@ function openFeedback() {
 }
 
 // 页面导航
-function navigateToPage(pageId) {
+export function navigateToPage(pageId) {
     // 隐藏所有页面
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
     });
-    
+
     // 显示指定页面
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
@@ -754,7 +754,7 @@ function navigateToPage(pageId) {
 }
 
 // 返回上一页
-function goBack() {
+export function goBack() {
     const activePage = document.querySelector('.page.active');
     if (activePage && activePage.id === 'feature-page') {
         navigateToPage('language-page');
@@ -769,18 +769,18 @@ function goBack() {
 // 选择语言
 // 添加一个标志来防止递归调用
 let isSelectingLanguage = false;
-function selectLanguageFromAccessibility(langCode) {
+export function selectLanguageFromAccessibility(langCode) {
     console.log('无障碍功能调用语言选择:', langCode);
-    
+
     // 添加防递归调用保护
     if (isSelectingLanguage) {
         console.log('跳过递归调用');
         return;
     }
-    
+
     try {
         isSelectingLanguage = true;
-        
+
         // 如果全局selectLanguage函数存在，则调用它
         if (typeof window.selectLanguage === 'function') {
             console.log('调用全局selectLanguage函数');
@@ -801,14 +801,14 @@ function selectLanguageFromAccessibility(langCode) {
 
 
 // 更新语言内容
-function updateLanguageContent() {
+export function updateLanguageContent() {
     // 这里应该实现语言内容更新逻辑
     // 由于我们不知道具体的实现细节，这里只是一个占位符
     console.log('更新语言内容到:', window.currentLanguage);
 }
 
 // 获取语言名称
-function getLanguageName(langCode) {
+export function getLanguageName(langCode) {
     const languages = {
         'zh': '中文',
         'en': '英文',
@@ -821,7 +821,7 @@ function getLanguageName(langCode) {
 }
 
 // 选择功能
-function selectFeature(featureId) {
+export function selectFeature(featureId) {
     // 触发功能卡片点击事件
     const featureCard = document.querySelector(`.feature-card[data-feature="${featureId}"]`);
     if (featureCard) {
@@ -831,7 +831,7 @@ function selectFeature(featureId) {
 }
 
 // 获取功能名称
-function getFeatureName(featureId) {
+export function getFeatureName(featureId) {
     const features = {
         'history': '历史渊源',
         'characteristics': '艺术特点',
@@ -844,7 +844,7 @@ function getFeatureName(featureId) {
 }
 
 // 停止所有操作
-function stopAll() {
+export function stopAll() {
     if (recognition && isListening) {
         recognition.stop();
     }
@@ -852,23 +852,23 @@ function stopAll() {
 }
 
 // 文字转语音（带防抖和去重）
-function speakText(text, force = false) {
+export function speakText(text, force = false) {
     if (!text || typeof text !== 'string') return;
-    
+
     // 检查浏览器是否支持语音合成
     if (!('speechSynthesis' in window)) {
         console.warn('您的浏览器不支持语音合成功能');
         return;
     }
-    
+
     const now = Date.now();
-    
+
     // 去重：相同内容在短时间内不重复播报
     if (!force) {
         if (text === lastSpokenText && (now - lastSpokenTime) < SPEAK_DEBOUNCE_MS) {
             return; // 静默忽略重复内容
         }
-        
+
         // 最小间隔检查
         if ((now - lastSpokenTime) < MIN_SPEAK_INTERVAL) {
             // 延迟播报
@@ -881,14 +881,14 @@ function speakText(text, force = false) {
             return;
         }
     }
-    
+
     // 更新记录
     lastSpokenText = text;
     lastSpokenTime = now;
-    
+
     // 取消之前的语音播放
     window.speechSynthesis.cancel();
-    
+
     // 在播放语音前，暂停语音识别（防止识别到自己播放的语音）
     if (recognition && isListening) {
         try {
@@ -900,22 +900,22 @@ function speakText(text, force = false) {
     } else {
         recognitionWasActive = false;
     }
-    
+
     // 标记开始播放
     isSpeaking = true;
-    
+
     // 创建语音合成对象
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN'; // 设置为中文
     utterance.rate = 1.0; // 语速
     utterance.pitch = 1.0; // 音调
     utterance.volume = 1.0; // 音量
-    
+
     // 播放完成后的清理
     utterance.onend = function() {
         // 标记播放结束
         isSpeaking = false;
-        
+
         // 如果之前识别是活动的，恢复语音识别
         if (recognitionWasActive && recognition) {
             // 延迟一小段时间再恢复，确保语音完全停止
@@ -931,7 +931,7 @@ function speakText(text, force = false) {
             }, 300); // 300ms延迟，确保语音完全停止
         }
     };
-    
+
     utterance.onerror = function(event) {
         console.error('语音播报错误:', event.error);
         // 即使出错也要恢复状态
@@ -948,13 +948,13 @@ function speakText(text, force = false) {
             }, 300);
         }
     };
-    
+
     // 播放语音
     window.speechSynthesis.speak(utterance);
 }
 
 // 防抖版本的语音播报（用于非关键提示）
-function speakTextDebounced(text) {
+export function speakTextDebounced(text) {
     if (speakDebounceTimer) {
         clearTimeout(speakDebounceTimer);
     }
@@ -964,17 +964,17 @@ function speakTextDebounced(text) {
 }
 
 // 初始化对比度控制功能
-function initContrastControl() {
+export function initContrastControl() {
     const contrastBtn = document.getElementById('contrast-control-btn');
-    
+
     // 创建对比度模式选择菜单
     createContrastMenu();
-    
+
     contrastBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         toggleContrastMenu();
     });
-    
+
     // 点击页面其他地方关闭菜单
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('contrast-menu');
@@ -985,7 +985,7 @@ function initContrastControl() {
 }
 
 // 创建对比度模式选择菜单
-function createContrastMenu() {
+export function createContrastMenu() {
     const menu = document.createElement('div');
     menu.id = 'contrast-menu';
     menu.className = 'contrast-menu';
@@ -996,9 +996,9 @@ function createContrastMenu() {
         <div class="menu-item" data-mode="deuteranopia">红绿色盲模式(第二种)</div>
         <div class="menu-item" data-mode="tritanopia">蓝黄色盲模式</div>
     `;
-    
+
     document.body.appendChild(menu);
-    
+
     // 为菜单项添加点击事件
     menu.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', function() {
@@ -1010,16 +1010,16 @@ function createContrastMenu() {
 }
 
 // 切换对比度菜单显示状态
-function toggleContrastMenu() {
+export function toggleContrastMenu() {
     const menu = document.getElementById('contrast-menu');
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
 // 应用对比度模式
-function applyContrastMode(mode) {
+export function applyContrastMode(mode) {
     // 移除所有对比度模式类
     document.body.classList.remove('high-contrast', 'colorblind-protanopia', 'colorblind-deuteranopia', 'colorblind-tritanopia');
-    
+
     // 根据选择的模式应用相应的类
     switch(mode) {
         case 'high-contrast':
@@ -1042,7 +1042,7 @@ function applyContrastMode(mode) {
             speakText('已恢复标准模式');
             break;
     }
-    
+
     // 更新当前模式
     if (mode === 'high-contrast') {
         highContrastMode = true;

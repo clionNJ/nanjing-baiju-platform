@@ -90,9 +90,9 @@ const languageTexts = {
 let currentLanguage = 'zh-CN';
 
 // 选择语言函数
-function selectLanguage(lang) {
+export function selectLanguage(lang) {
     currentLanguage = lang;
-    
+
     // 更新功能页面的文本
     document.getElementById('feature-title').textContent = languageTexts[lang].featureTitle;
     document.getElementById('feature-description').textContent = languageTexts[lang].featureDescription;
@@ -106,40 +106,40 @@ function selectLanguage(lang) {
     document.getElementById('feature4-desc').textContent = languageTexts[lang].feature4Desc;
     document.getElementById('back-btn').textContent = languageTexts[lang].backBtn;
     document.getElementById('help-btn').textContent = languageTexts[lang].helpBtn;
-    
+
     // 切换到功能页面
     document.getElementById('language-page').classList.remove('active');
     document.getElementById('feature-page').classList.add('active');
 }
 
 // 返回语言选择页面
-function goBackToLanguage() {
+export function goBackToLanguage() {
     document.getElementById('feature-page').classList.remove('active');
     document.getElementById('language-page').classList.add('active');
 }
 
 // 帮助按钮点击事件
 document.getElementById('help-btn').addEventListener('click', function() {
-    alert(currentLanguage === 'zh-CN' ? 
-        '帮助功能正在开发中...' : 
+    alert(currentLanguage === 'zh-CN' ?
+        '帮助功能正在开发中...' :
         'Help feature is under development...');
 });
 // 虚拟人物表演功能
 let isPerforming = false;
 let currentPerformance = null;
 
-function playPerformance(songId) {
+export function playPerformance(songId) {
     if (isPerforming) {
         stopPerformance();
     }
-    
+
     isPerforming = true;
     currentPerformance = songId;
-    
+
     // 开始嘴巴动画
     const mouth = document.getElementById('mouth');
     mouth.classList.add('speaking');
-    
+
     // 根据选择的歌曲播放不同的表演
     switch(songId) {
         case 'song1':
@@ -151,50 +151,50 @@ function playPerformance(songId) {
     }
 }
 
-function stopPerformance() {
+export function stopPerformance() {
     isPerforming = false;
     currentPerformance = null;
-    
+
     // 停止嘴巴动画
     const mouth = document.getElementById('mouth');
     mouth.classList.remove('speaking');
-    
+
     // 清空表演文本
     const performanceText = document.getElementById('performance-text');
     performanceText.textContent = '';
-    
+
     console.log('表演已停止');
 }
 
-function simulatePerformance(songName, duration) {
+export function simulatePerformance(songName, duration) {
     console.log(`开始表演: ${songName}`);
-    
+
     // 更新表演状态
     const performanceText = document.getElementById('performance-text');
     performanceText.textContent = `正在表演: ${songName}...`;
-    
+
     // 模拟歌词显示
     const lyrics = getLyrics(songName);
     let currentLine = 0;
-    
+
     const lyricInterval = setInterval(() => {
         if (!isPerforming) {
             clearInterval(lyricInterval);
             return;
         }
-        
+
         if (currentLine < lyrics.length) {
             performanceText.textContent = lyrics[currentLine];
             currentLine++;
         }
     }, 2000); // 每2秒换一行歌词
-    
+
     // 表演结束后自动停止
     setTimeout(() => {
         if (isPerforming) {
             stopPerformance();
             performanceText.textContent = '表演结束';
-            
+
             // 3秒后清空文本
             setTimeout(() => {
                 performanceText.textContent = '';
@@ -203,7 +203,7 @@ function simulatePerformance(songName, duration) {
     }, duration);
 }
 
-function getLyrics(songName) {
+export function getLyrics(songName) {
     const lyrics = {
         '秦淮灯会': [
             '🎵 秦淮河畔灯火明，',
@@ -218,19 +218,19 @@ function getLyrics(songName) {
             '🎵 冬雪纷飞兆丰年。'
         ]
     };
-    
+
     return lyrics[songName] || ['正在加载歌词...'];
 }
 
 // 更新原有的selectSong函数
-function selectSong(songId) {
+export function selectSong(songId) {
     console.log('选择唱段:', songId);
     // 可以选择唱段但不立即播放
     const performanceText = document.getElementById('performance-text');
     performanceText.textContent = `已选择: ${getSongName(songId)}，点击播放按钮开始表演`;
 }
 
-function getSongName(songId) {
+export function getSongName(songId) {
     const songNames = {
         'song1': '《秦淮灯会》',
         'song2': '《金陵四季》',
