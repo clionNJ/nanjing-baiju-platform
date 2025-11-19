@@ -1976,7 +1976,7 @@ export function applyGenreTexts() {
 }
 
 // 显示功能详情
-export function showFeatureDetail(featureId) {
+export function showFunctionDetail(featureId) {
     // 显示遮罩层
     document.getElementById('overlay').classList.add('active');
 
@@ -2181,7 +2181,6 @@ export function submitFeedback() {
     document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
     document.getElementById('rating-text').textContent = currentLanguage === 'zh-CN' ? '请选择评分' : 'Please select rating';
 }
-
 
 
 export {replaceTextIds, originalTexts, currentBaseGenreName, currentGenre};

@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0a7cc719-6a52-46c1-9299-61cad9fdb8ba" name="Changes" comment="" />
+    <list default="true" id="80a270b8-3252-4f15-a724-fa66dc4ade9a" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.core.resources.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/my-vue-app/.vscode/extensions.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/index/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/index/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/index/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/index/js/main.js" afterDir="false" />
+    </list>
+    <list id="0ffdaf17-c89d-4325-b9e2-23f91c32e8bc" name="无需修改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,32 +23,78 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
-  <component name="ProjectId" id="35HKDAisdrVeXCZi66HuGqHgUx1" />
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="D:\CodeLife\root\guan-maven-reprository" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../../root/apache-maven-3.6.3" />
+        <option name="useMavenConfig" value="true" />
+        <option name="userSettingsFile" value="$PROJECT_DIR$/../../../../root/apache-maven-3.6.3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="35hi4itlQUpGhjfGf7Dx8Y3ktiA" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+    <option name="showVisibilityIcons" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true"
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/CodeLife/Code/demo/tqj/nanjing-baiju-platform",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ssh.settings",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="0a7cc719-6a52-46c1-9299-61cad9fdb8ba" name="Changes" comment="" />
-      <created>1762761437079</created>
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="80a270b8-3252-4f15-a724-fa66dc4ade9a" name="更改" comment="" />
+      <changelist id="0ffdaf17-c89d-4325-b9e2-23f91c32e8bc" name="无需修改" comment="" />
+      <created>1763568516578</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1762761437079</updated>
+      <updated>1763568516578</updated>
+      <workItem from="1763568518580" duration="691000" />
     </task>
+    <task id="LOCAL-00001" summary="项目目录迁移">
+      <created>1763568721902</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1763568721902</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="项目目录迁移" />
+    <option name="LAST_COMMIT_MESSAGE" value="项目目录迁移" />
   </component>
 </project>
