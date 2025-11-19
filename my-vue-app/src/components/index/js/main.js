@@ -1,62 +1,6 @@
 import {trainingLibrary} from './data/trainingLibrary.js';
 import {languageTexts} from './data/languageTexts.js';
 
-// 函数暴露辅助函数 - 在函数定义后立即调用此函数来暴露它们
-export function exposeFunctionsToGlobal() {
-    if (typeof window === 'undefined') return;
-
-    try {
-        // 直接赋值，不进行检查（函数声明会被提升）
-        // 存储真正的函数实现（供占位函数调用）
-        if (selectLanguage) {
-            window._selectLanguage = selectLanguage;
-            window.selectLanguage = selectLanguage;
-        }
-        if (selectGenre) {
-            window._selectGenre = selectGenre;
-            window.selectGenre = selectGenre;
-        }
-        if (goBackToLanguage) {
-            window._goBackToLanguage = goBackToLanguage;
-            window.goBackToLanguage = goBackToLanguage;
-        }
-        if (goBackToLanguageFromGenre) {
-            window._goBackToLanguageFromGenre = goBackToLanguageFromGenre;
-            window.goBackToLanguageFromGenre = goBackToLanguageFromGenre;
-        }
-        if (showFeatureDetail) {
-            window._showFeatureDetail = showFeatureDetail;
-            window.showFeatureDetail = showFeatureDetail;
-        }
-        if (closeFeatureDetail) {
-            window._closeFeatureDetail = closeFeatureDetail;
-            window.closeFeatureDetail = closeFeatureDetail;
-        }
-        if (playPerformance) {
-            window._playPerformance = playPerformance;
-            window.playPerformance = playPerformance;
-        }
-        if (stopPerformance) {
-            window._stopPerformance = stopPerformance;
-            window.stopPerformance = stopPerformance;
-        }
-        if (showHelp) {
-            window._showHelp = showHelp;
-            window.showHelp = showHelp;
-        }
-        if (selectCourse) {
-            window._selectCourse = selectCourse;
-            window.selectCourse = selectCourse;
-        }
-        if (submitFeedback) {
-            window._submitFeedback = submitFeedback;
-            window.submitFeedback = submitFeedback;
-        }
-    } catch (e) {
-        console.warn('函数暴露时出错:', e);
-    }
-}
-
 export function initTrainingModule() {
     const genreSelector = document.getElementById('genre-selector');
     const trackSelect = document.getElementById('training-track-select');
@@ -1953,7 +1897,7 @@ export function selectLanguage(lang) {
 }
 
 // 选择曲种后进入功能展示页面（暂时与白局相同）
-export function selectGenre(genre) {
+export function selectTypesOfSongs(genre) {
     console.log('选择曲种:', genre);
     currentGenre = genre;
     // 更新功能页返回按钮文字

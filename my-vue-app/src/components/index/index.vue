@@ -2,10 +2,6 @@
   <div class="my-component">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
           onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'">
-    <h2>这是我的第一个组件！</h2>
-    <p>来自父组件的消息：{{ msg }}</p>
-    <p>当前计数：{{ count }}</p>
-    <button @click="increment">点我加一</button>
     <!-- 遮罩层 -->
     <div class="overlay" id="overlay"></div>
 
@@ -55,37 +51,37 @@
         <p data-simple="请选择一种语言">请选择您偏好的语言界面 / Please select your preferred language interface</p>
 
         <div class="language-grid">
-          <div class="language-card" onclick="selectLanguage('zh-CN')">
+          <div class="language-card" onclick="selectTypesOfSongs('zh-CN')">
             <img src="https://flagcdn.com/w80/cn.png"
                  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/CN.svg'"
                  alt="中文">
             <h3>中文</h3>
           </div>
-          <div class="language-card" onclick="selectLanguage('en')">
+          <div class="language-card" onclick="selectTypesOfSongs('en')">
             <img src="https://flagcdn.com/w80/us.png"
                  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/US.svg'"
                  alt="English">
             <h3>English</h3>
           </div>
-          <div class="language-card" onclick="selectLanguage('es')">
+          <div class="language-card" onclick="selectTypesOfSongs('es')">
             <img src="https://flagcdn.com/w80/es.png"
                  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/ES.svg'"
                  alt="Español">
             <h3>Español</h3>
           </div>
-          <div class="language-card" onclick="selectLanguage('fr')">
+          <div class="language-card" onclick="selectTypesOfSongs('fr')">
             <img src="https://flagcdn.com/w80/fr.png"
                  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/FR.svg'"
                  alt="Français">
             <h3>Français</h3>
           </div>
-          <div class="language-card" onclick="selectLanguage('ja')">
+          <div class="language-card" onclick="selectTypesOfSongs('ja')">
             <img src="https://flagcdn.com/w80/jp.png"
                  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/JP.svg'"
                  alt="日本語">
             <h3>日本語</h3>
           </div>
-          <div class="language-card" onclick="selectLanguage('ar')">
+          <div class="language-card" onclick="selectTypesOfSongs('ar')">
             <img src="https://flagcdn.com/w80/sa.png"
                  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/country-flag-icons@3.5.0/3x2/SA.svg'"
                  alt="العربية">
@@ -639,9 +635,9 @@
 import {onMounted, ref} from 'vue'
 import './css/index.css'
 import './css/main.css'
-import './css/style.css'
+// import './css/style.css'
 import {initStarRating} from "./js";
-import {initTrainingModule, originalTexts, replaceTextIds} from "./js/main.js"
+import {initTrainingModule, originalTexts, replaceTextIds, selectTypesOfSongs} from "./js/main.js"
 
 // 定义组件接收的属性
 defineProps<{

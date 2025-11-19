@@ -21,7 +21,7 @@
 
 body {
     /* 背景图片设置 */
-    background-image: url('images/4ED9557E923B0B49B6F4A467C16AB514.jpg');
+    background-image: url('src/assets/images/4ED9557E923B0B49B6F4A467C16AB514.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -847,7 +847,7 @@ p {
 }
 
 .character {
-    background-image: url('images/3DB4A5D6F35C44B34ECBC88BD7D20D37.jpg');
+    background-image: url('src/assets/images/3DB4A5D6F35C44B34ECBC88BD7D20D37.jpg');
     background-size: cover;
     background-position: center;
 }
