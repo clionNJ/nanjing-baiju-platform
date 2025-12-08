@@ -1318,6 +1318,21 @@
         .overlay.active {
             display: block;
         }
+
+        /* 选择曲种页面：2列对称布局 */
+        #genre-page .language-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+            /* 选择曲种页面在小屏幕上保持2列布局 */
+            #genre-page .language-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
     </style>
 </head>
 <body>
